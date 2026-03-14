@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import Build from "./pages/Build.tsx";
 import Calculator from "./pages/Calculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ThankYou from "./pages/ThankYou.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/build" element={<Build />} />
             <Route path="/calculator" element={<Calculator />} />
+            <Route path="/bedankt" element={<ThankYou />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
