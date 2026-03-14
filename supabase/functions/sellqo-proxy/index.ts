@@ -11,32 +11,30 @@ serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const SELLQO_API_URL = Deno.env.get('SELLQO_API_URL');
-  const SELLQO_API_KEY = Deno.env.get('SELLQO_API_KEY');
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-  if (!SELLQO_API_URL || !SELLQO_API_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     return new Response(
-      JSON.stringify({ error: 'SellQo API not configured' }),
+      JSON.stringify({ error: 'Supabase environment not configured' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 
   try {
     const url = new URL(req.url);
-    // Strip the edge function prefix to get the SellQo API path
     const path = url.pathname.replace(/^\/sellqo-proxy/, '') || '/';
-    const queryString = url.search;
-    const targetUrl = `${SELLQO_API_URL}${path}${queryString}`;
+    const tenantId = req.headers.get('X-Tenant-ID') || 'vanxcel';
+
+    // Build target URL with tenant_id as query param
+    const targetUrl = new URL(`${SUPABASE_URL}/functions/v1/storefront-api${path}`);
+    url.searchParams.forEach((value, key) => targetUrl.searchParams.set(key, value));
+    targetUrl.searchParams.set('tenant_id', tenantId);
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SELLQO_API_KEY}`,
+      'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
     };
-
-    const tenantId = req.headers.get('X-Tenant-ID');
-    if (tenantId) {
-      headers['X-Tenant-ID'] = tenantId;
-    }
 
     const fetchOptions: RequestInit = {
       method: req.method,
@@ -50,7 +48,7 @@ serve(async (req: Request) => {
       }
     }
 
-    const response = await fetch(targetUrl, fetchOptions);
+    const response = await fetch(targetUrl.toString(), fetchOptions);
     const responseBody = await response.text();
 
     return new Response(responseBody, {
