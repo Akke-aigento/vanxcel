@@ -36,14 +36,7 @@ const Navbar = () => {
 
         {/* Cart + mobile toggle */}
         <div className="flex items-center gap-4">
-          <a
-            href="https://www.vanxcel.be/cart"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ShoppingCart size={20} />
-          </a>
+          <CartDrawer />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden text-muted-foreground hover:text-foreground"
