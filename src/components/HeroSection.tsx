@@ -31,14 +31,12 @@ const HeroSection = () => {
           >
             Bekijk Kits →
           </a>
-          <a
-            href="https://www.vanxcel.be/products/build-your-power-system"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/build"
             className="px-8 py-3 border border-foreground/30 text-foreground font-semibold text-sm rounded hover:bg-foreground/10 transition-all"
           >
             Bouw je Systeem
-          </a>
+          </Link>
         </div>
       </div>
     </section>
