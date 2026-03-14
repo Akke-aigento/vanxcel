@@ -79,9 +79,25 @@ export interface CheckoutPayload {
   cancel_url: string;
 }
 
+export interface LegalPage {
+  title: string;
+  url: string;
+  slug: string;
+}
+
+export interface SocialLinks {
+  instagram?: string;
+  tiktok?: string;
+  facebook?: string;
+  twitter?: string;
+  youtube?: string;
+}
+
 export interface StoreSettings {
   store_name: string;
+  shop_name?: string;
   currency: string;
+  social?: SocialLinks;
   [key: string]: unknown;
 }
 
