@@ -9,6 +9,7 @@ import Build from "./pages/Build.tsx";
 import Calculator from "./pages/Calculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
+import Contact from "./pages/Contact.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/build" element={<Build />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/bedankt" element={<ThankYou />} />
+            <Route path="/contact" element={<Contact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
