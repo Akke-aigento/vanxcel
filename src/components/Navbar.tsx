@@ -1,5 +1,6 @@
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import CartDrawer from "@/components/CartDrawer";
 
 const navLinks = [
   { label: "Home", href: "#" },
