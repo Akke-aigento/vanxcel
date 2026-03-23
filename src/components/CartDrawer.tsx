@@ -20,8 +20,8 @@ const CartDrawer = () => {
     setCheckingOut(true);
     try {
       await checkout({
-        success_url: "https://www.vanxcel.be/bedankt",
-        cancel_url: "https://www.vanxcel.be/shop",
+        success_url: `${window.location.origin}/bedankt`,
+        cancel_url: `${window.location.origin}/shop`,
       });
     } catch (err) {
       console.error("Checkout failed:", err);

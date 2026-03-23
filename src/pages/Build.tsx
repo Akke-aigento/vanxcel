@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Check, ArrowRight, ArrowLeft } from "lucide-react";
@@ -239,14 +240,12 @@ const Build = () => {
                   <div className="rounded-2xl border-2 border-accent bg-card p-8">
                     <p className="text-accent font-bold text-lg mb-2">⚡ Jouw ideale systeem</p>
                     <h3 className="font-display text-[32px] text-foreground leading-tight mb-6">{kitRec}</h3>
-                    <a
-                      href={`https://www.vanxcel.be/collections/${kitSlug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      to={`/shop?collection=${kitSlug}`}
                       className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-semibold px-6 py-3 rounded-lg hover:bg-accent/90 transition-colors"
                     >
                       Bekijk dit pakket <ArrowRight size={16} />
-                    </a>
+                    </Link>
 
                     <div className="grid grid-cols-3 gap-3 mt-8">
                       <div className="bg-secondary rounded-xl p-4 text-center">
@@ -301,14 +300,12 @@ const Build = () => {
                     <div className="rounded-2xl border border-border bg-card p-6 mt-4">
                       <p className="text-sm text-muted-foreground mb-1">Alternatief:</p>
                       <p className="text-foreground font-semibold">{altKit}</p>
-                      <a
-                        href={`https://www.vanxcel.be/collections/${altSlug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        to={`/shop?collection=${altSlug}`}
                         className="text-sm text-primary hover:underline mt-2 inline-block"
                       >
                         Bekijk dit pakket →
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>

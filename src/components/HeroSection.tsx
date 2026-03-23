@@ -23,14 +23,12 @@ const HeroSection = () => {
           LiFePO4 batterijen & off-grid systemen voor campervans
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 animate-fade-in-up-delay-2">
-          <a
-            href="https://www.vanxcel.be/collections"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/shop"
             className="px-8 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded hover:brightness-110 transition-all"
           >
             Bekijk Kits →
-          </a>
+          </Link>
           <Link
             to="/build"
             className="px-8 py-3 border border-foreground/30 text-foreground font-semibold text-sm rounded hover:bg-foreground/10 transition-all"

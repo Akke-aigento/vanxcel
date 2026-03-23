@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Check, Zap } from "lucide-react";
@@ -170,28 +171,24 @@ const Calculator = () => {
                         <div className="flex justify-between items-center">
                           <span className="text-primary text-sm font-semibold">Aanbevolen kabel:</span>
                           {result.cable ? (
-                            <a
-                              href="https://www.vanxcel.be/collections/cables"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <Link
+                              to="/shop?collection=cables"
                               className="text-primary font-bold text-lg hover:underline"
                             >
                               {result.cable} mm²
-                            </a>
+                            </Link>
                           ) : (
                             <span className="text-destructive font-bold text-lg">&gt;50 mm² (specialist nodig)</span>
                           )}
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-primary text-sm font-semibold">Aanbevolen zekering:</span>
-                          <a
-                            href="https://www.vanxcel.be/collections/accessories"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <Link
+                            to="/shop?collection=accessories"
                             className="text-primary font-bold text-lg hover:underline"
                           >
                             {result.fuse}
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -236,14 +233,12 @@ const Calculator = () => {
                   ))}
                 </div>
 
-                <a
-                  href="https://www.vanxcel.be/collections/cables"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/shop?collection=cables"
                   className="inline-block mt-6 text-sm font-semibold text-primary hover:underline"
                 >
                   Bekijk onze kabelcollectie →
-                </a>
+                </Link>
               </div>
             </div>
           </div>
