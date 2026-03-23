@@ -1,55 +1,92 @@
 
 
-## VanXcel — Grondige Analyse: Wat Moet Er Nog Gebeuren
+## Meertaligheid (NL, EN, FR, DE) met i18next
 
-Na het doorlichten van alle bestanden, dit zijn de openstaande issues en verbeterpunten:
+### Aanpak
 
----
+State-based taalwisseling met `i18next` + `react-i18next`. Taal wordt opgeslagen in `localStorage` en kan geschakeld worden via een taalselector in de Navbar. Geen URL-prefixen.
 
-### 1. Externe links naar vanxcel.be vervangen door interne routes
+### Bestanden
 
-Meerdere componenten linken nog naar `vanxcel.be` in plaats van interne `/shop` routes:
+**1. Nieuwe bestanden**
 
-- **HeroSection.tsx** — "Bekijk Kits →" linkt naar `https://www.vanxcel.be/collections` → moet `/shop` worden
-- **Build.tsx** — "Bekijk dit pakket" links gaan naar `vanxcel.be/collections/{slug}` → moet `/shop?collection={slug}` worden (2 plekken: hoofdaanbeveling + alternatief)
-- **Calculator.tsx** — links naar `vanxcel.be/collections/cables` en `vanxcel.be/collections/accessories` → moeten interne shop links worden
-- **Newsletter.tsx** — stuurt naar `vanxcel.be/account/register` → dit kan zo blijven (er is geen lokaal accountsysteem) OF de newsletter flow moet via SellQo `/contact` of een eigen implementatie
-- **CartDrawer.tsx** — checkout URLs gebruiken `vanxcel.be/bedankt` en `vanxcel.be/shop` → moeten `window.location.origin + '/bedankt'` en `window.location.origin + '/shop'` worden zodat het werkt op elk domein (.be, .nl, .com)
+- `src/i18n/index.ts` — i18next configuratie met `initReactI18next`, fallback `nl`, detectie via `localStorage`
+- `src/i18n/locales/nl.json` — Alle Nederlandse teksten (huidige hardcoded strings)
+- `src/i18n/locales/en.json` — Engelse vertalingen
+- `src/i18n/locales/fr.json` — Franse vertalingen
+- `src/i18n/locales/de.json` — Duitse vertalingen
+- `src/components/LanguageSwitcher.tsx` — Dropdown met vlaggetjes (🇳🇱 🇬🇧 🇫🇷 🇩🇪)
 
-### 2. ProductCard badge positioning is broken
+**2. Bestaande bestanden aanpassen**
 
-De `absolute` positioned badges (korting %, uitverkocht, bijna op) staan in een container die **geen** `relative` class heeft. Ze verschijnen dus niet correct boven de afbeelding.
+Elk component met hardcoded tekst wordt aangepast om `useTranslation()` te gebruiken:
 
-**Fix:** Voeg `relative` toe aan de `aspect-square` wrapper div.
+| Component | Aantal te vertalen strings |
+|---|---|
+| Navbar | 6 nav labels |
+| HeroSection | 3 (tagline, subtitle, CTA's) |
+| TrustBar | 4 USP labels |
+| CategoryGrid | 2 (title, subtitle) |
+| FeaturedProducts | 3 (title, subtitle, CTA) |
+| PowerCalculator | ~10 (title, labels, recommendation) |
+| ComparisonTable | ~12 (title, subtitle, features) |
+| ReviewsMarquee | 2 (title, subtitle) |
+| Newsletter | 3 (title, subtitle, placeholder) |
+| CartDrawer | ~8 (title, empty state, checkout, labels) |
+| Footer | 4 (brand desc, headings, copyright) |
+| Shop | ~6 (title, filters, sort, empty state) |
+| ProductDetail | ~10 (breadcrumb, stock, variant, qty, CTA, related) |
+| Build | ~25 (all wizard steps, labels, results) |
+| Calculator | ~10 (page title, links, labels) |
+| Contact | ~8 (form labels, placeholders, messages) |
+| ThankYou | ~5 (title, messages, CTA) |
+| NotFound | 3 |
 
-### 3. Meertaligheid (i18n) ontbreekt nog
+**3. Dependencies**
 
-Was eerder besproken maar nog niet geïmplementeerd. Alle teksten zijn hardcoded in het Nederlands. Dit is een grote feature — apart op te pakken.
+- `i18next`
+- `react-i18next`
+- `i18next-browser-languagedetector` (detecteert `localStorage` key)
 
-### 4. SEO & Meta tags
+**4. `src/main.tsx`**
 
-Geen `<title>`, `<meta description>` of Open Graph tags. Voor een e-commerce site is dit cruciaal. Kan met `react-helmet-async`.
+Import `src/i18n/index.ts` voor side-effect initialisatie.
 
-### 5. ThankYou pagina mist Footer
+### Structuur vertaalbestanden
 
-De `/bedankt` pagina heeft geen `<Footer />` component.
+```json
+{
+  "nav": { "home": "Home", "shop": "Shop", ... },
+  "hero": { "title": "Power Your Journey.", "subtitle": "...", ... },
+  "trust": { "warranty": "2 Year Warranty", ... },
+  "categories": { "title": "SHOP BY CATEGORY", ... },
+  "bestsellers": { "title": "BESTSELLERS", ... },
+  "calculator": { "title": "POWER CALCULATOR", ... },
+  "comparison": { "title": "LIFEPO4 VS AGM", ... },
+  "reviews": { "title": "CUSTOMER REVIEWS", ... },
+  "newsletter": { "title": "GET 10% OFF", ... },
+  "cart": { "title": "Shopping Cart", ... },
+  "shop": { "title": "SHOP", ... },
+  "product": { "addToCart": "Add to Cart", ... },
+  "build": { "title": "BUILD YOUR SYSTEM", ... },
+  "contact": { "title": "Contact", ... },
+  "footer": { "followUs": "FOLLOW US", ... },
+  "thankYou": { ... },
+  "notFound": { ... }
+}
+```
 
-### 6. Checkout URLs zijn hardcoded
+### LanguageSwitcher
 
-De success/cancel URLs in CartDrawer moeten dynamisch het huidige domein gebruiken (`window.location.origin`) zodat het werkt op vanxcel.nl, .be en .com.
+Klein dropdown-component in de Navbar, naast het cart-icoon. Toont de huidige taal als vlaggetje, opent een dropdown met de 4 opties. Bij selectie: `i18n.changeLanguage(lng)` — alles re-rendert automatisch.
 
----
+### Domein-detectie (optioneel, voorbereiding)
 
-### Aanbevolen aanpak (prioriteit)
+In de i18n config wordt `window.location.hostname` gecheckt als fallback:
+- `vanxcel.nl` → `nl`
+- `vanxcel.be` → `nl`
+- `vanxcel.com` → `en`
+- Anders → `nl`
 
-| # | Taak | Impact |
-|---|------|--------|
-| 1 | Externe vanxcel.be links → interne routes | Hoog — core UX broken |
-| 2 | ProductCard `relative` fix | Medium — visuele bug |
-| 3 | Checkout URLs dynamisch maken | Hoog — checkout werkt niet op .nl/.com |
-| 4 | Footer toevoegen aan ThankYou | Klein — consistentie |
-| 5 | SEO/meta tags | Medium — vindbaarheid |
-| 6 | i18n (NL/EN/FR/DE) | Groot — aparte sprint |
-
-Ik zou **items 1-4 in één keer** aanpakken. Items 5 en 6 als vervolgstappen.
+Dit werkt alleen als de domeinen later via proxy worden gekoppeld.
 
