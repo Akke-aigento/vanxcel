@@ -32,6 +32,7 @@ export async function sellqoFetch<T = unknown>(
     headers: {
       'Content-Type': 'application/json',
       'X-Tenant-ID': TENANT_ID,
+      'Accept-Language': currentLocale,
       ...options?.headers,
     },
   });
