@@ -299,14 +299,12 @@ const Build = () => {
                     <div className="rounded-2xl border border-border bg-card p-6 mt-4">
                       <p className="text-sm text-muted-foreground mb-1">Alternatief:</p>
                       <p className="text-foreground font-semibold">{altKit}</p>
-                      <a
-                        href={`https://www.vanxcel.be/collections/${altSlug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        to={`/shop?collection=${altSlug}`}
                         className="text-sm text-primary hover:underline mt-2 inline-block"
                       >
                         Bekijk dit pakket →
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
