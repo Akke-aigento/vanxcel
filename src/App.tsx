@@ -10,6 +10,8 @@ import Calculator from "./pages/Calculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Contact from "./pages/Contact.tsx";
+import Shop from "./pages/Shop.tsx";
+import ProductDetail from "./pages/ProductDetail.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +33,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/shop/:slug" element={<ProductDetail />} />
             <Route path="/build" element={<Build />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/bedankt" element={<ThankYou />} />
