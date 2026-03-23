@@ -34,6 +34,7 @@ serve(async (req: Request) => {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'X-API-Key': SELLQO_API_KEY,
+      'X-Tenant-ID': tenantId,
     };
 
     const fetchOptions: RequestInit = {
