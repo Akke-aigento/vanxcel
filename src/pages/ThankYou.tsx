@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { sellqoFetch } from "@/integrations/sellqo/client";
+import { sellqoFetch, extractSingle } from "@/integrations/sellqo/client";
+import { normalizeCart } from "@/integrations/sellqo/normalizer";
 import { useCartContext } from "@/integrations/sellqo/CartContext";
 import type { Cart } from "@/integrations/sellqo/types";
 import Navbar from "@/components/Navbar";
@@ -24,8 +25,11 @@ const ThankYou = () => {
 
   useEffect(() => {
     if (!cartId) return;
-    sellqoFetch<Cart>(`/cart/${cartId}`)
-      .then(setCart)
+    sellqoFetch(`/cart/${cartId}`)
+      .then((data) => {
+        const raw = extractSingle<Cart>(data) || data;
+        setCart(normalizeCart(raw));
+      })
       .catch((err) => console.error("Failed to load order:", err))
       .finally(() => setLoading(false));
   }, [cartId]);
@@ -55,22 +59,22 @@ const ThankYou = () => {
               <div className="divide-y divide-border">
                 {cart.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 px-4 py-3">
-                    {item.product_image && (
+                    {item.image && (
                       <img
-                        src={item.product_image}
-                        alt={item.product_name}
+                        src={item.image}
+                        alt={item.title}
                         className="w-12 h-12 object-cover rounded bg-muted"
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{item.product_name}</p>
+                      <p className="text-sm font-medium truncate">{item.title}</p>
                       {item.variant_title && (
                         <p className="text-xs text-muted-foreground">{item.variant_title}</p>
                       )}
                     </div>
                     <div className="text-right text-sm">
                       <p>{item.quantity}×</p>
-                      <p className="font-semibold">€{(item.unit_price * item.quantity).toFixed(2)}</p>
+                      <p className="font-semibold">€{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
@@ -83,7 +87,7 @@ const ThankYou = () => {
           )}
 
           <Button asChild>
-            <Link to="/">Terug naar de shop</Link>
+            <Link to="/shop">Terug naar de shop</Link>
           </Button>
         </div>
       </main>
