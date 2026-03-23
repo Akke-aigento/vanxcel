@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProducts, useCollections } from '@/integrations/sellqo/hooks';
 import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeProducts, normalizeCollections } from '@/integrations/sellqo/normalizer';
@@ -9,6 +10,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function Shop() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get('collection') || 'all';
   const [sort, setSort] = useState('newest');
@@ -25,9 +27,7 @@ export default function Shop() {
   const products: Product[] = useMemo(() => {
     if (productsData) {
       const rawProducts = extractArray(productsData);
-      if (rawProducts.length > 0) {
-        return normalizeProducts(rawProducts);
-      }
+      if (rawProducts.length > 0) return normalizeProducts(rawProducts);
     }
     return [];
   }, [productsData]);
@@ -35,9 +35,7 @@ export default function Shop() {
   const collections: Collection[] = useMemo(() => {
     if (collectionsData) {
       const rawCollections = extractArray(collectionsData);
-      if (rawCollections.length > 0) {
-        return normalizeCollections(rawCollections).filter(c => !c.parent_id);
-      }
+      if (rawCollections.length > 0) return normalizeCollections(rawCollections).filter(c => !c.parent_id);
     }
     return [];
   }, [collectionsData]);
@@ -48,10 +46,9 @@ export default function Shop() {
       <main className="pt-24 pb-16 px-4">
         <div className="container mx-auto">
           <h1 className="font-display text-4xl md:text-5xl text-center text-foreground mb-10">
-            SHOP
+            {t("shop.title")}
           </h1>
 
-          {/* Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
             <div className="flex flex-wrap gap-2">
               <button
@@ -62,7 +59,7 @@ export default function Shop() {
                     : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
                 }`}
               >
-                Alles
+                {t("shop.all")}
               </button>
               {collections.map(col => (
                 <button
@@ -83,13 +80,12 @@ export default function Shop() {
               onChange={e => setSort(e.target.value)}
               className="px-4 py-2 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary"
             >
-              <option value="newest">Nieuwste</option>
-              <option value="price-asc">Prijs: laag → hoog</option>
-              <option value="price-desc">Prijs: hoog → laag</option>
+              <option value="newest">{t("shop.newest")}</option>
+              <option value="price-asc">{t("shop.priceAsc")}</option>
+              <option value="price-desc">{t("shop.priceDesc")}</option>
             </select>
           </div>
 
-          {/* Product grid */}
           {productsLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
@@ -102,7 +98,7 @@ export default function Shop() {
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-xl text-muted-foreground">Geen producten gevonden</p>
+              <p className="text-xl text-muted-foreground">{t("shop.noProducts")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
