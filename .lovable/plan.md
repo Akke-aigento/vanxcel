@@ -1,18 +1,10 @@
 
 
-## Responsive marquee snelheid
+## Taalkeuze: vlagjes vervangen door initialen
 
-Huidige situatie: marquee draait op `40s` op alle schermformaten.
+### Aanpassing in `src/components/LanguageSwitcher.tsx`
 
-### Aanpassing in `src/index.css`
-
-Voeg media queries toe voor de marquee-snelheid:
-- **Desktop** (standaard): `40s` — blijft hetzelfde
-- **Tablet** (`max-width: 1024px`): `28s` — merkbaar sneller
-- **Mobiel** (`max-width: 768px`): `20s` — nog sneller
-
-De `.marquee-track` class krijgt responsive `animation-duration` via `@media` queries.
-
-### Alleen dit bestand wordt aangepast:
-- `src/index.css`
+- Verwijder de `flag` property uit de `languages` array
+- Toon enkel de `label` (NL, EN, FR, DE) in zowel de trigger-knop als het dropdown-menu
+- Geen andere bestanden worden aangepast
 
