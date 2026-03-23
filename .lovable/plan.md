@@ -1,10 +1,13 @@
 
 
-## Taalkeuze: vlagjes vervangen door initialen
+## Browser icoon (favicon) toevoegen
 
-### Aanpassing in `src/components/LanguageSwitcher.tsx`
+### Aanpak
+- Kopieer `src/assets/logo-white.png` naar `public/favicon.png`
+- Voeg `<link rel="icon" href="/favicon.png" type="image/png">` toe aan `index.html`
 
-- Verwijder de `flag` property uit de `languages` array
-- Toon enkel de `label` (NL, EN, FR, DE) in zowel de trigger-knop als het dropdown-menu
-- Geen andere bestanden worden aangepast
+Het witte logo op transparante achtergrond wordt zo het browser-icoon.
+
+### Bestand dat wordt aangepast
+- `index.html` — favicon link toevoegen
 
