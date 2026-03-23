@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CartDrawer from "@/components/CartDrawer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import logoWhite from "@/assets/logo-white.png";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
