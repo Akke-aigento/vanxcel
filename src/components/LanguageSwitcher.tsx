@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const languages = [
-  { code: 'nl', flag: '🇳🇱', label: 'NL' },
-  { code: 'en', flag: '🇬🇧', label: 'EN' },
-  { code: 'fr', flag: '🇫🇷', label: 'FR' },
-  { code: 'de', flag: '🇩🇪', label: 'DE' },
+  { code: 'nl', label: 'NL' },
+  { code: 'en', label: 'EN' },
+  { code: 'fr', label: 'FR' },
+  { code: 'de', label: 'DE' },
 ];
 
 const LanguageSwitcher = () => {
@@ -29,8 +29,7 @@ const LanguageSwitcher = () => {
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <span>{current.flag}</span>
-        <span className="hidden sm:inline">{current.label}</span>
+        <span>{current.label}</span>
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-2 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50 min-w-[100px]">
@@ -42,7 +41,6 @@ const LanguageSwitcher = () => {
                 lang.code === i18n.language ? 'text-primary font-semibold' : 'text-foreground'
               }`}
             >
-              <span>{lang.flag}</span>
               <span>{lang.label}</span>
             </button>
           ))}
