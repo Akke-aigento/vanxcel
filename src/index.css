@@ -88,6 +88,18 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .marquee-track {
+    animation-duration: 28s;
+  }
+}
+
+@media (max-width: 768px) {
+  .marquee-track {
+    animation-duration: 20s;
+  }
+}
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
