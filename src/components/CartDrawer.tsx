@@ -9,30 +9,20 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/integrations/sellqo/CartContext";
-import { getCartId } from "@/integrations/sellqo/CartContext";
-import { sellqoFetch } from "@/integrations/sellqo/client";
 
 const CartDrawer = () => {
-  const { cart, isLoading, updateItem, removeItem } = useCartContext();
+  const { cart, isLoading, updateQuantity, removeItem, checkout, isOpen, openCart, closeCart } = useCartContext();
   const [checkingOut, setCheckingOut] = useState(false);
 
   const itemCount = cart?.item_count ?? 0;
 
   const handleCheckout = async () => {
-    const cartId = getCartId();
-    if (!cartId) return;
-
     setCheckingOut(true);
     try {
-      const response = await sellqoFetch<{ data: { checkout_url: string } }>("/checkout", {
-        method: "POST",
-        body: JSON.stringify({
-          cart_id: cartId,
-          success_url: "https://www.vanxcel.be/bedankt?cart_id=" + cartId,
-          cancel_url: "https://www.vanxcel.be/shop",
-        }),
+      await checkout({
+        success_url: "https://www.vanxcel.be/bedankt",
+        cancel_url: "https://www.vanxcel.be/shop",
       });
-      window.location.href = response.data.checkout_url;
     } catch (err) {
       console.error("Checkout failed:", err);
       setCheckingOut(false);
@@ -40,7 +30,7 @@ const CartDrawer = () => {
   };
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={(open) => open ? openCart() : closeCart()}>
       <SheetTrigger asChild>
         <button className="relative text-muted-foreground hover:text-foreground transition-colors">
           <ShoppingCart size={20} />
@@ -71,27 +61,27 @@ const CartDrawer = () => {
             <div className="flex-1 overflow-y-auto -mx-6 px-6 space-y-4 py-4">
               {cart.items.map((item) => (
                 <div key={item.id} className="flex gap-3">
-                  {item.product_image && (
+                  {item.image && (
                     <img
-                      src={item.product_image}
-                      alt={item.product_name}
+                      src={item.image}
+                      alt={item.title}
                       className="w-16 h-16 object-cover rounded-md bg-muted"
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{item.product_name}</p>
+                    <p className="text-sm font-medium truncate">{item.title}</p>
                     {item.variant_title && (
                       <p className="text-xs text-muted-foreground">{item.variant_title}</p>
                     )}
                     <p className="text-sm font-semibold mt-1">
-                      €{(item.unit_price * item.quantity).toFixed(2)}
+                      €{(item.price * item.quantity).toFixed(2)}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <button
                         onClick={() =>
                           item.quantity <= 1
                             ? removeItem(item.id)
-                            : updateItem(item.id, item.quantity - 1)
+                            : updateQuantity(item.id, item.quantity - 1)
                         }
                         className="h-6 w-6 flex items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground"
                       >
@@ -99,7 +89,7 @@ const CartDrawer = () => {
                       </button>
                       <span className="text-sm w-6 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => updateItem(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="h-6 w-6 flex items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground"
                       >
                         <Plus size={12} />
