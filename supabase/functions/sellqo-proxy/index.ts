@@ -29,7 +29,6 @@ serve(async (req: Request) => {
 
     const targetUrl = new URL(`${SELLQO_API_URL}${path}`);
     url.searchParams.forEach((value, key) => targetUrl.searchParams.set(key, value));
-    targetUrl.searchParams.set('tenant_id', tenantId);
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
