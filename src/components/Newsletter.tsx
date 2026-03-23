@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
+  const { t } = useTranslation();
 
   return (
     <section className="bg-secondary/50 py-20">
       <div className="container mx-auto px-4 max-w-xl text-center">
         <h2 className="font-display text-4xl md:text-5xl text-foreground mb-4">
-          KRIJG 10% KORTING
+          {t("newsletter.title")}
         </h2>
         <p className="text-muted-foreground mb-8">
-          Schrijf je in voor onze nieuwsbrief en ontvang 10% korting op je eerste bestelling.
+          {t("newsletter.subtitle")}
         </p>
         <form
           onSubmit={(e) => {
@@ -24,7 +26,7 @@ const Newsletter = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Je e-mailadres"
+            placeholder={t("newsletter.placeholder")}
             required
             className="flex-1 px-4 py-3 bg-card border border-border rounded text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
           />

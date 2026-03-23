@@ -1,17 +1,20 @@
 import { useState } from "react";
-
-const appliances = [
-  { name: "LED Verlichting", watts: 10, icon: "💡" },
-  { name: "Koelkast (compressor)", watts: 50, icon: "❄️" },
-  { name: "Laptop", watts: 65, icon: "💻" },
-  { name: "Telefoon opladen", watts: 15, icon: "📱" },
-  { name: "Waterpomp", watts: 40, icon: "🚰" },
-  { name: "Ventilator", watts: 25, icon: "🌀" },
-  { name: "Diesel kachel", watts: 30, icon: "🔥" },
-  { name: "TV / Monitor", watts: 60, icon: "📺" },
-];
+import { useTranslation } from "react-i18next";
 
 const PowerCalculator = () => {
+  const { t } = useTranslation();
+
+  const appliances = [
+    { name: t("appliances.led"), watts: 10, icon: "💡" },
+    { name: t("appliances.fridge"), watts: 50, icon: "❄️" },
+    { name: t("appliances.laptop"), watts: 65, icon: "💻" },
+    { name: t("appliances.phone"), watts: 15, icon: "📱" },
+    { name: t("appliances.waterPump"), watts: 40, icon: "🚰" },
+    { name: t("appliances.fan"), watts: 25, icon: "🌀" },
+    { name: t("appliances.heater"), watts: 30, icon: "🔥" },
+    { name: t("appliances.tv"), watts: 60, icon: "📺" },
+  ];
+
   const [selected, setSelected] = useState<Record<string, { hours: number }>>({});
 
   const toggle = (name: string) => {
@@ -37,22 +40,22 @@ const PowerCalculator = () => {
     return sum;
   }, 0);
 
-  const recommendedAh = Math.ceil(totalWh / 12.8 / 0.8); // 80% DoD
+  const recommendedAh = Math.ceil(totalWh / 12.8 / 0.8);
   const recommendation =
     recommendedAh <= 100
-      ? "200Ah batterij is voldoende"
+      ? t("calculator.rec100")
       : recommendedAh <= 200
-        ? "200Ah batterij aanbevolen"
-        : "300Ah batterij aanbevolen";
+        ? t("calculator.rec200")
+        : t("calculator.rec300");
 
   return (
     <section id="calculator" className="bg-background py-20">
       <div className="container mx-auto px-4 max-w-4xl">
         <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-          POWER CALCULATOR
+          {t("calculator.title")}
         </h2>
         <p className="text-center text-muted-foreground mb-12">
-          Bereken hoeveel batterijcapaciteit je nodig hebt
+          {t("calculator.subtitle")}
         </p>
 
         <div className="bg-surface-elevated border border-border rounded-lg p-6 md:p-8">
@@ -96,16 +99,15 @@ const PowerCalculator = () => {
             })}
           </div>
 
-          {/* Results */}
           <div className="mt-8 pt-6 border-t border-border">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-3xl font-display text-accent">{totalWh}</p>
-                <p className="text-xs text-muted-foreground mt-1">Wh / dag</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("calculator.whPerDay")}</p>
               </div>
               <div>
                 <p className="text-3xl font-display text-primary">{recommendedAh}</p>
-                <p className="text-xs text-muted-foreground mt-1">Ah nodig</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("calculator.ahNeeded")}</p>
               </div>
               <div>
                 <p className="text-sm font-semibold text-foreground mt-2">{recommendation}</p>

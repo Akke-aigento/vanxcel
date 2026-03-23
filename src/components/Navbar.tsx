@@ -1,21 +1,24 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import CartDrawer from "@/components/CartDrawer";
-
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Shop", href: "/shop" },
-  { label: "Products", href: "/#products" },
-  { label: "Calculator", href: "/calculator" },
-  { label: "About", href: "/#about" },
-  { label: "Contact", href: "/contact" },
-];
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const navLinks = [
+    { label: t("nav.home"), href: "/" },
+    { label: t("nav.shop"), href: "/shop" },
+    { label: t("nav.products"), href: "/#products" },
+    { label: t("nav.calculator"), href: "/calculator" },
+    { label: t("nav.about"), href: "/#about" },
+    { label: t("nav.contact"), href: "/contact" },
+  ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("/#")) {
@@ -64,6 +67,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          <LanguageSwitcher />
           <CartDrawer />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
