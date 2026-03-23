@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { sellqoFetch, extractSingle } from "@/integrations/sellqo/client";
 import type { SocialLinks, StoreSettings } from "@/integrations/sellqo/types";
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
@@ -13,6 +14,7 @@ const socialConfig = [
 ];
 
 const Footer = () => {
+  const { t } = useTranslation();
   const [legalPages, setLegalPages] = useState<{ title: string; url: string; slug: string }[]>([]);
   const [social, setSocial] = useState<SocialLinks>({});
   const [shopName, setShopName] = useState("VANXCEL");
@@ -45,20 +47,17 @@ const Footer = () => {
     <footer className="bg-background border-t border-border py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Brand */}
           <div>
             <h3 className="font-display text-2xl text-foreground mb-4">
               {shopName.toUpperCase()}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Fueling Your Journey. Off-grid power oplossingen voor campervans,
-              gemaakt in België.
+              {t("footer.brandDesc")}
             </p>
           </div>
 
-          {/* Shop */}
           <div>
-            <h4 className="font-display text-lg text-foreground mb-4">SHOP</h4>
+            <h4 className="font-display text-lg text-foreground mb-4">{t("footer.shop")}</h4>
             <ul className="space-y-2">
               {categories.map((cat) => (
                 <li key={cat.slug}>
@@ -73,9 +72,8 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
-            <h4 className="font-display text-lg text-foreground mb-4">INFO</h4>
+            <h4 className="font-display text-lg text-foreground mb-4">{t("footer.info")}</h4>
             <ul className="space-y-2">
               {legalPages.map((page) => (
                 <li key={page.slug}>
@@ -92,10 +90,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Social */}
           <div>
             <h4 className="font-display text-lg text-foreground mb-4">
-              VOLG ONS
+              {t("footer.followUs")}
             </h4>
             {activeSocials.length > 0 && (
               <ul className="space-y-2">
@@ -119,8 +116,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-border text-center">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {shopName}. Alle rechten voorbehouden.
-            🇧🇪 Made in Belgium.
+            {t("footer.copyright", { year: new Date().getFullYear(), name: shopName })}
           </p>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ShoppingCart, Plus, Minus, Trash2, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Sheet,
   SheetContent,
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/integrations/sellqo/CartContext";
 
 const CartDrawer = () => {
+  const { t } = useTranslation();
   const { cart, isLoading, updateQuantity, removeItem, checkout, isOpen, openCart, closeCart } = useCartContext();
   const [checkingOut, setCheckingOut] = useState(false);
 
@@ -44,7 +46,7 @@ const CartDrawer = () => {
 
       <SheetContent className="flex flex-col w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Winkelwagen</SheetTitle>
+          <SheetTitle>{t("cart.title")}</SheetTitle>
         </SheetHeader>
 
         {isLoading ? (
@@ -54,7 +56,7 @@ const CartDrawer = () => {
         ) : !cart || cart.items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <ShoppingCart size={48} strokeWidth={1} />
-            <p className="text-sm">Je winkelwagen is leeg</p>
+            <p className="text-sm">{t("cart.empty")}</p>
           </div>
         ) : (
           <>
@@ -108,17 +110,17 @@ const CartDrawer = () => {
 
             <div className="border-t border-border pt-4 space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotaal</span>
+                <span className="text-muted-foreground">{t("cart.subtotal")}</span>
                 <span className="font-semibold">€{(cart.subtotal ?? cart.total).toFixed(2)}</span>
               </div>
               {cart.discount_amount != null && cart.discount_amount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Korting</span>
+                  <span>{t("cart.discount")}</span>
                   <span>-€{cart.discount_amount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between font-semibold">
-                <span>Totaal</span>
+                <span>{t("cart.total")}</span>
                 <span>€{cart.total.toFixed(2)}</span>
               </div>
               <Button
@@ -130,10 +132,10 @@ const CartDrawer = () => {
                 {checkingOut ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Even geduld...
+                    {t("cart.loading")}
                   </>
                 ) : (
-                  "Afrekenen"
+                  t("cart.checkout")
                 )}
               </Button>
             </div>

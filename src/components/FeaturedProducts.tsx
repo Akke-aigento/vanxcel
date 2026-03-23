@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProducts } from '@/integrations/sellqo/hooks';
 import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeProducts } from '@/integrations/sellqo/normalizer';
@@ -7,13 +8,13 @@ import type { Product } from '@/integrations/sellqo/types';
 import ProductCard from './ProductCard';
 
 const FeaturedProducts = () => {
+  const { t } = useTranslation();
   const { data: productsData, isLoading } = useProducts({ per_page: 6 });
 
   const products: Product[] = useMemo(() => {
     if (productsData) {
       const raw = extractArray(productsData);
       if (raw.length > 0) {
-        // Show featured products first, then by newest
         const normalized = normalizeProducts(raw);
         const featured = normalized.filter(p => p.is_featured);
         const rest = normalized.filter(p => !p.is_featured);
@@ -27,8 +28,8 @@ const FeaturedProducts = () => {
     return (
       <section className="bg-secondary/50 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">BESTSELLERS</h2>
-          <p className="text-center text-muted-foreground mb-12">De populairste producten van VanXcel</p>
+          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">{t("bestsellers.title")}</h2>
+          <p className="text-center text-muted-foreground mb-12">{t("bestsellers.subtitle")}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -49,10 +50,10 @@ const FeaturedProducts = () => {
     <section className="bg-secondary/50 py-20">
       <div className="container mx-auto px-4">
         <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-          BESTSELLERS
+          {t("bestsellers.title")}
         </h2>
         <p className="text-center text-muted-foreground mb-12">
-          De populairste producten van VanXcel
+          {t("bestsellers.subtitle")}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product, i) => (
@@ -64,7 +65,7 @@ const FeaturedProducts = () => {
             to="/shop"
             className="inline-flex items-center px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
           >
-            Bekijk alle producten →
+            {t("bestsellers.viewAll")}
           </Link>
         </div>
       </div>

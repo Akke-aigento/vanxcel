@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProduct, useRelatedProducts } from '@/integrations/sellqo/hooks';
 import { extractSingle, extractArray } from '@/integrations/sellqo/client';
 import { normalizeProduct, normalizeProducts } from '@/integrations/sellqo/normalizer';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Minus, Plus, Loader2 } from 'lucide-react';
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const { addItem, isAddingItem } = useCartContext();
   const [selectedVariant, setSelectedVariant] = useState(0);
@@ -53,8 +55,8 @@ export default function ProductDetail() {
         <Navbar />
         <main className="pt-24 pb-16 px-4 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <p className="text-xl text-muted-foreground mb-4">Product niet gevonden</p>
-            <Link to="/shop" className="text-primary hover:underline">← Terug naar shop</Link>
+            <p className="text-xl text-muted-foreground mb-4">{t("product.notFound")}</p>
+            <Link to="/shop" className="text-primary hover:underline">{t("product.backToShop")}</Link>
           </div>
         </main>
         <Footer />
@@ -85,17 +87,15 @@ export default function ProductDetail() {
       <Navbar />
       <main className="pt-24 pb-16 px-4">
         <div className="container mx-auto max-w-6xl">
-          {/* Breadcrumb */}
           <nav className="text-sm text-muted-foreground mb-8">
             <Link to="/" className="hover:text-primary">Home</Link>
             <span className="mx-2">/</span>
-            <Link to="/shop" className="hover:text-primary">Shop</Link>
+            <Link to="/shop" className="hover:text-primary">{t("nav.shop")}</Link>
             <span className="mx-2">/</span>
             <span className="text-foreground">{product.title}</span>
           </nav>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16">
-            {/* Image */}
             <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
               {mainImage ? (
                 <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
@@ -104,7 +104,6 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Info */}
             <div className="flex flex-col">
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
 
@@ -118,13 +117,13 @@ export default function ProductDetail() {
               </div>
 
               {product.stock_status === 'out_of_stock' && (
-                <p className="text-sm text-destructive mb-4">● Uitverkocht</p>
+                <p className="text-sm text-destructive mb-4">{t("product.outOfStock")}</p>
               )}
               {product.stock_status === 'low_stock' && (
-                <p className="text-sm text-amber-500 mb-4">⚡ Bijna uitverkocht</p>
+                <p className="text-sm text-amber-500 mb-4">{t("product.lowStock")}</p>
               )}
               {product.stock_status === 'in_stock' && (
-                <p className="text-sm text-green-500 mb-4">● Op voorraad</p>
+                <p className="text-sm text-green-500 mb-4">{t("product.inStock")}</p>
               )}
 
               {plainDescription && (
@@ -133,10 +132,9 @@ export default function ProductDetail() {
                 </p>
               )}
 
-              {/* Variant selector */}
               {product.variants.length > 1 && (
                 <div className="mb-4">
-                  <span className="text-sm font-semibold text-foreground mb-2 block">Variant</span>
+                  <span className="text-sm font-semibold text-foreground mb-2 block">{t("product.variant")}</span>
                   <div className="flex flex-wrap gap-2">
                     {product.variants.map((v, i) => (
                       <button
@@ -156,9 +154,8 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Quantity */}
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-sm font-semibold">Aantal</span>
+                <span className="text-sm font-semibold">{t("product.quantity")}</span>
                 <div className="flex items-center border border-border rounded-lg">
                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 hover:bg-muted transition-colors">
                     <Minus size={16} />
@@ -170,7 +167,6 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              {/* Add to cart */}
               <Button
                 onClick={handleAddToCart}
                 disabled={product.stock_status === 'out_of_stock' || isAddingItem}
@@ -178,18 +174,17 @@ export default function ProductDetail() {
                 className="w-full"
               >
                 {isAddingItem ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Toevoegen...</>
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
                 ) : (
-                  'In winkelwagen'
+                  t("product.addToCart")
                 )}
               </Button>
             </div>
           </div>
 
-          {/* Related products */}
           {relatedProducts.length > 0 && (
             <div className="mt-20">
-              <h2 className="font-display text-2xl text-foreground mb-8">Gerelateerde producten</h2>
+              <h2 className="font-display text-2xl text-foreground mb-8">{t("product.related")}</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {relatedProducts.slice(0, 4).map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import Footer from "@/components/Footer";
 import { Mail, Send } from "lucide-react";
 
 const Contact = () => {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -22,13 +24,13 @@ const Contact = () => {
     e.preventDefault();
 
     if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
-      toast({ title: "Vul alle velden in", variant: "destructive" });
+      toast({ title: t("contact.fillAll"), variant: "destructive" });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      toast({ title: "Ongeldig e-mailadres", variant: "destructive" });
+      toast({ title: t("contact.invalidEmail"), variant: "destructive" });
       return;
     }
 
@@ -50,8 +52,8 @@ const Contact = () => {
       setMessage("");
     } catch {
       toast({
-        title: "Er ging iets mis",
-        description: "Probeer het later opnieuw.",
+        title: t("contact.error"),
+        description: t("contact.errorDesc"),
         variant: "destructive",
       });
     } finally {
@@ -68,76 +70,38 @@ const Contact = () => {
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <Mail className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-2xl font-display">Contact</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Heb je een vraag? Stuur ons een bericht en we nemen zo snel mogelijk contact met je op.
-            </p>
+            <CardTitle className="text-2xl font-display">{t("contact.title")}</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">{t("contact.subtitle")}</p>
           </CardHeader>
           <CardContent>
             {success ? (
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-6 text-center">
-                <p className="text-foreground font-medium">
-                  Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.
-                </p>
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => setSuccess(false)}
-                >
-                  Nieuw bericht versturen
+                <p className="text-foreground font-medium">{t("contact.success")}</p>
+                <Button variant="outline" className="mt-4" onClick={() => setSuccess(false)}>
+                  {t("contact.newMessage")}
                 </Button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Naam</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Je naam"
-                    required
-                    maxLength={100}
-                  />
+                  <Label htmlFor="name">{t("contact.name")}</Label>
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("contact.namePlaceholder")} required maxLength={100} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="je@email.com"
-                    required
-                    maxLength={255}
-                  />
+                  <Label htmlFor="email">{t("contact.email")}</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("contact.emailPlaceholder")} required maxLength={255} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="subject">Onderwerp</Label>
-                  <Input
-                    id="subject"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Waar gaat je bericht over?"
-                    required
-                    maxLength={200}
-                  />
+                  <Label htmlFor="subject">{t("contact.subject")}</Label>
+                  <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={t("contact.subjectPlaceholder")} required maxLength={200} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">Bericht</Label>
-                  <Textarea
-                    id="message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Typ je bericht hier..."
-                    required
-                    maxLength={2000}
-                    className="min-h-[120px]"
-                  />
+                  <Label htmlFor="message">{t("contact.message")}</Label>
+                  <Textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t("contact.messagePlaceholder")} required maxLength={2000} className="min-h-[120px]" />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   <Send className="h-4 w-4 mr-2" />
-                  {loading ? "Versturen..." : "Verstuur bericht"}
+                  {loading ? t("contact.sending") : t("contact.send")}
                 </Button>
               </form>
             )}

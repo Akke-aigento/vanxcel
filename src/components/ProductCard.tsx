@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { Product } from "@/integrations/sellqo/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { productsAPI } from "@/integrations/sellqo/api";
@@ -10,6 +11,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const mainImage = product.images?.[0]?.url;
 
@@ -37,7 +39,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <span className="text-5xl">📦</span>
-            <span className="text-xs">Foto binnenkort</span>
+            <span className="text-xs">{t("product.photoSoon")}</span>
           </div>
         )}
         {product.compare_at_price && product.compare_at_price > product.price && (
@@ -47,12 +49,12 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         )}
         {product.stock_status === 'out_of_stock' && (
           <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-            <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full">Uitverkocht</span>
+            <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full">{t("product.outOfStock")}</span>
           </div>
         )}
         {product.stock_status === 'low_stock' && (
           <div className="absolute top-2 left-2 bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded-full">
-            ⚡ Bijna op
+            {t("product.almostGone")}
           </div>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const reviews = [
   { name: "Henk van Dusschoten", text: "De powerstation is degelijk uitgevoerd. Met een goed overzichtelijke display.", product: "1000W Powerstation", stars: 5 },
@@ -32,22 +33,26 @@ const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (
   </div>
 );
 
-const ReviewsMarquee = () => (
-  <section className="bg-secondary/50 py-16 overflow-hidden">
-    <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-      KLANTEN REVIEWS
-    </h2>
-    <p className="text-center text-muted-foreground mb-10">
-      4.7 uit 5 sterren — 44 reviews
-    </p>
-    <div className="relative">
-      <div className="flex marquee-track">
-        {[...reviews, ...reviews].map((review, i) => (
-          <ReviewCard key={i} review={review} />
-        ))}
+const ReviewsMarquee = () => {
+  const { t } = useTranslation();
+
+  return (
+    <section className="bg-secondary/50 py-16 overflow-hidden">
+      <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
+        {t("reviews.title")}
+      </h2>
+      <p className="text-center text-muted-foreground mb-10">
+        {t("reviews.subtitle")}
+      </p>
+      <div className="relative">
+        <div className="flex marquee-track">
+          {[...reviews, ...reviews].map((review, i) => (
+            <ReviewCard key={i} review={review} />
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default ReviewsMarquee;
