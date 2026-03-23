@@ -41,7 +41,6 @@ const LanguageSwitcher = () => {
                 lang.code === i18n.language ? 'text-primary font-semibold' : 'text-foreground'
               }`}
             >
-              <span>{lang.flag}</span>
               <span>{lang.label}</span>
             </button>
           ))}
