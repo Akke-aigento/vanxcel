@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const SELLQO_API_URL = "https://gczmfcabnoofnmfpzeop.supabase.co/functions/v1/storefront-api";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-tenant-id, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
@@ -11,12 +13,11 @@ serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const SELLQO_API_KEY = Deno.env.get('SELLQO_API_KEY');
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  if (!SELLQO_API_KEY) {
     return new Response(
-      JSON.stringify({ error: 'Supabase environment not configured' }),
+      JSON.stringify({ error: 'SELLQO_API_KEY not configured' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
@@ -26,14 +27,13 @@ serve(async (req: Request) => {
     const path = url.pathname.replace(/^\/sellqo-proxy/, '') || '/';
     const tenantId = req.headers.get('X-Tenant-ID') || 'vanxcel';
 
-    // Build target URL with tenant_id as query param
-    const targetUrl = new URL(`${SUPABASE_URL}/functions/v1/storefront-api${path}`);
+    const targetUrl = new URL(`${SELLQO_API_URL}${path}`);
     url.searchParams.forEach((value, key) => targetUrl.searchParams.set(key, value));
-    targetUrl.searchParams.set('tenant_id', tenantId);
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      'X-API-Key': SELLQO_API_KEY,
+      'X-Tenant-ID': tenantId,
     };
 
     const fetchOptions: RequestInit = {
