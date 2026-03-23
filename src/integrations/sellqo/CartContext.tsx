@@ -1,98 +1,107 @@
-import React, { createContext, useContext, useCallback, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useCart, useAddToCart, useUpdateCartItem, useRemoveCartItem } from './hooks';
-import type { Cart, AddToCartPayload } from './types';
+import React, { createContext, useContext, useCallback, useMemo, useState } from 'react';
+import { useCartQuery, useAddToCart, useUpdateCartItem, useRemoveCartItem, useCreateCheckout, clearStoredCartId } from './hooks';
+import type { Cart, CartItem } from './types';
 
-const CART_STORAGE_KEY = 'vanxcel_cart_id';
-
-// ── localStorage helpers (exported for hooks) ──
-
-export function getCartId(): string | null {
-  try {
-    const id = localStorage.getItem(CART_STORAGE_KEY);
-    if (id && id !== 'undefined' && id !== 'null') return id;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function setCartId(id: string) {
-  if (id && id !== 'undefined' && id !== 'null') {
-    localStorage.setItem(CART_STORAGE_KEY, id);
-  }
-}
-
-function clearCartId() {
-  localStorage.removeItem(CART_STORAGE_KEY);
-}
-
-// ── Context ──
-
-interface CartContextValue {
+interface CartContextType {
   cart: Cart | undefined;
+  items: CartItem[];
   isLoading: boolean;
-  addItem: (payload: AddToCartPayload) => void;
-  updateItem: (itemId: string, quantity: number) => void;
-  removeItem: (itemId: string) => void;
+  isOpen: boolean;
+  itemCount: number;
+  subtotal: number;
+  total: number;
+  openCart: () => void;
+  closeCart: () => void;
+  addItem: (item: { product_id: string; variant_id?: string; quantity: number; title: string; variant_title?: string; price: number; image?: string }) => Promise<void>;
+  updateQuantity: (itemId: string, quantity: number) => Promise<void>;
+  removeItem: (itemId: string) => Promise<void>;
+  checkout: (options?: { success_url?: string; cancel_url?: string }) => Promise<void>;
   clearCart: () => void;
   isAddingItem: boolean;
 }
 
-const CartContext = createContext<CartContextValue | null>(null);
+const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const queryClient = useQueryClient();
-  const { data: cart, isLoading } = useCart();
+  const { data: cart, isLoading } = useCartQuery();
   const addToCartMutation = useAddToCart();
-  const updateItemMutation = useUpdateCartItem();
-  const removeItemMutation = useRemoveCartItem();
+  const updateItem = useUpdateCartItem();
+  const removeCartItem = useRemoveCartItem();
+  const createCheckout = useCreateCheckout();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const addItem = useCallback(
-    (payload: AddToCartPayload) => {
-      addToCartMutation.mutate(payload);
-    },
-    [addToCartMutation]
-  );
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
 
-  const updateItem = useCallback(
-    (itemId: string, quantity: number) => {
-      const cartId = getCartId();
-      if (!cartId) return;
-      updateItemMutation.mutate({ cartId, itemId, quantity });
-    },
-    [updateItemMutation]
-  );
+  const addItem = useCallback(async (item: { product_id: string; variant_id?: string; quantity: number; title: string; variant_title?: string; price: number; image?: string }) => {
+    try {
+      await addToCartMutation.mutateAsync({
+        product_id: item.product_id,
+        variant_id: item.variant_id,
+        quantity: item.quantity,
+      });
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Add to cart failed:', error);
+      const { toast } = await import('sonner');
+      toast.error('Er ging iets mis bij het toevoegen aan je winkelwagen.');
+    }
+  }, [addToCartMutation]);
 
-  const removeItem = useCallback(
-    (itemId: string) => {
-      const cartId = getCartId();
-      if (!cartId) return;
-      removeItemMutation.mutate({ cartId, itemId });
-    },
-    [removeItemMutation]
-  );
+  const updateQuantity = useCallback(async (itemId: string, quantity: number) => {
+    try {
+      if (quantity <= 0) {
+        await removeCartItem.mutateAsync(itemId);
+      } else {
+        await updateItem.mutateAsync({ itemId, quantity });
+      }
+    } catch (error) {
+      console.error('Update quantity failed:', error);
+      const { toast } = await import('sonner');
+      toast.error('Kon hoeveelheid niet aanpassen.');
+    }
+  }, [updateItem, removeCartItem]);
+
+  const removeItemFn = useCallback(async (itemId: string) => {
+    try {
+      await removeCartItem.mutateAsync(itemId);
+    } catch (error) {
+      console.error('Remove item failed:', error);
+      const { toast } = await import('sonner');
+      toast.error('Kon item niet verwijderen.');
+    }
+  }, [removeCartItem]);
+
+  const doCheckout = useCallback(async (options?: { success_url?: string; cancel_url?: string }) => {
+    await createCheckout.mutateAsync(options);
+  }, [createCheckout]);
 
   const clearCart = useCallback(() => {
-    const cartId = getCartId();
-    clearCartId();
-    if (cartId) {
-      queryClient.removeQueries({ queryKey: ['sellqo', 'cart', cartId] });
-    }
-  }, [queryClient]);
+    clearStoredCartId();
+  }, []);
 
-  const value = useMemo<CartContextValue>(
-    () => ({
-      cart,
-      isLoading,
-      addItem,
-      updateItem,
-      removeItem,
-      clearCart,
-      isAddingItem: addToCartMutation.isPending,
-    }),
-    [cart, isLoading, addItem, updateItem, removeItem, clearCart, addToCartMutation.isPending]
-  );
+  const items = cart?.items || [];
+  const itemCount = cart?.item_count || items.reduce((sum, i) => sum + i.quantity, 0);
+  const subtotal = cart?.subtotal || 0;
+  const total = cart?.total || 0;
+
+  const value = useMemo<CartContextType>(() => ({
+    cart,
+    items,
+    isLoading,
+    isOpen,
+    itemCount,
+    subtotal,
+    total,
+    openCart,
+    closeCart,
+    addItem,
+    updateQuantity,
+    removeItem: removeItemFn,
+    checkout: doCheckout,
+    clearCart,
+    isAddingItem: addToCartMutation.isPending,
+  }), [cart, items, isLoading, isOpen, itemCount, subtotal, total, openCart, closeCart, addItem, updateQuantity, removeItemFn, doCheckout, clearCart, addToCartMutation.isPending]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

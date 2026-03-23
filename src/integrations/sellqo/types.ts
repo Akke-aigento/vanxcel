@@ -1,3 +1,4 @@
+// === PRODUCTS ===
 export interface ProductImage {
   id: string;
   url: string;
@@ -11,34 +12,57 @@ export interface ProductVariant {
   price: number;
   compare_at_price?: number;
   sku?: string;
-  in_stock: boolean;
-  options?: Record<string, string>;
+  stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
+  stock_quantity?: number;
+  options: Record<string, string>;
+  image?: ProductImage;
 }
 
 export interface Product {
   id: string;
-  name: string;
   slug: string;
+  title: string;
+  description: string;
+  short_description?: string;
   price: number;
   compare_at_price?: number;
+  currency: string;
   images: ProductImage[];
-  category?: string;
   variants: ProductVariant[];
+  collection?: string;
+  collections?: string[];
+  category?: { id: string; slug: string; name: string };
+  tags?: string[];
+  stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
+  stock_quantity?: number;
+  sku?: string;
   product_type?: string;
-  in_stock: boolean;
-  description?: string;
+  is_featured?: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
+// === COLLECTIONS ===
+export interface Collection {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  image?: string;
+  product_count?: number;
+  parent_id?: string;
+}
+
+// === CART ===
 export interface CartItem {
   id: string;
   product_id: string;
-  variant_id?: string;
+  variant_id: string;
+  title: string;
+  variant_title: string;
+  price: number;
   quantity: number;
-  unit_price: number;
-  product_name: string;
-  product_image?: string;
-  variant_title?: string;
-  gift_card_metadata?: Record<string, unknown>;
+  image?: string;
 }
 
 export interface Cart {
@@ -47,38 +71,41 @@ export interface Cart {
   item_count: number;
   subtotal: number;
   total: number;
+  currency: string;
   discount_code?: string;
   discount_amount?: number;
 }
 
-export interface Collection {
+// === CHECKOUT ===
+export interface CheckoutSession {
   id: string;
-  name: string;
-  slug: string;
-  product_count: number;
+  checkout_url: string;
+  cart_id: string;
 }
 
+// === PARAMS ===
 export interface ProductsParams {
   collection?: string;
   category?: string;
   search?: string;
+  sort?: 'newest' | 'price_asc' | 'price_desc';
   page?: number;
-  limit?: number;
-  sort?: string;
+  per_page?: number;
 }
 
 export interface AddToCartPayload {
   product_id: string;
   variant_id?: string;
   quantity: number;
-  gift_card_metadata?: Record<string, unknown>;
 }
 
 export interface CheckoutPayload {
+  cart_id: string;
   success_url: string;
   cancel_url: string;
 }
 
+// === LEGAL & SETTINGS ===
 export interface LegalPage {
   title: string;
   url: string;
@@ -94,13 +121,14 @@ export interface SocialLinks {
 }
 
 export interface StoreSettings {
-  store_name: string;
-  shop_name?: string;
-  currency: string;
+  store?: {
+    name: string;
+    currency: string;
+    logo_url?: string;
+    favicon_url?: string;
+    country?: string;
+    vat_rate?: number;
+  };
   social?: SocialLinks;
-  [key: string]: unknown;
-}
-
-export interface LegalPages {
   [key: string]: unknown;
 }
