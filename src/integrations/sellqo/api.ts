@@ -4,57 +4,61 @@ import type {
   Cart,
   Collection,
   ProductsParams,
-  AddToCartPayload,
-  CheckoutPayload,
   StoreSettings,
-  LegalPages,
 } from './types';
 
-function toQueryString(params?: Record<string, unknown>): string {
-  if (!params) return '';
-  const entries = Object.entries(params).filter(([, v]) => v != null);
-  if (!entries.length) return '';
-  return '?' + new URLSearchParams(
-    entries.map(([k, v]) => [k, String(v)])
-  ).toString();
-}
-
+// === PRODUCTS ===
 export const productsAPI = {
-  getAll: (params?: ProductsParams) =>
-    sellqoFetch<Product[]>(`/products${toQueryString(params as Record<string, unknown>)}`),
+  getAll: (params?: ProductsParams) => {
+    const searchParams = new URLSearchParams();
+    if (params?.collection) searchParams.set('collection', params.collection);
+    if (params?.category) searchParams.set('category', params.category);
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.sort) searchParams.set('sort', params.sort);
+    if (params?.page) searchParams.set('page', String(params.page));
+    if (params?.per_page) searchParams.set('per_page', String(params.per_page));
+    const qs = searchParams.toString();
+    return sellqoFetch<{ data: { products: Product[]; pagination: unknown } }>(`/products${qs ? `?${qs}` : ''}`);
+  },
 
-  getOne: (slug: string) =>
-    sellqoFetch<Product>(`/products/${slug}`),
+  getBySlug: (slug: string) =>
+    sellqoFetch<{ data: Product }>(`/products/${slug}`),
+
+  getRelated: (slug: string, limit = 4) =>
+    sellqoFetch<Product[]>(`/products/${slug}/related?limit=${limit}`),
 };
 
+// === COLLECTIONS ===
 export const collectionsAPI = {
   getAll: () =>
-    sellqoFetch<Collection[]>('/collections'),
+    sellqoFetch<{ data: Collection[] }>('/collections'),
 };
 
+// === CART ===
 export const cartAPI = {
-  get: (cartId: string) =>
-    sellqoFetch<Cart>(`/cart/${cartId}`),
-
   create: () =>
     sellqoFetch<Cart>('/cart', { method: 'POST' }),
 
-  addItem: (cartId: string, item: AddToCartPayload) =>
-    sellqoFetch<Cart>(`/cart/${cartId}/items`, {
+  get: (cartId: string) =>
+    sellqoFetch<Cart>(`/cart/${cartId}`),
+
+  addItem: (cartId: string, item: { product_id: string; variant_id?: string; quantity: number }) => {
+    const body: Record<string, unknown> = { product_id: item.product_id, quantity: item.quantity };
+    if (item.variant_id) body.variant_id = item.variant_id;
+    return sellqoFetch<Cart>(`/cart/${cartId}/items`, {
       method: 'POST',
-      body: JSON.stringify(item),
-    }),
+      body: JSON.stringify(body),
+    });
+  },
 
   updateItem: (cartId: string, itemId: string, quantity: number) =>
     sellqoFetch<Cart>(`/cart/${cartId}/items/${itemId}`, {
-      method: 'PATCH',
+      method: 'PUT',
       body: JSON.stringify({ quantity }),
     }),
 
   removeItem: (cartId: string, itemId: string) =>
-    sellqoFetch<Cart>(`/cart/${cartId}/items/${itemId}`, {
-      method: 'DELETE',
-    }),
+    sellqoFetch<Cart>(`/cart/${cartId}/items/${itemId}`, { method: 'DELETE' }),
 
   applyDiscount: (cartId: string, code: string) =>
     sellqoFetch<Cart>(`/cart/${cartId}/discount`, {
@@ -63,23 +67,26 @@ export const cartAPI = {
     }),
 
   removeDiscount: (cartId: string) =>
-    sellqoFetch<Cart>(`/cart/${cartId}/discount`, {
-      method: 'DELETE',
-    }),
+    sellqoFetch<Cart>(`/cart/${cartId}/discount`, { method: 'DELETE' }),
+};
 
-  checkout: (cartId: string, successUrl: string, cancelUrl: string) =>
-    sellqoFetch<{ checkout_url: string }>('/checkout', {
+// === CHECKOUT ===
+export const checkoutAPI = {
+  create: (cartId: string, options?: { success_url?: string; cancel_url?: string }) =>
+    sellqoFetch<{ data: { checkout_url: string } }>('/checkout', {
       method: 'POST',
-      body: JSON.stringify({ cart_id: cartId, success_url: successUrl, cancel_url: cancelUrl } as CheckoutPayload & { cart_id: string }),
+      body: JSON.stringify({ cart_id: cartId, ...options }),
     }),
 };
 
+// === SETTINGS ===
 export const settingsAPI = {
-  get: () =>
-    sellqoFetch<StoreSettings>('/settings'),
+  getAll: () =>
+    sellqoFetch<{ data: StoreSettings }>('/settings'),
 };
 
+// === LEGAL ===
 export const legalAPI = {
-  get: () =>
-    sellqoFetch<LegalPages>('/legal'),
+  getAll: () =>
+    sellqoFetch<{ data: { title: string; url: string; slug: string }[] }>('/legal'),
 };

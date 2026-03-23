@@ -1,126 +1,216 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productsAPI, collectionsAPI, cartAPI, settingsAPI, legalAPI } from './api';
-import type { ProductsParams, AddToCartPayload, Cart } from './types';
-import { getCartId } from './CartContext';
+import { productsAPI, collectionsAPI, cartAPI, checkoutAPI, settingsAPI, legalAPI } from './api';
+import { extractArray, extractSingle } from './client';
+import { normalizeCart } from './normalizer';
+import type { Cart, ProductsParams } from './types';
 
-// ── Products ──
+// === QUERY KEYS ===
+export const sellqoKeys = {
+  products: {
+    all: ['sellqo', 'products'] as const,
+    list: (params?: ProductsParams) => ['sellqo', 'products', 'list', params] as const,
+    detail: (slug: string) => ['sellqo', 'products', 'detail', slug] as const,
+    related: (slug: string) => ['sellqo', 'products', 'related', slug] as const,
+  },
+  collections: {
+    all: ['sellqo', 'collections'] as const,
+  },
+  cart: (cartId: string) => ['sellqo', 'cart', cartId] as const,
+  settings: {
+    all: ['sellqo', 'settings'] as const,
+  },
+  legal: ['sellqo', 'legal'] as const,
+};
 
+// === CART STORAGE ===
+const CART_STORAGE_KEY = 'vanxcel_cart_id';
+
+function isValidCartId(id: string | null): id is string {
+  return !!id && id !== 'undefined' && id !== 'null' && id.trim() !== '';
+}
+
+export function getStoredCartId(): string | null {
+  try {
+    const id = localStorage.getItem(CART_STORAGE_KEY);
+    if (!isValidCartId(id)) {
+      if (id !== null) localStorage.removeItem(CART_STORAGE_KEY);
+      return null;
+    }
+    return id;
+  } catch {
+    return null;
+  }
+}
+
+function storeCartId(cartId: string) {
+  if (!isValidCartId(cartId)) return;
+  try { localStorage.setItem(CART_STORAGE_KEY, cartId); } catch { /* noop */ }
+}
+
+export function clearStoredCartId() {
+  try { localStorage.removeItem(CART_STORAGE_KEY); } catch { /* noop */ }
+}
+
+// === PRODUCT HOOKS ===
 export function useProducts(params?: ProductsParams) {
   return useQuery({
-    queryKey: ['sellqo', 'products', params],
+    queryKey: sellqoKeys.products.list(params),
     queryFn: () => productsAPI.getAll(params),
   });
 }
 
 export function useProduct(slug: string) {
   return useQuery({
-    queryKey: ['sellqo', 'product', slug],
-    queryFn: () => productsAPI.getOne(slug),
+    queryKey: sellqoKeys.products.detail(slug),
+    queryFn: () => productsAPI.getBySlug(slug),
     enabled: !!slug,
   });
 }
 
-export function usePrefetchProduct() {
-  const queryClient = useQueryClient();
-  return (slug: string) => {
-    queryClient.prefetchQuery({
-      queryKey: ['sellqo', 'product', slug],
-      queryFn: () => productsAPI.getOne(slug),
-    });
-  };
-}
-
-// ── Collections ──
-
-export function useCollections() {
+export function useRelatedProducts(slug: string) {
   return useQuery({
-    queryKey: ['sellqo', 'collections'],
-    queryFn: () => collectionsAPI.getAll(),
+    queryKey: sellqoKeys.products.related(slug),
+    queryFn: () => productsAPI.getRelated(slug),
+    enabled: !!slug,
   });
 }
 
-// ── Cart ──
-
-export function useCart() {
-  const cartId = getCartId();
+// === COLLECTION HOOKS ===
+export function useCollections() {
   return useQuery({
-    queryKey: ['sellqo', 'cart', cartId],
-    queryFn: () => cartAPI.get(cartId!),
+    queryKey: sellqoKeys.collections.all,
+    queryFn: collectionsAPI.getAll,
+  });
+}
+
+// === CART HOOKS ===
+export function useCartQuery() {
+  const cartId = getStoredCartId();
+  return useQuery({
+    queryKey: sellqoKeys.cart(cartId || ''),
+    queryFn: async () => {
+      const result = await cartAPI.get(cartId!);
+      const raw = extractSingle<Cart>(result) || result;
+      return normalizeCart(raw);
+    },
     enabled: !!cartId,
+  });
+}
+
+export function useCreateCart() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const result = await cartAPI.create();
+      const raw = extractSingle<Cart>(result) || result;
+      return normalizeCart(raw);
+    },
+    onSuccess: (cart) => {
+      storeCartId(cart.id);
+      queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
+    },
   });
 }
 
 export function useAddToCart() {
   const queryClient = useQueryClient();
+  const createCart = useCreateCart();
+
   return useMutation({
-    mutationFn: async (item: AddToCartPayload) => {
-      let cartId = getCartId();
-      if (!cartId) {
-        const newCart = await cartAPI.create();
-        cartId = newCart.id;
-        setCartId(cartId);
+    mutationFn: async (item: { product_id: string; variant_id?: string; quantity: number }) => {
+      let activeCartId = getStoredCartId();
+      if (!activeCartId) {
+        const newCart = await createCart.mutateAsync();
+        activeCartId = newCart.id;
       }
-      return cartAPI.addItem(cartId, item);
+      const result = await cartAPI.addItem(activeCartId, item);
+      const raw = extractSingle<Cart>(result) || result;
+      return normalizeCart(raw);
     },
     onSuccess: (cart) => {
-      queryClient.setQueryData(['sellqo', 'cart', cart.id], cart);
+      queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
     },
   });
 }
 
 export function useUpdateCartItem() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ cartId, itemId, quantity }: { cartId: string; itemId: string; quantity: number }) =>
-      cartAPI.updateItem(cartId, itemId, quantity),
-    onMutate: async ({ cartId, itemId, quantity }) => {
-      await queryClient.cancelQueries({ queryKey: ['sellqo', 'cart', cartId] });
-      const previous = queryClient.getQueryData<Cart>(['sellqo', 'cart', cartId]);
-      if (previous) {
-        queryClient.setQueryData<Cart>(['sellqo', 'cart', cartId], {
-          ...previous,
-          items: previous.items.map((i) =>
-            i.id === itemId ? { ...i, quantity } : i
+    mutationFn: async ({ itemId, quantity }: { itemId: string; quantity: number }) => {
+      const cartId = getStoredCartId();
+      if (!cartId) throw new Error('No cart found');
+      const result = await cartAPI.updateItem(cartId, itemId, quantity);
+      const raw = extractSingle<Cart>(result) || result;
+      return normalizeCart(raw);
+    },
+    onMutate: async ({ itemId, quantity }) => {
+      const cartId = getStoredCartId();
+      if (!cartId) return;
+      await queryClient.cancelQueries({ queryKey: sellqoKeys.cart(cartId) });
+      const previousCart = queryClient.getQueryData<Cart>(sellqoKeys.cart(cartId));
+      if (previousCart) {
+        queryClient.setQueryData<Cart>(sellqoKeys.cart(cartId), {
+          ...previousCart,
+          items: previousCart.items.map(item =>
+            item.id === itemId ? { ...item, quantity } : item
           ),
         });
       }
-      return { previous, cartId };
+      return { previousCart, cartId };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['sellqo', 'cart', context.cartId], context.previous);
+      if (context?.previousCart && context.cartId) {
+        queryClient.setQueryData(sellqoKeys.cart(context.cartId), context.previousCart);
       }
     },
-    onSettled: (_data, _err, { cartId }) => {
-      queryClient.invalidateQueries({ queryKey: ['sellqo', 'cart', cartId] });
+    onSuccess: (cart) => {
+      queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
+    },
+    onSettled: () => {
+      const cartId = getStoredCartId();
+      if (cartId) queryClient.invalidateQueries({ queryKey: sellqoKeys.cart(cartId) });
     },
   });
 }
 
 export function useRemoveCartItem() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ cartId, itemId }: { cartId: string; itemId: string }) =>
-      cartAPI.removeItem(cartId, itemId),
-    onMutate: async ({ cartId, itemId }) => {
-      await queryClient.cancelQueries({ queryKey: ['sellqo', 'cart', cartId] });
-      const previous = queryClient.getQueryData<Cart>(['sellqo', 'cart', cartId]);
-      if (previous) {
-        queryClient.setQueryData<Cart>(['sellqo', 'cart', cartId], {
-          ...previous,
-          items: previous.items.filter((i) => i.id !== itemId),
-          item_count: previous.item_count - 1,
+    mutationFn: async (itemId: string) => {
+      const cartId = getStoredCartId();
+      if (!cartId) throw new Error('No cart found');
+      const result = await cartAPI.removeItem(cartId, itemId);
+      const raw = extractSingle<Cart>(result) || result;
+      return normalizeCart(raw);
+    },
+    onMutate: async (itemId) => {
+      const cartId = getStoredCartId();
+      if (!cartId) return;
+      await queryClient.cancelQueries({ queryKey: sellqoKeys.cart(cartId) });
+      const previousCart = queryClient.getQueryData<Cart>(sellqoKeys.cart(cartId));
+      if (previousCart) {
+        const newItems = previousCart.items.filter(item => item.id !== itemId);
+        queryClient.setQueryData<Cart>(sellqoKeys.cart(cartId), {
+          ...previousCart,
+          items: newItems,
+          item_count: newItems.reduce((sum, item) => sum + item.quantity, 0),
         });
       }
-      return { previous, cartId };
+      return { previousCart, cartId };
     },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['sellqo', 'cart', context.cartId], context.previous);
+    onError: (_err, _itemId, context) => {
+      if (context?.previousCart && context.cartId) {
+        queryClient.setQueryData(sellqoKeys.cart(context.cartId), context.previousCart);
       }
     },
-    onSettled: (_data, _err, { cartId }) => {
-      queryClient.invalidateQueries({ queryKey: ['sellqo', 'cart', cartId] });
+    onSuccess: (cart) => {
+      queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
+    },
+    onSettled: () => {
+      const cartId = getStoredCartId();
+      if (cartId) queryClient.invalidateQueries({ queryKey: sellqoKeys.cart(cartId) });
     },
   });
 }
@@ -128,44 +218,50 @@ export function useRemoveCartItem() {
 export function useApplyDiscount() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ cartId, code }: { cartId: string; code: string }) =>
-      cartAPI.applyDiscount(cartId, code),
+    mutationFn: async (code: string) => {
+      const cartId = getStoredCartId();
+      if (!cartId) throw new Error('No cart found');
+      const result = code
+        ? await cartAPI.applyDiscount(cartId, code)
+        : await cartAPI.removeDiscount(cartId);
+      const raw = extractSingle<Cart>(result) || result;
+      return normalizeCart(raw);
+    },
     onSuccess: (cart) => {
-      queryClient.setQueryData(['sellqo', 'cart', cart.id], cart);
+      queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
     },
   });
 }
 
-export function useRemoveDiscount() {
-  const queryClient = useQueryClient();
+// === CHECKOUT HOOKS ===
+export function useCreateCheckout() {
   return useMutation({
-    mutationFn: ({ cartId }: { cartId: string }) =>
-      cartAPI.removeDiscount(cartId),
-    onSuccess: (cart) => {
-      queryClient.setQueryData(['sellqo', 'cart', cart.id], cart);
+    mutationFn: (options?: { success_url?: string; cancel_url?: string }) => {
+      const cartId = getStoredCartId();
+      if (!cartId) throw new Error('No cart found');
+      return checkoutAPI.create(cartId, options);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSuccess: (response: any) => {
+      const url = response?.data?.checkout_url || response?.checkout_url;
+      if (url) {
+        window.location.href = url;
+      }
     },
   });
 }
 
-// ── Settings & Legal ──
-
+// === SETTINGS ===
 export function useSettings() {
   return useQuery({
-    queryKey: ['sellqo', 'settings'],
-    queryFn: () => settingsAPI.get(),
+    queryKey: sellqoKeys.settings.all,
+    queryFn: settingsAPI.getAll,
   });
 }
 
 export function useLegalPages() {
   return useQuery({
-    queryKey: ['sellqo', 'legal'],
-    queryFn: () => legalAPI.get(),
+    queryKey: sellqoKeys.legal,
+    queryFn: legalAPI.getAll,
   });
-}
-
-// Re-export for use in hooks
-function setCartId(id: string) {
-  if (id && id !== 'undefined' && id !== 'null') {
-    localStorage.setItem('vanxcel_cart_id', id);
-  }
 }

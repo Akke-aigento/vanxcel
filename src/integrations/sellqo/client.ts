@@ -34,3 +34,36 @@ export async function sellqoFetch<T = unknown>(
   const text = await response.text();
   return text ? JSON.parse(text) : ({} as T);
 }
+
+/**
+ * Extract array from API response: { data: { products: [...] } } or { data: [...] }
+ */
+export function extractArray<T>(response: unknown): T[] {
+  if (Array.isArray(response)) return response;
+  if (response && typeof response === 'object') {
+    const r = response as Record<string, unknown>;
+    if (r.data && typeof r.data === 'object' && !Array.isArray(r.data)) {
+      const inner = r.data as Record<string, unknown>;
+      if (Array.isArray(inner.products)) return inner.products as T[];
+      if (Array.isArray(inner.items)) return inner.items as T[];
+      if (Array.isArray(inner.data)) return inner.data as T[];
+    }
+    if (Array.isArray(r.data)) return r.data as T[];
+    if (Array.isArray(r.products)) return r.products as T[];
+    if (Array.isArray(r.items)) return r.items as T[];
+  }
+  return [];
+}
+
+/**
+ * Extract single object from API response: { data: {...} }
+ */
+export function extractSingle<T>(response: unknown): T | null {
+  if (!response || typeof response !== 'object') return null;
+  const r = response as Record<string, unknown>;
+  if (r.data && typeof r.data === 'object' && !Array.isArray(r.data)) {
+    return r.data as T;
+  }
+  if (r.id) return r as unknown as T;
+  return null;
+}
