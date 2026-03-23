@@ -29,8 +29,7 @@ const LanguageSwitcher = () => {
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <span>{current.flag}</span>
-        <span className="hidden sm:inline">{current.label}</span>
+        <span>{current.label}</span>
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-2 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50 min-w-[100px]">
