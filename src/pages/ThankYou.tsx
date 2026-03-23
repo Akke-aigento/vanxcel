@@ -7,6 +7,7 @@ import { normalizeCart } from "@/integrations/sellqo/normalizer";
 import { useCartContext } from "@/integrations/sellqo/CartContext";
 import type { Cart } from "@/integrations/sellqo/types";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const ThankYou = () => {
   const [searchParams] = useSearchParams();
