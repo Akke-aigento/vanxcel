@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { sellqoFetch } from "@/integrations/sellqo/client";
-import type { LegalPage, SocialLinks } from "@/integrations/sellqo/types";
+import { Link } from "react-router-dom";
+import { sellqoFetch, extractSingle } from "@/integrations/sellqo/client";
+import type { SocialLinks, StoreSettings } from "@/integrations/sellqo/types";
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
 
 const socialConfig = [
@@ -12,18 +13,18 @@ const socialConfig = [
 ];
 
 const Footer = () => {
-  const [legalPages, setLegalPages] = useState<LegalPage[]>([]);
+  const [legalPages, setLegalPages] = useState<{ title: string; url: string; slug: string }[]>([]);
   const [social, setSocial] = useState<SocialLinks>({});
   const [shopName, setShopName] = useState("VANXCEL");
 
   useEffect(() => {
-    sellqoFetch<{ data: LegalPage[] }>("/legal")
+    sellqoFetch<{ data: { title: string; url: string; slug: string }[] }>("/legal")
       .then((r) => setLegalPages(r?.data || []))
       .catch(() => {});
 
-    sellqoFetch<{ data: { shop_name?: string; social?: SocialLinks } }>("/settings")
+    sellqoFetch<{ data: StoreSettings }>("/settings")
       .then((r) => {
-        if (r?.data?.shop_name) setShopName(r.data.shop_name);
+        if (r?.data?.store?.name) setShopName(r.data.store.name);
         if (r?.data?.social) setSocial(r.data.social);
       })
       .catch(() => {});
@@ -32,6 +33,13 @@ const Footer = () => {
   const activeSocials = socialConfig.filter(
     (s) => social[s.key] && social[s.key]!.trim() !== ""
   );
+
+  const categories = [
+    { title: "Converters", slug: "converters" },
+    { title: "Accu's", slug: "accus" },
+    { title: "Powerstations", slug: "powerstations" },
+    { title: "Accessoires", slug: "accessoires" },
+  ];
 
   return (
     <footer className="bg-background border-t border-border py-16">
@@ -52,20 +60,16 @@ const Footer = () => {
           <div>
             <h4 className="font-display text-lg text-foreground mb-4">SHOP</h4>
             <ul className="space-y-2">
-              {["Converters", "Batteries", "Powerstations", "Accessories"].map(
-                (item) => (
-                  <li key={item}>
-                    <a
-                      href={`https://www.vanxcel.be/collections/${item.toLowerCase()}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                )
-              )}
+              {categories.map((cat) => (
+                <li key={cat.slug}>
+                  <Link
+                    to={`/shop?collection=${cat.slug}`}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {cat.title}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
