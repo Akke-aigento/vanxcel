@@ -182,14 +182,12 @@ const Calculator = () => {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-primary text-sm font-semibold">Aanbevolen zekering:</span>
-                          <a
-                            href="https://www.vanxcel.be/collections/accessories"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <Link
+                            to="/shop?collection=accessories"
                             className="text-primary font-bold text-lg hover:underline"
                           >
                             {result.fuse}
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
