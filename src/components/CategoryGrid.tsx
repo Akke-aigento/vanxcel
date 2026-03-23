@@ -17,6 +17,7 @@ const categoryImages: Record<string, string> = {
 
 const CategoryGrid = () => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const { data: collectionsData, isLoading } = useCollections();
 
   const collections: Collection[] = useMemo(() => {
