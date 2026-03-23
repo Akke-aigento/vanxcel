@@ -22,7 +22,8 @@
   "categories": {
     "title": "SHOP PER CATEGORIE",
     "subtitle": "Alles wat je nodig hebt voor een volledig powered campervan",
-    "products": "producten"
+    "products": "producten",
+    "viewAll": "Alle categorieën →"
   },
   "bestsellers": {
     "title": "BESTSELLERS",
