@@ -232,14 +232,12 @@ const Calculator = () => {
                   ))}
                 </div>
 
-                <a
-                  href="https://www.vanxcel.be/collections/cables"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/shop?collection=cables"
                   className="inline-block mt-6 text-sm font-semibold text-primary hover:underline"
                 >
                   Bekijk onze kabelcollectie →
-                </a>
+                </Link>
               </div>
             </div>
           </div>
