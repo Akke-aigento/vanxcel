@@ -5,6 +5,7 @@ import { useCollections } from '@/integrations/sellqo/hooks';
 import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeCollections } from '@/integrations/sellqo/normalizer';
 import type { Collection } from '@/integrations/sellqo/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const categoryImages: Record<string, string> = {
   converters: "https://www.vanxcel.be/cdn/shop/files/Converters_grouped.png?v=1754123623&width=800",
