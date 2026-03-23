@@ -5,6 +5,7 @@ import { useCollections } from '@/integrations/sellqo/hooks';
 import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeCollections } from '@/integrations/sellqo/normalizer';
 import type { Collection } from '@/integrations/sellqo/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const categoryImages: Record<string, string> = {
   converters: "https://www.vanxcel.be/cdn/shop/files/Converters_grouped.png?v=1754123623&width=800",
@@ -16,6 +17,7 @@ const categoryImages: Record<string, string> = {
 
 const CategoryGrid = () => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const { data: collectionsData, isLoading } = useCollections();
 
   const collections: Collection[] = useMemo(() => {
@@ -60,7 +62,7 @@ const CategoryGrid = () => {
           {t("categories.subtitle")}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {collections.map((col) => (
+          {(isMobile ? collections.slice(0, 3) : collections).map((col) => (
             <Link
               key={col.id}
               to={`/shop?collection=${col.slug}`}
@@ -86,6 +88,16 @@ const CategoryGrid = () => {
             </Link>
           ))}
         </div>
+        {isMobile && collections.length > 3 && (
+          <div className="mt-8 text-center">
+            <Link
+              to="/shop"
+              className="inline-block px-8 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded hover:brightness-110 transition-all"
+            >
+              {t("categories.viewAll")}
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

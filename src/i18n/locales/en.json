@@ -22,7 +22,8 @@
   "categories": {
     "title": "SHOP BY CATEGORY",
     "subtitle": "Everything you need for a fully powered campervan",
-    "products": "products"
+    "products": "products",
+    "viewAll": "View all categories →"
   },
   "bestsellers": {
     "title": "BESTSELLERS",
