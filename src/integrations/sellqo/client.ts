@@ -1,6 +1,19 @@
 const SELLQO_PROXY_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/sellqo-proxy`;
 const TENANT_ID = 'vanxcel';
 
+let currentLocale = 'nl';
+
+export function setSellqoLocale(locale: string) {
+  currentLocale = locale;
+}
+
+export function detectLocale(): string {
+  const hostname = window.location.hostname;
+  if (hostname.endsWith('.nl')) return 'nl-NL';
+  if (hostname.endsWith('.be')) return 'nl-BE';
+  return 'nl';
+}
+
 export class SellQoError extends Error {
   status: number;
   constructor(message: string, status: number) {
