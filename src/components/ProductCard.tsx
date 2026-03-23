@@ -26,7 +26,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       onMouseEnter={handleMouseEnter}
       className="group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 transition-all duration-300"
     >
-      <div className="aspect-square bg-foreground/[0.03] p-6 flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-square bg-foreground/[0.03] p-6 flex items-center justify-center overflow-hidden">
         {mainImage ? (
           <img
             src={mainImage}

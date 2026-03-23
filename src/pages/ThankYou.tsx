@@ -92,6 +92,7 @@ const ThankYou = () => {
           </Button>
         </div>
       </main>
+      <Footer />
     </>
   );
 };
