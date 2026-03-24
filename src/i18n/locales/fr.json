@@ -26,7 +26,9 @@
     "title": "ACHETER PAR CATÉGORIE",
     "subtitle": "Tout ce dont vous avez besoin pour un campervan entièrement alimenté",
     "products": "produits",
-    "viewAll": "Toutes les catégories →"
+    "viewAll": "Toutes les catégories →",
+    "pageTitle": "TOUTES LES CATÉGORIES",
+    "pageSubtitle": "Découvrez notre gamme complète par catégorie"
   },
   "bestsellers": {
     "title": "MEILLEURES VENTES",
