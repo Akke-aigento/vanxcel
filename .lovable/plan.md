@@ -1,66 +1,61 @@
 
 
-## Website dynamischer en geanimeerder maken
+## Website WOW-factor: next-level animaties
 
-### Aanpak
-Scroll-gebaseerde reveal-animaties toevoegen aan alle secties op de homepage, plus subtiele hover- en interactie-animaties — professioneel, niet kitscherig.
+### Huidige staat
+De site heeft basis fade-in scroll reveals — netjes maar braaf. Geen movement, geen diepte, geen "wow". Tijd voor tastbare dynamiek.
 
-### 1. Herbruikbare `useScrollReveal` hook (nieuw)
-**`src/hooks/use-scroll-reveal.ts`**
-- Custom hook gebaseerd op `IntersectionObserver`
-- Retourneert een `ref` en `isVisible` boolean
-- Configurable threshold (default 0.15) en `once` option (default true)
-- Elementen animeren pas in wanneer ze in viewport komen
+### Wat er verandert
 
-### 2. Herbruikbaar `RevealOnScroll` wrapper component (nieuw)
-**`src/components/RevealOnScroll.tsx`**
-- Wrapper component dat `useScrollReveal` gebruikt
-- Props: `direction` (`up` | `left` | `right` | `fade`), `delay` (ms), `className`
-- Transition: `opacity 0 → 1` + `translateY/X` afhankelijk van richting
-- CSS transition (geen keyframe) voor smooth 60fps animatie
-- `duration-700 ease-out`
+#### 1. Hero — Parallax + Ken Burns effect
+**`src/components/HeroSection.tsx`**
+- **Achtergrond slow-zoom**: de hero-afbeelding krijgt een constante langzame zoom (Ken Burns) via CSS `@keyframes scale 1→1.08` over 20s — geeft leven aan het eerste scherm
+- **Parallax scroll**: bij scrollen beweegt de achtergrond trager dan de content via `transform: translateY(scrollY * 0.3)` met een lightweight scroll listener
+- **Staggered tekst-animatie**: elke regel van de hero tekst schuift iets later in (al aanwezig maar kan dramatischer — grotere translateY, snappier timing)
 
-### 3. Animaties per sectie toepassen
+#### 2. Sectie-titels — Animated underline accent
+**`src/index.css`** + diverse componenten
+- Na het reveal van een sectie-titel verschijnt een geanimeerde accent-lijn (2px primary kleur) die van links naar rechts groeit onder de titel — geeft focus en richting
 
-| Component | Animatie |
-|---|---|
-| **TrustBar** | Elke USP-item fade-in met staggered delay (0ms, 100ms, 200ms, 300ms) |
-| **CategoryGrid** | Titel fade-up, elke categorie-card fade-up met staggered delay per kaart |
-| **FeaturedProducts** | Titel fade-up, product cards fade-up staggered |
-| **PowerCalculator** | Hele sectie fade-up |
-| **ReviewsMarquee** | Fade-in wanneer in viewport |
-| **ComparisonTable** | Titel fade-up, tabel fade-up met lichte delay |
-| **Newsletter** | Fade-up als geheel |
+#### 3. Category & Product Cards — 3D tilt hover
+**`src/components/ProductCard.tsx`** + **`src/components/CategoryGrid.tsx`**
+- Cards krijgen een subtiel 3D perspectief-effect bij hover: `perspective(800px) rotateY(±3deg) rotateX(±2deg)` gebaseerd op muispositie
+- Combineer met de bestaande scale en shadow — voelt als een fysieke kaart die je optilt
+- Implementatie via een kleine `onMouseMove` handler die CSS custom properties `--rx` en `--ry` set
 
-### 4. Extra micro-animaties in CSS
+#### 4. Floating particles / glow achtergrond
+**`src/components/HeroSection.tsx`**
+- Voeg 3-4 subtiele radial gradient "glow orbs" toe die langzaam driften (CSS animation, geen JS) — geeft diepte aan de hero zonder afleidend te zijn
+- Kleuren: primary (teal) en accent (amber) op zeer lage opacity (0.05-0.1)
+
+#### 5. Counter animatie — TrustBar & ComparisonTable
+**`src/hooks/use-count-up.ts`** (nieuw)
+- Getallen in de comparison table animeren omhoog wanneer ze in viewport komen (bv "3.000 – 5.000+" telt op van 0)
+- Simpele hook: `useCountUp(target, duration)` die een easeOut interpolatie doet
+
+#### 6. CTA buttons — Shimmer effect
 **`src/index.css`**
-- Navbar: `transition-all duration-300` bij scroll — achtergrond wordt iets meer opaque bij scrollen (optioneel: kleiner worden)
-- CTA buttons op hover: subtiele `scale(1.02)` + `shadow-lg` transition
-- Product cards: hover shadow glow effect met `shadow-primary/10`
-- Category cards: soepelere hover border-glow
+- De amber CTA buttons krijgen een subtiel shimmer/glans effect: een diagonale lichtstreep die eenmalig over de button glijdt bij hover
+- Pure CSS met `background: linear-gradient` en `background-position` animatie
 
-### 5. Navbar scroll-effect (optioneel enhancement)
-**`src/components/Navbar.tsx`**
-- Detecteer scroll positie (`window.scrollY > 20`)
-- Bij scrollen: navbar krijgt sterkere `bg-background/95` + `shadow-md` voor een "sticky header condenseert" effect
+#### 7. Scroll-indicator in Hero
+**`src/components/HeroSection.tsx`**
+- Een subtiel bouncend chevron/pijltje onderaan de hero dat aangeeft "scroll naar beneden"
+- Verdwijnt zodra je begint te scrollen (opacity transition)
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/hooks/use-scroll-reveal.ts` | Nieuw — IntersectionObserver hook |
-| `src/components/RevealOnScroll.tsx` | Nieuw — animatie wrapper |
-| `src/components/TrustBar.tsx` | Wrap items in RevealOnScroll |
-| `src/components/CategoryGrid.tsx` | Wrap titel + cards in RevealOnScroll |
-| `src/components/FeaturedProducts.tsx` | Wrap titel + cards in RevealOnScroll |
-| `src/components/PowerCalculator.tsx` | Wrap sectie in RevealOnScroll |
-| `src/components/ComparisonTable.tsx` | Wrap titel + tabel in RevealOnScroll |
-| `src/components/Newsletter.tsx` | Wrap in RevealOnScroll |
-| `src/components/Navbar.tsx` | Scroll-based opacity/shadow effect |
-| `src/index.css` | Hover micro-animaties voor buttons en cards |
+| `src/components/HeroSection.tsx` | Ken Burns zoom, parallax, glow orbs, scroll indicator |
+| `src/components/ProductCard.tsx` | 3D tilt hover effect |
+| `src/components/CategoryGrid.tsx` | 3D tilt op category cards |
+| `src/components/ComparisonTable.tsx` | Count-up animatie op getallen |
+| `src/hooks/use-count-up.ts` | Nieuw — count-up animatie hook |
+| `src/index.css` | Shimmer buttons, animated underlines, Ken Burns keyframes, glow orbs, scroll indicator bounce |
 
 ### Geen impact op
-- Functionaliteit — puur visueel
-- Performance — IntersectionObserver is native en lightweight
-- Bestaande animaties (hero, marquee) — die blijven ongewijzigd
+- Performance: alles is CSS-driven of lightweight JS (geen externe libraries)
+- Functionaliteit: puur visueel
+- Mobiel: parallax en tilt worden uitgeschakeld op touch devices (respecteer `prefers-reduced-motion` en touch detection)
 
