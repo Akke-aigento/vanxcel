@@ -469,6 +469,24 @@
     "dcDcRecommended": "charger (recommended)",
     "chargesVia": "Charges via your",
     "adjustAppliances": "Not satisfied? Adjust your appliances →",
-    "step4Complete": "Calculation complete! Product recommendations coming soon."
+    "step4Complete": "Calculation complete! Product recommendations coming soon.",
+    "packageTitle": "Your Package",
+    "packageSubtitle": "Custom-built for your {{vehicle}}",
+    "totalItems": "Total products",
+    "items": "items",
+    "totalPrice": "Total price",
+    "addAllToCart": "Add all to cart",
+    "saveConfig": "Save configuration",
+    "downloadPdf": "Download as PDF",
+    "comingSoon": "This feature is coming soon!",
+    "systemSummary": "System summary",
+    "estimatedAutarky": "Estimated autonomy",
+    "packageCatBattery": "Battery",
+    "packageCatSolar": "Solar Panels",
+    "packageCatInverter": "Inverter",
+    "packageCatDcDc": "DC-DC Charger",
+    "packageCatCable": "Wiring",
+    "packageCatFuse": "Fuses",
+    "packageCatAccessory": "Accessories"
   }
 }

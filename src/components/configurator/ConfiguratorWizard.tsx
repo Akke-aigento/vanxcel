@@ -14,6 +14,7 @@ import StepClimate from "./StepClimate";
 import StepPersons from "./StepPersons";
 import StepAppliances from "./StepAppliances";
 import StepResults from "./StepResults";
+import StepPackage from "./StepPackage";
 import type { SelectedAppliance } from "./StepAppliances";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -277,8 +278,11 @@ const ConfiguratorWizard = () => {
           </div>
         )}
         {state.subStep === 13 && (
-          <div className="animate-fade-in-up text-center py-12">
-            <p className="text-muted-foreground mb-6">{t("configurator.step4Complete")}</p>
+          <div className="animate-fade-in-up">
+            <StepPackage
+              state={state}
+              onBack={() => goTo(12)}
+            />
           </div>
         )}
       </div>

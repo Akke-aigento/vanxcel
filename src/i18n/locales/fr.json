@@ -469,6 +469,24 @@
     "dcDcRecommended": "chargeur (recommandé)",
     "chargesVia": "Charge via votre",
     "adjustAppliances": "Pas satisfait ? Ajustez vos appareils →",
-    "step4Complete": "Calcul terminé ! Recommandations produits bientôt disponibles."
+    "step4Complete": "Calcul terminé ! Recommandations produits bientôt disponibles.",
+    "packageTitle": "Votre Kit",
+    "packageSubtitle": "Composé sur mesure pour votre {{vehicle}}",
+    "totalItems": "Total produits",
+    "items": "articles",
+    "totalPrice": "Prix total",
+    "addAllToCart": "Tout ajouter au panier",
+    "saveConfig": "Sauvegarder la configuration",
+    "downloadPdf": "Télécharger en PDF",
+    "comingSoon": "Cette fonctionnalité arrive bientôt !",
+    "systemSummary": "Résumé du système",
+    "estimatedAutarky": "Autonomie estimée",
+    "packageCatBattery": "Batterie",
+    "packageCatSolar": "Panneaux Solaires",
+    "packageCatInverter": "Onduleur",
+    "packageCatDcDc": "Chargeur DC-DC",
+    "packageCatCable": "Câblage",
+    "packageCatFuse": "Fusibles",
+    "packageCatAccessory": "Accessoires"
   }
 }
