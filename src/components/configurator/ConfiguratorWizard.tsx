@@ -45,6 +45,8 @@ const initialState: ConfiguratorState = {
   usageType: null,
   climate: null,
   persons: null,
+  selectedAppliances: [],
+  totalDailyWh: 0,
   subStep: 0,
 };
 
