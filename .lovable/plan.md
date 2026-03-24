@@ -1,30 +1,52 @@
 
 
-## Verwijder bevestigings-tussenstappen uit Configurator
+## Fix kabeldikte-berekeningen in Installatiegids
 
 ### Probleem
-SubStep 9 ("step2Complete") en subStep 11 ("step3Complete") zijn overbodige bevestigingsschermen die de flow vertragen.
+De `calcCableSize()` functie in `StepInstallGuide.tsx` berekent puur wiskundig, zonder minimumwaarden per circuittype. Resultaat: gevaarlijk dunne kabels (bijv. 4mm² als accukabel).
 
-### Nieuwe subStep nummering
+### Aanpak
 
-| subStep | Inhoud | Was |
+**1. Nieuwe functie `getMinCableSize()` in StepInstallGuide.tsx**
+
+Bepaalt het minimum per circuittype op basis van de systeemwaarden:
+
+| Circuit ID | Conditie | Minimum mm² |
 |---|---|---|
-| 0-5 | Voertuig selectie (ongewijzigd) | 0-5 |
-| 6 | UsageType | 6 |
-| 7 | Climate | 7 |
-| 8 | Persons → **direct door naar 9** | 8 |
-| 9 | Appliances | was 10 |
-| 10 | Results | was 12 |
-| 11 | Package | was 13 |
-| 12 | InstallGuide | was 14 |
+| `starter_to_dcdc` | ≤30A: 10, ≤50A: 16, >50A: 25 |
+| `dcdc_to_leisure` | Zelfde als starter_to_dcdc |
+| `solar_to_mppt` | ≤200Wp: 2.5, ≤400Wp: 4, >400Wp: 6 |
+| `battery_to_fusebox` | ≤1000Wh/dag: 16, >1000Wh/dag: 25 |
+| `battery_to_inverter` | ≤1000W: 25, ≤2000W: 35, >2000W: 50 |
+| `mppt_to_battery` | ≤20A: 6, ≤40A: 10, >40A: 16 |
 
-### Wijzigingen
+**2. Update `cablingRows` array**
 
-| Bestand | Wat |
+Elk row krijgt een `circuitId` veld. De weergegeven kabeldikte wordt `Math.max(calcCableSize(...), getMinCableSize(circuitId))`.
+
+**3. Voeg MPPT → Batterij rij toe** (ontbreekt nu)
+
+**4. Waarschuwing per zware kabel**
+
+Als resultaat ≥ 16mm²: toon "Gebruik gelaste of geperste kabelschoenen" tekst in de tabelcel.
+
+**5. Algemene waarschuwing bovenaan bekabelingssectie**
+
+Alert banner: "Alle genoemde kabeldiktes zijn MINIMUM waarden. Bij twijfel: kies altijd een maat dikker."
+
+**6. i18n keys toevoegen** (4 talen)
+
+- `cableSafetyNote`: de algemene waarschuwing
+- `cableLugWarning`: kabelschoenen waarschuwing
+- `cableMppt` / `cableMpptToBattery`: labels voor nieuwe rij
+
+### Bestanden
+
+| Bestand | Actie |
 |---|---|
-| `ConfiguratorWizard.tsx` | Verwijder subStep 9 en 11 blokken. Hernummer: `selectPersons` → subStep 9, `completeAppliances` → subStep 10. Update alle `goTo()` calls en subStep checks. |
-| `VehicleSummaryBar.tsx` | Update step nummers in crumbs (10→9, 12→10, 13→11, 14→12) |
-| `StepResults.tsx` | `onBack`/`onAdjustAppliances` targets bijwerken (als die vanuit Wizard komen, hoeft dit component zelf niet te veranderen) |
-
-Alle navigatie-callbacks (`onBack`, `onNext`, `goTo`) worden aangepast naar de nieuwe nummering. De componenten zelf (StepAppliances, StepResults, etc.) hoeven intern niet te veranderen — alleen de step nummers in de Wizard en SummaryBar.
+| `src/components/configurator/StepInstallGuide.tsx` | Minimumlogica, MPPT→batterij rij, waarschuwingen |
+| `src/i18n/locales/nl.json` | Nieuwe keys |
+| `src/i18n/locales/en.json` | Nieuwe keys |
+| `src/i18n/locales/fr.json` | Nieuwe keys |
+| `src/i18n/locales/de.json` | Nieuwe keys |
 
