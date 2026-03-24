@@ -11,7 +11,7 @@ import SplitRevealText from './SplitRevealText';
 
 const FeaturedProducts = () => {
   const { t } = useTranslation();
-  const { data: productsData, isLoading } = useProducts({ collection: 'bestellers', per_page: 6 });
+  const { data: productsData, isLoading } = useProducts(const { data: productsData, isLoading } = useProducts({ collection: 'bestsellers', per_page: 6 }););
 
   const products: Product[] = useMemo(() => {
     if (productsData) {
