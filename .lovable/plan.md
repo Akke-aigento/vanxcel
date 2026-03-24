@@ -1,61 +1,49 @@
 
 
-## Website WOW-factor: next-level animaties
+## Nog meer WOW-factor — next level
 
-### Huidige staat
-De site heeft basis fade-in scroll reveals — netjes maar braaf. Geen movement, geen diepte, geen "wow". Tijd voor tastbare dynamiek.
+### Wat er al is
+Ken Burns hero, parallax, 3D tilt cards, count-up counters, shimmer buttons, scroll reveals, glow orbs. Dat is een stevige basis. Hier zijn de volgende stappen die het verschil maken:
 
-### Wat er verandert
+### Nieuwe effecten
 
-#### 1. Hero — Parallax + Ken Burns effect
-**`src/components/HeroSection.tsx`**
-- **Achtergrond slow-zoom**: de hero-afbeelding krijgt een constante langzame zoom (Ken Burns) via CSS `@keyframes scale 1→1.08` over 20s — geeft leven aan het eerste scherm
-- **Parallax scroll**: bij scrollen beweegt de achtergrond trager dan de content via `transform: translateY(scrollY * 0.3)` met een lightweight scroll listener
-- **Staggered tekst-animatie**: elke regel van de hero tekst schuift iets later in (al aanwezig maar kan dramatischer — grotere translateY, snappier timing)
+#### 1. Smooth page transitions (fade between routes)
+Wanneer je tussen pagina's navigeert, fade de oude pagina uit en de nieuwe in — geeft een app-achtig gevoel ipv een harde page swap. Implementatie via een `AnimatedOutlet` wrapper met CSS opacity transition rond React Router's `<Outlet>`.
 
-#### 2. Sectie-titels — Animated underline accent
-**`src/index.css`** + diverse componenten
-- Na het reveal van een sectie-titel verschijnt een geanimeerde accent-lijn (2px primary kleur) die van links naar rechts groeit onder de titel — geeft focus en richting
+#### 2. Magnetic cursor op CTA buttons (desktop)
+De grote CTA buttons (hero, newsletter) "trekken" licht naar je muis toe wanneer je in de buurt komt — subtiel (max 6px verschuiving), voelt magnetisch en premium. Pure JS `onMouseMove` op de button parent.
 
-#### 3. Category & Product Cards — 3D tilt hover
-**`src/components/ProductCard.tsx`** + **`src/components/CategoryGrid.tsx`**
-- Cards krijgen een subtiel 3D perspectief-effect bij hover: `perspective(800px) rotateY(±3deg) rotateX(±2deg)` gebaseerd op muispositie
-- Combineer met de bestaande scale en shadow — voelt als een fysieke kaart die je optilt
-- Implementatie via een kleine `onMouseMove` handler die CSS custom properties `--rx` en `--ry` set
+#### 3. Staggered product grid — wave-in effect
+In de Shop pagina en Featured Products laden de product cards niet allemaal tegelijk maar in een golf-patroon: elke card verschijnt 50ms na de vorige, van links naar rechts per rij. Geeft een "cascade" effect.
 
-#### 4. Floating particles / glow achtergrond
-**`src/components/HeroSection.tsx`**
-- Voeg 3-4 subtiele radial gradient "glow orbs" toe die langzaam driften (CSS animation, geen JS) — geeft diepte aan de hero zonder afleidend te zijn
-- Kleuren: primary (teal) en accent (amber) op zeer lage opacity (0.05-0.1)
+#### 4. Tekst split-reveal op sectietitels
+Grote titels (CategoryGrid, FeaturedProducts, ComparisonTable) worden letter-voor-letter of woord-voor-woord onthuld met een stagger — elke letter/woord schuift iets later in. Veel impactvoller dan een hele titel die tegelijk fade-in doet.
 
-#### 5. Counter animatie — TrustBar & ComparisonTable
-**`src/hooks/use-count-up.ts`** (nieuw)
-- Getallen in de comparison table animeren omhoog wanneer ze in viewport komen (bv "3.000 – 5.000+" telt op van 0)
-- Simpele hook: `useCountUp(target, duration)` die een easeOut interpolatie doet
+#### 5. Navbar logo morph bij scroll
+Het navbar-logo wordt subtiel kleiner (scale 1 → 0.85) en krijgt een glow-effect wanneer je naar beneden scrollt — laat zien dat de nav "leeft".
 
-#### 6. CTA buttons — Shimmer effect
-**`src/index.css`**
-- De amber CTA buttons krijgen een subtiel shimmer/glans effect: een diagonale lichtstreep die eenmalig over de button glijdt bij hover
-- Pure CSS met `background: linear-gradient` en `background-position` animatie
-
-#### 7. Scroll-indicator in Hero
-**`src/components/HeroSection.tsx`**
-- Een subtiel bouncend chevron/pijltje onderaan de hero dat aangeeft "scroll naar beneden"
-- Verdwijnt zodra je begint te scrollen (opacity transition)
+#### 6. Product image hover zoom-pan
+Op de Shop en ProductDetail pagina: bij hover over een product-afbeelding volgt de zoom de muispositie — alsof je inzoomt op het deel waar je muis staat. Geeft een premium e-commerce gevoel.
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/components/HeroSection.tsx` | Ken Burns zoom, parallax, glow orbs, scroll indicator |
-| `src/components/ProductCard.tsx` | 3D tilt hover effect |
-| `src/components/CategoryGrid.tsx` | 3D tilt op category cards |
-| `src/components/ComparisonTable.tsx` | Count-up animatie op getallen |
-| `src/hooks/use-count-up.ts` | Nieuw — count-up animatie hook |
-| `src/index.css` | Shimmer buttons, animated underlines, Ken Burns keyframes, glow orbs, scroll indicator bounce |
+| `src/components/AnimatedOutlet.tsx` | Nieuw — route transition wrapper |
+| `src/App.tsx` | AnimatedOutlet integreren |
+| `src/components/MagneticButton.tsx` | Nieuw — magnetic hover wrapper |
+| `src/components/HeroSection.tsx` | MagneticButton op CTA's |
+| `src/components/SplitRevealText.tsx` | Nieuw — woord-voor-woord reveal |
+| `src/components/CategoryGrid.tsx` | SplitRevealText op titel |
+| `src/components/FeaturedProducts.tsx` | SplitRevealText op titel + staggered wave op cards |
+| `src/components/ProductCard.tsx` | Image zoom-pan op hover |
+| `src/pages/Shop.tsx` | Staggered grid animatie |
+| `src/components/Navbar.tsx` | Logo scale + glow bij scroll |
+| `src/components/Newsletter.tsx` | MagneticButton op CTA |
+| `src/index.css` | Page transition CSS, zoom-pan styles |
 
 ### Geen impact op
-- Performance: alles is CSS-driven of lightweight JS (geen externe libraries)
-- Functionaliteit: puur visueel
-- Mobiel: parallax en tilt worden uitgeschakeld op touch devices (respecteer `prefers-reduced-motion` en touch detection)
+- Performance: alles native CSS/JS, geen libraries
+- Mobiel: magnetic cursor en zoom-pan disabled op touch
+- `prefers-reduced-motion`: alle nieuwe animaties respecteren dit
 
