@@ -63,16 +63,16 @@ const VehicleSummaryBar = ({ state, onStepClick }: Props) => {
     crumbs.push({ label: personsLabels[state.persons] ?? `${state.persons}`, step: 8 });
   }
   if (state.totalDailyWh > 0) {
-    crumbs.push({ label: `${state.totalDailyWh} Wh/${t("configurator.day")}`, step: 10 });
+    crumbs.push({ label: `${state.totalDailyWh} Wh/${t("configurator.day")}`, step: 9 });
+  }
+  if (state.subStep >= 10) {
+    crumbs.push({ label: `✓ ${t("configurator.resultsTitle")}`, step: 10 });
+  }
+  if (state.subStep >= 11) {
+    crumbs.push({ label: `✓ ${t("configurator.packageTitle")}`, step: 11 });
   }
   if (state.subStep >= 12) {
-    crumbs.push({ label: `✓ ${t("configurator.resultsTitle")}`, step: 12 });
-  }
-  if (state.subStep >= 13) {
-    crumbs.push({ label: `✓ ${t("configurator.packageTitle")}`, step: 13 });
-  }
-  if (state.subStep >= 14) {
-    crumbs.push({ label: `✓ ${t("configurator.installTitle")}`, step: 14 });
+    crumbs.push({ label: `✓ ${t("configurator.installTitle")}`, step: 12 });
   }
 
   if (crumbs.length === 0) return null;
