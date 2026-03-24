@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   ArrowLeft,
+  ArrowRight,
   Battery,
   Sun,
   Zap,
@@ -28,6 +29,7 @@ import { generatePackage, type PackageItem } from "@/lib/configurator-package";
 interface Props {
   state: ConfiguratorState;
   onBack: () => void;
+  onNext?: () => void;
 }
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -61,7 +63,7 @@ const categoryLabels: Record<string, string> = {
   accessory: "packageCatAccessory",
 };
 
-const StepPackage = ({ state, onBack }: Props) => {
+const StepPackage = ({ state, onBack, onNext }: Props) => {
   const { t } = useTranslation();
 
   const { data: appliances } = useQuery({
@@ -264,6 +266,15 @@ const StepPackage = ({ state, onBack }: Props) => {
           {t("configurator.downloadPdf")}
         </Button>
       </div>
+
+      {onNext && (
+        <div className="mt-8 text-center">
+          <Button size="lg" className="btn-shimmer gap-2" onClick={onNext}>
+            {t("configurator.nextStep")}
+            <ArrowRight className="w-5 h-5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
