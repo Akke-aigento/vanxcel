@@ -440,6 +440,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
           {t("configurator.cablingOverview")}
         </h3>
+        <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-400 mb-4">
+          <Info className="w-4 h-4" />
+          <AlertDescription className="text-sm font-medium">
+            {t("configurator.cableSafetyNote")}
+          </AlertDescription>
+        </Alert>
         <Card>
           <div className="overflow-x-auto">
             <Table>
@@ -453,21 +459,31 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {cablingRows.map((row, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="font-medium whitespace-nowrap">
-                      {row.from} → {row.to}
-                    </TableCell>
-                    <TableCell>{row.distance}m</TableCell>
-                    <TableCell className="font-semibold">
-                      {calcCableSize(row.amps, row.distance)} mm²
-                    </TableCell>
-                    <TableCell>{row.amps}A</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {row.type}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {cablingRows.map((row, i) => {
+                  const calculated = calcCableSize(row.amps, row.distance);
+                  const minimum = getMinCableSize(row.circuitId, minSpecs);
+                  const finalSize = Math.max(calculated, minimum);
+                  return (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {row.from} → {row.to}
+                      </TableCell>
+                      <TableCell>{row.distance}m</TableCell>
+                      <TableCell>
+                        <span className="font-semibold">{finalSize} mm²</span>
+                        {finalSize >= 16 && (
+                          <p className="text-xs text-destructive mt-1">
+                            {t("configurator.cableLugWarning")}
+                          </p>
+                        )}
+                      </TableCell>
+                      <TableCell>{row.amps}A</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {row.type}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

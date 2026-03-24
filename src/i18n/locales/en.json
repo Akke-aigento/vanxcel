@@ -518,6 +518,8 @@
     "cablePosPlusNeg": "Positive + Negative",
     "cablePos": "Positive",
     "cableLug": "cable lug",
+    "cableSafetyNote": "All listed cable sizes are MINIMUM values. When in doubt: always choose one size thicker. A cable that's too thick is never a problem — a cable that's too thin is a fire hazard.",
+    "cableLugWarning": "Use welded or crimped cable lugs, NEVER screw terminals.",
     "installTips": "Installation tips",
     "tipFuse": "ALWAYS place a fuse within 30cm of every positive battery connection.",
     "tipLabel": "Label all your cables with colour or tape — your future self will thank you.",

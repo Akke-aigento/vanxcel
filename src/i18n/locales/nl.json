@@ -518,6 +518,8 @@
     "cablePosPlusNeg": "Positief + Negatief",
     "cablePos": "Positief",
     "cableLug": "kabelschoen",
+    "cableSafetyNote": "Alle genoemde kabeldiktes zijn MINIMUM waarden. Bij twijfel: kies altijd een maat dikker. Een te dikke kabel is nooit een probleem, een te dunne kabel is een brandgevaar.",
+    "cableLugWarning": "Gebruik gelaste of geperste kabelschoenen, NOOIT schroefklemmen.",
     "installTips": "Installatietips",
     "tipFuse": "Plaats ALTIJD een zekering binnen 30cm van elke positieve batterij-aansluiting.",
     "tipLabel": "Label al je kabels met kleur of tape — je toekomstige zelf zal je dankbaar zijn.",
