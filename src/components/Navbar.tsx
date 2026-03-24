@@ -20,8 +20,15 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopExpanded, setShopExpanded] = useState(false);
   const [toolsExpanded, setToolsExpanded] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const { t } = useTranslation();
   const { data: collectionsData } = useCollections();
 
