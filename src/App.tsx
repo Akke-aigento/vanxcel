@@ -12,6 +12,7 @@ import ThankYou from "./pages/ThankYou.tsx";
 import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
+import Categories from "./pages/Categories.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
