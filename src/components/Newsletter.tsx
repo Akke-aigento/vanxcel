@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import RevealOnScroll from "./RevealOnScroll";
+import MagneticButton from "./MagneticButton";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
