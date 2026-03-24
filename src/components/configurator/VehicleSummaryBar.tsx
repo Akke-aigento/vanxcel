@@ -71,6 +71,9 @@ const VehicleSummaryBar = ({ state, onStepClick }: Props) => {
   if (state.subStep >= 13) {
     crumbs.push({ label: `✓ ${t("configurator.packageTitle")}`, step: 13 });
   }
+  if (state.subStep >= 14) {
+    crumbs.push({ label: `✓ ${t("configurator.installTitle")}`, step: 14 });
+  }
 
   if (crumbs.length === 0) return null;
 

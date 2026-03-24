@@ -283,6 +283,15 @@ const ConfiguratorWizard = () => {
             <StepPackage
               state={state}
               onBack={() => goTo(12)}
+              onNext={() => goTo(14)}
+            />
+          </div>
+        )}
+        {state.subStep === 14 && (
+          <div className="animate-fade-in-up">
+            <StepInstallGuide
+              state={state}
+              onBack={() => goTo(13)}
             />
           </div>
         )}
