@@ -102,6 +102,7 @@ const CategoryGrid = () => {
                   )}
                 </div>
               </Link>
+            </div>
             </RevealOnScroll>
           ))}
         </div>
