@@ -222,7 +222,10 @@
     "shop": "SHOP",
     "info": "INFO",
     "followUs": "FOLGE UNS",
-    "copyright": "© {{year}} {{name}}. Alle Rechte vorbehalten. 🇧🇪 Made in Belgium."
+    "copyright": "© {{year}} {{name}}. Alle Rechte vorbehalten. 🇧🇪 Made in Belgium.",
+    "faq": "Häufige Fragen",
+    "delivery": "Versand & Lieferung",
+    "manuals": "Schaltpläne & Anleitungen"
   },
   "thankYou": {
     "title": "Vielen Dank für deine Bestellung!",
