@@ -258,10 +258,27 @@ const ConfiguratorWizard = () => {
           <div className="animate-fade-in-up text-center py-12">
             <p className="text-lg font-semibold mb-2">{state.totalDailyWh} Wh/{t("configurator.day")}</p>
             <p className="text-muted-foreground mb-6">{t("configurator.step3Complete")}</p>
-            <Button size="lg" className="btn-shimmer gap-2">
+            <Button size="lg" className="btn-shimmer gap-2" onClick={() => goTo(12)}>
               {t("configurator.nextStep")}
               <ArrowRight className="w-5 h-5" />
             </Button>
+          </div>
+        )}
+
+        {/* Step 4: Results */}
+        {state.subStep === 12 && (
+          <div className="animate-fade-in-up">
+            <StepResults
+              state={state}
+              onBack={() => goTo(10)}
+              onAdjustAppliances={() => goTo(10)}
+              onNext={() => goTo(13)}
+            />
+          </div>
+        )}
+        {state.subStep === 13 && (
+          <div className="animate-fade-in-up text-center py-12">
+            <p className="text-muted-foreground mb-6">{t("configurator.step4Complete")}</p>
           </div>
         )}
       </div>
