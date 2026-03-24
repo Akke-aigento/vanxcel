@@ -22,8 +22,10 @@ const Navbar = () => {
   const [shopExpanded, setShopExpanded] = useState(false);
   const [toolsExpanded, setToolsExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, customer, logout } = useCustomerAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
