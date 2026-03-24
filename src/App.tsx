@@ -12,6 +12,7 @@ import ThankYou from "./pages/ThankYou.tsx";
 import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
+import Categories from "./pages/Categories.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/bedankt" element={<ThankYou />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/categories" element={<Categories />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

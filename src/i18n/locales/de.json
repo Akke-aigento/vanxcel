@@ -3,6 +3,8 @@
     "home": "Startseite",
     "shop": "Shop",
     "products": "Produkte",
+    "allProducts": "Alle Produkte",
+    "allCategories": "Alle Kategorien",
     "calculator": "Rechner",
     "tools": "Werkzeuge",
     "about": "Über uns",
@@ -24,7 +26,9 @@
     "title": "NACH KATEGORIE KAUFEN",
     "subtitle": "Alles was du für einen voll ausgestatteten Campervan brauchst",
     "products": "Produkte",
-    "viewAll": "Alle Kategorien →"
+    "viewAll": "Alle Kategorien →",
+    "pageTitle": "ALLE KATEGORIEN",
+    "pageSubtitle": "Entdecke unser komplettes Sortiment nach Kategorie"
   },
   "bestsellers": {
     "title": "BESTSELLER",

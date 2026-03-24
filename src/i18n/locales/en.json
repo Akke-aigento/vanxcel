@@ -3,6 +3,8 @@
     "home": "Home",
     "shop": "Shop",
     "products": "Products",
+    "allProducts": "All products",
+    "allCategories": "All categories",
     "calculator": "Calculator",
     "tools": "Tools",
     "about": "About",
@@ -24,7 +26,9 @@
     "title": "SHOP BY CATEGORY",
     "subtitle": "Everything you need for a fully powered campervan",
     "products": "products",
-    "viewAll": "View all categories →"
+    "viewAll": "View all categories →",
+    "pageTitle": "ALL CATEGORIES",
+    "pageSubtitle": "Discover our full range by category"
   },
   "bestsellers": {
     "title": "BESTSELLERS",
