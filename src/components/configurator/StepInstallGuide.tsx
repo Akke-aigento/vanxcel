@@ -510,6 +510,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                   <TableHead>{t("configurator.distance")}</TableHead>
                   <TableHead>{t("configurator.cableSize")}</TableHead>
                   <TableHead>{t("configurator.current")}</TableHead>
+                  <TableHead>{t("configurator.fuse")}</TableHead>
                   <TableHead>{t("configurator.cableType")}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -518,6 +519,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                   const calculated = calcCableSize(row.amps, row.distance);
                   const minimum = getMinCableSize(row.circuitId, minSpecs);
                   const finalSize = Math.max(calculated, minimum);
+                  const fuse = getFuseSpec(row.circuitId, { dcDcA: calc.dcDcA, inverterW: calc.inverterW });
                   return (
                     <TableRow key={i}>
                       <TableCell className="font-medium whitespace-nowrap">
@@ -533,6 +535,9 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                         )}
                       </TableCell>
                       <TableCell>{row.amps}A</TableCell>
+                      <TableCell className="text-xs">
+                        {fuse ?? "—"}
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {row.type}
                       </TableCell>
