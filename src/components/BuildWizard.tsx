@@ -77,18 +77,18 @@ const BuildWizard = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 pb-24">
       <div className="max-w-lg mx-auto mb-12">
-        <div className="flex items-center">
+        <div className="flex items-center justify-between w-full">
           {stepLabels.map((label, i) => (
-            <div key={label} className="flex items-center min-w-0 w-1/4 last:flex-none">
-              <div className="flex flex-col items-center min-w-0">
+            <div key={label} className="flex items-center flex-1 last:flex-none">
+              <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold transition-colors shrink-0 ${
                   i < step ? "bg-primary text-primary-foreground" : i === step ? "bg-accent text-accent-foreground" : "bg-secondary text-muted-foreground"
                 }`}>
                   {i < step ? <Check size={14} /> : i + 1}
                 </div>
-                <span className={`text-[10px] md:text-xs mt-1.5 md:mt-2 text-center leading-tight ${i === step ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+                <span className={`text-[10px] md:text-xs mt-1.5 md:mt-2 text-center leading-tight whitespace-nowrap ${i === step ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
               </div>
-              {i < 3 && <div className={`flex-1 h-px mx-1 md:mx-2 ${i < step ? "bg-primary" : "bg-border"}`} />}
+              {i < 3 && <div className={`flex-1 h-px mx-2 md:mx-3 ${i < step ? "bg-primary" : "bg-border"}`} />}
             </div>
           ))}
         </div>
