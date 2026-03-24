@@ -62,7 +62,7 @@ const categoryLabels: Record<string, string> = {
   accessory: "packageCatAccessory",
 };
 
-const StepPackage = ({ state, onBack }: Props) => {
+const StepPackage = ({ state, onBack, onNext }: Props) => {
   const { t } = useTranslation();
 
   const { data: appliances } = useQuery({
