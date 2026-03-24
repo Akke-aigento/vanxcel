@@ -1,68 +1,83 @@
 
 
-## Configurator Stap 3: Verbruikers Selectie
+## Configurator Stap 4: Automatische Berekening
 
 ### Overzicht
-Na subStep 9 (stap 2 compleet) komt subStep 10: de verbruikers selectie. Gebruikers selecteren apparaten uit de `appliances` tabel, passen uren aan, en zien live hun dagverbruik berekend in een sticky footer.
+Na subStep 11 (stap 3 compleet) komt subStep 12: een visueel dashboard met 4 geanimeerde kaarten die het complete energiesysteem berekenen op basis van alle voorgaande stappen.
 
 ### Nieuwe bestanden
 
 | Bestand | Beschrijving |
 |---|---|
-| `src/components/configurator/StepAppliances.tsx` | Hoofdcomponent: fetcht appliances, groepeert per categorie, accordion layout, toggle + slider per item, sticky footer met live berekening |
+| `src/lib/configurator-calculations.ts` | Pure berekeningsfuncties: battery, solar, inverter, DC-DC sizing |
+| `src/components/configurator/StepResults.tsx` | Dashboard met 4 resultaatkaarten + samenvatting + "pas aan" link |
 
-### Hoe het werkt
+### Berekeningslogica (`src/lib/configurator-calculations.ts`)
 
-**Data**: `useQuery` fetcht alle appliances, gegroepeerd op `category` in vaste volgorde: koeling, verwarming, keuken, verlichting, comfort, werk, veiligheid, water.
+4 pure functies:
+- `calculateBattery(totalDailyWh, usageType)` → Ah (afgerond naar 50/100/200/300/400)
+- `calculateSolar(totalDailyWh, climate, maxSolarM2)` → Wp (afgerond naar 100)
+- `calculateInverter(selectedApplianceIds, allAppliances)` → W (0/300/600/1000/1500/2000/3000)
+- `calculateDcDc(motorisation, batteryAh)` → A (20/30/50/60)
 
-**State**: Intern een `Map<string, { enabled: boolean; hours: number }>` per appliance ID. Bij mount: automatische pre-selectie op basis van `usageType` uit de configurator state:
-- `weekend`: koelbox, LED strip, USB, smartphone
-- `regular`: koelkast 40L, LED strip, spots, USB, smartphone, laptop, waterpomp, ventilator, diesel heater
-- `fulltime`: koelkast 60L, alles van regular + inductie, boiler, CO melder, leeslamp
-- `stealth`: USB, smartphone, LED strip
+Plus helpers: `getDaysAutark(usageType)`, `getSunHours(climate)`, `getDailySolarYield(wp, climate)`.
 
-Matching via de `name` veld (Engels).
+### StepResults component
 
-**Per appliance rij**:
-- Lucide icon (dynamisch uit `icon` veld) + `name_nl`
-- Toggle switch (aan/uit)
-- Als aan: slider voor uren (0.5-24, stap 0.5), default uit `daily_hours_typical`
-- Berekend: `wattage_typical × uren = XXX Wh/dag` rechts
-- Badge "230V" als `requires_inverter = true`
-- Badge "Aanbevolen" als `is_essential = true`
+**4 grote kaarten in 2x2 grid**, elk met:
+- Kleur-gecodeerde accent border (groen/geel/blauw/oranje)
+- CountUp animatie voor het grote getal
+- Staggered fade-in (100ms delay per kaart)
 
-**Sticky footer bar** (altijd zichtbaar onderaan viewport):
-- Totaal dagelijks verbruik: XXXX Wh/dag
-- 12V: XXX Wh | 230V: XXX Wh
-- Aantal 230V apparaten + "Omvormer nodig" indicator
-- Max gelijktijdig 230V vermogen (som peak wattages)
-- "Volgende stap" button
+**Kaart 1 — Batterij (groen)**:
+- Groot: "200 Ah LiFePO4"
+- Sub: "XXXX Wh/dag × X dagen autonomie"
+- Progress bar: dagelijks verbruik als % van capaciteit
+- Tekst: "X dagen zonder externe stroom"
 
-**Output**: Bij klik op Volgende, sla `selectedAppliances` (array met id, hours, wh) en `totalDailyWh` op in configurator state.
+**Kaart 2 — Zonnepanelen (geel)**:
+- Groot: "400 Wp"
+- Sub: "Xx 200W panelen" (berekend)
+- Tekst: "Levert gemiddeld XXXX Wh/dag op in [klimaat]"
+- Waarschuwing als dak te klein: "Max XXX Wp past op je dak"
+
+**Kaart 3 — Omvormer (blauw)**:
+- Groot: "2000W" of "Niet nodig"
+- Sub: "Pure sine wave omvormer"
+- Tekst: "X apparaten op 230V, piek XXXX W"
+
+**Kaart 4 — DC-DC Lader (oranje)**:
+- Groot: "50A"
+- Sub: "DC-DC lader" + "(verplicht)" als smart alt
+- Rode banner als smart alternator
+- Tekst: "Laadt via je XXA alternator"
+
+**Onderaan**: compacte samenvattrij + "Pas je verbruikers aan" link (→ subStep 10)
 
 ### ConfiguratorWizard aanpassen
 
-- State uitbreiden met `selectedAppliances` en `totalDailyWh`
-- subStep 9: was "stap 2 complete" placeholder, wordt nu de trigger naar subStep 10
-- subStep 10: `StepAppliances` component
-- De "Volgende stap" button in subStep 9 navigeert naar subStep 10
+- subStep 11 "next" button → subStep 12
+- subStep 12: `StepResults` met alle benodigde props (state, appliances)
+- StepResults fetcht appliances zelf (voor peak wattage berekening)
 
-### VehicleSummaryBar uitbreiden
-Nieuwe crumb voor "Verbruikers" met het totale Wh/dag.
+### VehicleSummaryBar
+Optioneel: crumb met "✓ Berekening" bij subStep 12.
 
-### i18n keys toevoegen
+### i18n keys
 Nieuwe keys in `configurator` sectie voor alle 4 talen:
-- `appliancesTitle`, `appliancesSubtitle`
-- Categorie labels: `catKoeling`, `catVerwarming`, etc.
-- `hoursPerDay`, `whPerDay`, `totalDaily`, `of12v`, `of230v`, `inverterNeeded`, `maxSimultaneous`, `recommended`, `appliancesSummary`
+- `resultsTitle`, `batteryTitle`, `solarTitle`, `inverterTitle`, `dcDcTitle`
+- `basedOn`, `daysAutark`, `panelCount`, `solarYield`, `roofWarning`
+- `inverterNotNeeded`, `peakPower`, `dcDcRequired`, `dcDcRecommended`
+- `chargesVia`, `adjustAppliances`, `summaryLabel`
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/components/configurator/StepAppliances.tsx` | Nieuw |
-| `src/components/configurator/ConfiguratorWizard.tsx` | State uitbreiden, subStep 9→10 flow |
-| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb voor verbruikers |
+| `src/lib/configurator-calculations.ts` | Nieuw |
+| `src/components/configurator/StepResults.tsx` | Nieuw |
+| `src/components/configurator/ConfiguratorWizard.tsx` | subStep 11→12 flow, import StepResults |
+| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb voor berekening |
 | `src/i18n/locales/nl.json` | Nieuwe keys |
 | `src/i18n/locales/en.json` | Nieuwe keys |
 | `src/i18n/locales/fr.json` | Nieuwe keys |
