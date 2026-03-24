@@ -1,19 +1,17 @@
 
 
-## Tools pagina mobiel layout fixen
+## Vooruitgangsbollen layout fixen op mobiel
 
-### Problemen (zichtbaar in screenshot)
-1. **Tabs overflow**: De 3 tab-triggers (Power Calculator, Kabelberekening, Pakket Simulator) passen niet op mobiel — de tekst wordt afgesneden
-2. **Titel te groot**: `text-[56px]` is veel te groot op een 390px scherm
-3. **Padding-top**: `pt-16` (64px) klopt niet meer met de navbar die nu `h-20` (80px) is
+### Probleem
+Stap 3 label ("Zonne-energie") is te lang en breekt vreemd af op 390px breed. De bollen en labels staan niet netjes uitgelijnd.
 
-### Aanpassing in `src/pages/Calculator.tsx`
+### Aanpassing in `src/components/BuildWizard.tsx`
 
-- **pt-16 → pt-20**: padding matchen met navbar hoogte
-- **Titel responsive**: `text-[56px]` → `text-3xl md:text-[56px]`
-- **Tabs op mobiel**: kortere labels op kleine schermen — gebruik `text-xs` op mobiel, `text-sm` op desktop. Eventueel de emoji's weghalen op mobiel of de tab-tekst inkorten via responsive classes
-- **TabsList**: voeg `overflow-x-auto` of `flex-wrap` niet toe — gebruik ipv daarvan kleinere tekst + minder padding zodat alles past
+- Geef elke stap-kolom een vaste breedte via `min-w-0 w-1/4` zodat alle 4 stappen gelijkmatig verdeeld worden
+- Voeg `text-center` en `whitespace-nowrap` of `leading-tight` toe aan de labels zodat ze netjes onder de bol blijven
+- Verklein de bollen op mobiel: `w-8 h-8 md:w-10 md:h-10` en tekst `text-xs md:text-sm`
+- Labels: `text-[10px] md:text-xs` zodat langere woorden als "Zonne-energie" passen
 
 ### Alleen dit bestand wordt aangepast:
-- `src/pages/Calculator.tsx`
+- `src/components/BuildWizard.tsx`
 
