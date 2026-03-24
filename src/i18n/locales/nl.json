@@ -277,6 +277,35 @@
     "ctaShop": "Bekijk de shop →",
     "ctaContact": "Neem contact op"
   },
+  "powerSeo": {
+    "title1": "Hoe bereken je je stroomverbruik in een campervan?",
+    "text1": "Het dagelijkse stroomverbruik in een campervan wordt uitgedrukt in wattuur (Wh). Je berekent dit door het vermogen van elk apparaat (in Watt) te vermenigvuldigen met het aantal uur dat je het per dag gebruikt. Een LED-lamp van 10W die 4 uur brandt verbruikt bijvoorbeeld 40Wh per dag.",
+    "text1b": "Door al je apparaten bij elkaar op te tellen, krijg je het totale dagverbruik. Op basis daarvan bepaal je de benodigde batterijcapaciteit. Bij een LiFePO4-batterij is circa 80% van de capaciteit bruikbaar (bv. 200Ah × 12,8V × 0,8 = ±2.048Wh), terwijl een AGM-batterij slechts 50% bruikbaar heeft.",
+    "title2": "LiFePO4 vs AGM — hoeveel capaciteit heb je écht nodig?",
+    "text2": "Een veelgemaakte fout is de capaciteit van een LiFePO4-batterij één-op-één vergelijken met AGM. Bij AGM mag je maximaal 50% ontladen om de levensduur te behouden, terwijl LiFePO4 tot 80-90% ontladen kan worden. Een 200Ah LiFePO4-batterij biedt dus evenveel bruikbare energie als een 400Ah AGM-batterij — in de helft van het gewicht.",
+    "title3": "Tips voor je energiehuishouding",
+    "tip1": "Kies 12V-apparaten boven 230V waar mogelijk — een omvormer kost altijd 10-15% energie.",
+    "tip2": "Zonnepanelen (100-400Wp) kunnen je dagverbruik flink verlagen en je autonomie verdubbelen.",
+    "tip3": "Monitor je verbruik met een batterijmonitor — zo voorkom je onverwacht een lege batterij."
+  },
+  "buildSeo": {
+    "title1": "Hoe kies je het juiste off-grid pakket?",
+    "text1": "Het ideale energiesysteem hangt af van drie factoren: hoe je je camper gebruikt (weekend vs. fulltime), welke apparaten je wilt voeden, en of je zonnepanelen hebt. Een weekendcamper met LED-verlichting en telefoon heeft een heel ander systeem nodig dan een fulltimer met koelkast, laptop en koffiemachine.",
+    "text1b": "Onze pakketgenerator combineert deze factoren en berekent automatisch de optimale batterijcapaciteit en omvormer voor jouw situatie. Zo weet je zeker dat je niet te veel of te weinig investeert.",
+    "title2": "Wat zit er in een compleet campervan energiesysteem?",
+    "text2": "Een off-grid energiesysteem voor je campervan bestaat uit meerdere componenten die samenwerken:",
+    "comp1": "LiFePO4-batterij (100-300Ah) — de kern van je systeem, slaat alle energie op",
+    "comp2": "Omvormer (1000-3000W) — zet 12V om naar 230V voor huishoudelijke apparaten",
+    "comp3": "Kabels (juiste dikte!) — verbinden alles veilig, te dunne kabels zijn brandgevaarlijk",
+    "comp4": "Zekeringen & verdeelblokken — beschermen je installatie tegen kortsluiting",
+    "faqTitle": "Veelgestelde vragen",
+    "faq1q": "Kan ik mijn systeem later upgraden?",
+    "faq1a": "Ja! LiFePO4-batterijen kunnen parallel geschakeld worden. Begin met 200Ah en voeg later een tweede batterij toe als je meer capaciteit nodig hebt.",
+    "faq2q": "Heb ik een omvormer nodig?",
+    "faq2a": "Alleen als je 230V-apparaten wilt gebruiken (koffiemachine, haardroger, etc.). Veel campervan-apparaten werken direct op 12V, waardoor een omvormer niet altijd nodig is.",
+    "faq3q": "Hoelang gaat een LiFePO4-batterij mee?",
+    "faq3a": "LiFePO4-batterijen gaan 3.000 tot 5.000 laadcycli mee — dat is 8 tot 15 jaar bij dagelijks gebruik. Ter vergelijking: een AGM-batterij haalt gemiddeld 300-500 cycli."
+  },
   "toolsHub": {
     "title": "TOOLS & CALCULATORS",
     "subtitle": "Bereken, plan en bouw jouw ideale off-grid setup.",

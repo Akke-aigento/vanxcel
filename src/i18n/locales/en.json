@@ -277,6 +277,35 @@
     "ctaShop": "Browse the shop →",
     "ctaContact": "Get in touch"
   },
+  "powerSeo": {
+    "title1": "How to calculate your campervan power consumption?",
+    "text1": "Daily power consumption in a campervan is measured in watt-hours (Wh). Calculate it by multiplying each appliance's power (in Watts) by the hours you use it per day. For example, a 10W LED light running 4 hours consumes 40Wh per day.",
+    "text1b": "By adding up all your appliances, you get your total daily consumption. Based on that, you determine the required battery capacity. A LiFePO4 battery offers about 80% usable capacity (e.g. 200Ah × 12.8V × 0.8 = ±2,048Wh), while an AGM battery only provides 50% usable capacity.",
+    "title2": "LiFePO4 vs AGM — how much capacity do you really need?",
+    "text2": "A common mistake is comparing LiFePO4 and AGM capacity one-to-one. AGM batteries should only be discharged to 50% to preserve lifespan, while LiFePO4 can be discharged to 80-90%. A 200Ah LiFePO4 battery provides as much usable energy as a 400Ah AGM battery — at half the weight.",
+    "title3": "Tips for your energy management",
+    "tip1": "Choose 12V appliances over 230V where possible — an inverter always costs 10-15% energy.",
+    "tip2": "Solar panels (100-400Wp) can significantly reduce your daily consumption and double your autonomy.",
+    "tip3": "Monitor your consumption with a battery monitor — this prevents unexpectedly running out of power."
+  },
+  "buildSeo": {
+    "title1": "How to choose the right off-grid package?",
+    "text1": "The ideal energy system depends on three factors: how you use your camper (weekend vs. full-time), which appliances you want to power, and whether you have solar panels. A weekend camper with LED lighting and a phone needs a very different system than a full-timer with a fridge, laptop and coffee maker.",
+    "text1b": "Our package generator combines these factors and automatically calculates the optimal battery capacity and inverter for your situation. This way you know for sure you're not over- or under-investing.",
+    "title2": "What's in a complete campervan energy system?",
+    "text2": "An off-grid energy system for your campervan consists of several components working together:",
+    "comp1": "LiFePO4 battery (100-300Ah) — the core of your system, stores all energy",
+    "comp2": "Inverter (1000-3000W) — converts 12V to 230V for household appliances",
+    "comp3": "Cables (correct thickness!) — connect everything safely, cables that are too thin are a fire hazard",
+    "comp4": "Fuses & distribution blocks — protect your installation against short circuits",
+    "faqTitle": "Frequently asked questions",
+    "faq1q": "Can I upgrade my system later?",
+    "faq1a": "Yes! LiFePO4 batteries can be connected in parallel. Start with 200Ah and add a second battery later if you need more capacity.",
+    "faq2q": "Do I need an inverter?",
+    "faq2a": "Only if you want to use 230V appliances (coffee maker, hair dryer, etc.). Many campervan appliances run directly on 12V, so an inverter isn't always necessary.",
+    "faq3q": "How long does a LiFePO4 battery last?",
+    "faq3a": "LiFePO4 batteries last 3,000 to 5,000 charge cycles — that's 8 to 15 years with daily use. By comparison, an AGM battery averages 300-500 cycles."
+  },
   "toolsHub": {
     "title": "TOOLS & CALCULATORS",
     "subtitle": "Calculate, plan and build your ideal off-grid setup.",
