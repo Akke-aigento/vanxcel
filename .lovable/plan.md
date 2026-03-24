@@ -1,73 +1,81 @@
 
 
-## Configurator Stap 5: Productpakket
+## Configurator Stap 6: Installatiegids (subStep 14)
 
 ### Overzicht
-Na subStep 12 (berekening) vervangt subStep 13 de huidige placeholder met een compleet productpakket-overzicht. Een `generatePackage()` functie stelt op basis van de berekeningsresultaten een lijst hardcoded producten samen met prijzen.
+Na het productpakket (subStep 13) komt subStep 14: een technische installatiegids met voertuig-specifieke data uit 4 Supabase tabellen. De StepPackage krijgt een "Volgende" button die naar subStep 14 navigeert.
 
-### Nieuwe bestanden
+### Nieuw bestand
 
 | Bestand | Beschrijving |
 |---|---|
-| `src/lib/configurator-package.ts` | `generatePackage()` functie + `PackageItem` type — stelt productlijst samen op basis van configurator state + berekende waarden |
-| `src/components/configurator/StepPackage.tsx` | Productpakket UI: samenvatting header, productlijst per categorie, actie-buttons, zijpaneel-samenvatting |
+| `src/components/configurator/StepInstallGuide.tsx` | Volledige installatiegids met 5 secties + tips |
 
-### Logica (`configurator-package.ts`)
+### Data hooks toevoegen aan `use-configurator.ts`
 
-```typescript
-interface PackageItem {
-  category: string;        // battery, solar, inverter, dc_dc, cable, fuse, accessory
-  name: string;
-  specs: string;
-  quantity: number;
-  unitPrice: number;
-  reason: string;
-  icon: string;            // lucide icon name
-}
-```
+3 nieuwe hooks:
+- `useBatteryLocations(vehicleId)` — fetcht `vehicle_battery_locations`
+- `useCableRoutes(vehicleId)` — fetcht `vehicle_cable_routes`
+- `useGroundingPoints(vehicleId)` — fetcht `vehicle_grounding_points`
 
-`generatePackage()` ontvangt de configurator state + berekende waarden (batteryAh, solarWp, inverterW, dcDcA) en retourneert een `PackageItem[]` met:
-- Batterij (prijs afhankelijk van Ah, meerdere stuks als >200Ah)
-- Zonnepanelen + MPPT regelaar
-- Omvormer (alleen als 230V apparaten)
-- DC-DC lader
-- Bekabelingspakket (altijd)
-- Zekeringkast (altijd)
-- Battery monitor (als ≥100Ah)
+De bestaande `useVehicleWarnings` hook wordt hergebruikt.
 
-### UI (`StepPackage.tsx`)
+### Component: StepInstallGuide
 
-**Header bar**: aantal items, totaalprijs, "Op maat voor jouw [voertuig]"
+Props: `state: ConfiguratorState`, `onBack: () => void`
 
-**Productlijst per categorie**: kaarten met icoon, naam, specs, reden (accent), prijs × aantal = totaal. Quantity +/- knoppen.
+Intern berekent het de systeem-waarden (batteryAh, solarWp, inverterW, dcDcA) via de bestaande `configurator-calculations.ts` functies, en fetcht de voertuig-specifieke data.
 
-**Actie-buttons**:
-- "Voeg alles toe aan winkelwagen" → toast "Komt binnenkort"
-- "Bewaar configuratie" → toast
-- "Download als PDF" → toast
+**5 secties:**
 
-**Sidebar/onderaan**: compacte systeem-samenvatting met alle specs + totaalprijs
+1. **Waarschuwingen** — hergebruikt `useVehicleWarnings`, alert banners (rood/oranje/blauw per severity)
+
+2. **Batterij locaties** — `useBatteryLocations`, kaarten met afmetingen, montage-instructies, geschiktheidsbadge, populariteit-sortering
+
+3. **Kabelroutes** — `useCableRoutes`, Collapsible/Accordion kaarten met route beschrijving, afstand, moeilijkheidsgraad (groen/geel/rood badge), aanbevolen kabeldikte berekend op basis van dcDcA, gereedschappen lijst, gevaren
+
+4. **Aardpunten** — `useGroundingPoints`, simpele lijst met locatie, bout maat, max kabeldikte, bestaand/nieuw indicator
+
+5. **Bekabelingsoverzicht** — berekende tabel met alle kabels. Formule: `mm² = (I × L × 2) / (0.36 × 56)` afgerond naar standaard maten (4, 6, 10, 16, 25, 35, 50 mm²). Rijen:
+   - Starterbatterij → DC-DC (afstand uit cable_routes of 1.0m default)
+   - DC-DC → Leisurebatterij (0.5m)
+   - Zonnepaneel → MPPT (uit cable_routes of 3.5m)
+   - Batterij → Zekeringkast (0.3m)
+   - Batterij → Omvormer (0.5m, alleen als inverter > 0)
+
+**Onderaan:** 4 tips als een grid van info-cards.
 
 ### ConfiguratorWizard aanpassen
 
-- subStep 13: render `StepPackage` ipv placeholder tekst
-- StepResults `onNext` → subStep 13 (al bestaand)
-- Berekeningswaarden doorgeven aan StepPackage (of herberekenen in component)
+- StepPackage krijgt een `onNext` prop
+- subStep 14: render `StepInstallGuide`
+- Import toevoegen
 
 ### VehicleSummaryBar
-Crumb "Pakket" bij subStep 13.
+
+Crumb "✓ Installatiegids" bij subStep >= 14.
 
 ### i18n keys (alle 4 talen)
-Keys voor: `packageTitle`, `packageSubtitle`, `totalItems`, `totalPrice`, `tailoredFor`, `addAllToCart`, `saveConfig`, `downloadPdf`, `comingSoon`, categorie-labels, `perUnit`, `subtotal`, `systemSummary`, `estimatedAutarky`
+
+Nieuwe keys in `configurator` sectie:
+- `installTitle`, `installSubtitle`
+- `warningsSection`, `batteryLocationSection`, `cableRoutesSection`, `groundingSection`, `cablingOverview`
+- `location`, `dimensions`, `mountingNotes`, `suitability`
+- `routeDistance`, `difficulty`, `difficultyEasy`, `difficultyModerate`, `difficultyHard`
+- `recommendedCableSize`, `toolsRequired`, `hazards`
+- `boltSize`, `maxCableSize`, `existingGround`, `needsDrilling`
+- `from`, `to`, `distance`, `cableSize`, `current`, `type`
+- `tipFuse`, `tipLabel`, `tipTest`, `tipPhotos`, `installTips`
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/lib/configurator-package.ts` | Nieuw |
-| `src/components/configurator/StepPackage.tsx` | Nieuw |
-| `src/components/configurator/ConfiguratorWizard.tsx` | subStep 13 → StepPackage, import |
-| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb "Pakket" |
+| `src/components/configurator/StepInstallGuide.tsx` | Nieuw |
+| `src/hooks/use-configurator.ts` | 3 nieuwe hooks |
+| `src/components/configurator/ConfiguratorWizard.tsx` | subStep 14 + StepPackage onNext |
+| `src/components/configurator/StepPackage.tsx` | onNext prop + "Volgende" button |
+| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb voor installatiegids |
 | `src/i18n/locales/nl.json` | Nieuwe keys |
 | `src/i18n/locales/en.json` | Nieuwe keys |
 | `src/i18n/locales/fr.json` | Nieuwe keys |
