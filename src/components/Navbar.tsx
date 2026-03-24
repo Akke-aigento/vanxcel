@@ -2,6 +2,7 @@ import { Menu, X, ChevronDown, ChevronRight, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "@/hooks/use-toast";
 import CartDrawer from "@/components/CartDrawer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logoWhite from "@/assets/logo-white.png";
@@ -166,12 +167,18 @@ const Navbar = () => {
                   {t("nav.allTools")}
                 </Link>
                 <div className="h-px bg-border my-1 mx-3" />
-                {toolItems.map((item) => (
+                {toolItems.map((item) => item.comingSoon ? (
+                  <button
+                    key={item.href}
+                    onClick={() => toast({ title: t("nav.comingSoon", "Coming soon!") })}
+                    className={`${dropdownLinkClass} flex items-center justify-between opacity-50 cursor-not-allowed`}
+                  >
+                    <span>{item.icon} {t(item.labelKey)}</span>
+                    <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+                  </button>
+                ) : (
                   <Link key={item.href} to={item.href} className={`${dropdownLinkClass} flex items-center justify-between`}>
                     <span>{item.icon} {t(item.labelKey)}</span>
-                    {item.comingSoon && (
-                      <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
-                    )}
                   </Link>
                 ))}
               </div>
@@ -314,12 +321,18 @@ const Navbar = () => {
                 <Link to="/calculator" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t("nav.allTools")}
                 </Link>
-                {toolItems.map((item) => (
+                {toolItems.map((item) => item.comingSoon ? (
+                  <button
+                    key={item.href}
+                    onClick={() => toast({ title: t("nav.comingSoon", "Coming soon!") })}
+                    className="flex items-center justify-between py-2 text-sm text-muted-foreground opacity-50 cursor-not-allowed w-full text-left"
+                  >
+                    <span>{item.icon} {t(item.labelKey)}</span>
+                    <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+                  </button>
+                ) : (
                   <Link key={item.href} to={item.href} onClick={() => setMobileOpen(false)} className="flex items-center justify-between py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                     <span>{item.icon} {t(item.labelKey)}</span>
-                    {item.comingSoon && (
-                      <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
-                    )}
                   </Link>
                 ))}
               </div>
