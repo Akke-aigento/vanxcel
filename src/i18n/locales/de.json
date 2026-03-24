@@ -384,5 +384,31 @@
     "needHelp": "Hilfe nötig?",
     "needHelpDesc": "Kommst du nicht weiter? Kein Problem! Kontaktiere uns per WhatsApp oder über das Kontaktformular.",
     "contactUs": "Kontakt aufnehmen"
+  },
+  "configurator": {
+    "title": "CAMPERVAN KONFIGURATOR",
+    "subtitle": "Finde das perfekte Energiesystem für deinen Campervan — Schritt für Schritt.",
+    "selectBrand": "WÄHLE DEINE MARKE",
+    "selectModel": "WÄHLE DEIN MODELL",
+    "selectBody": "WÄHLE DEINE KAROSSERIE",
+    "selectYear": "WAS IST DAS BAUJAHR?",
+    "selectEngine": "WÄHLE DEINE MOTORISIERUNG",
+    "warnings": "WICHTIGE WARNUNGEN",
+    "models": "Modelle",
+    "present": "heute",
+    "alsoKnownAs": "Auch bekannt als",
+    "recommended": "Empfohlen",
+    "interior": "Innenraum",
+    "volume": "Volumen",
+    "payload": "Nutzlast",
+    "confirmYear": "Baujahr bestätigen",
+    "conventional": "Konventionell",
+    "alternator": "Lichtmaschine",
+    "noEngines": "Keine Motorisierungen für dieses Baujahr gefunden.",
+    "noWarnings": "Keine spezifischen Warnungen für deine Konfiguration.",
+    "smartAlternatorTitle": "⚡ Smart-Lichtmaschine erkannt",
+    "smartAlternatorDesc": "Dein Fahrzeug hat eine Smart-Lichtmaschine. Ein DC-DC-Ladegerät (B2B) ist erforderlich. Ein Trennrelais funktioniert hier NICHT.",
+    "nextStep": "Nächster Schritt",
+    "back": "Zurück"
   }
 }

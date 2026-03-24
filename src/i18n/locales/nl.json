@@ -384,5 +384,31 @@
     "needHelp": "Hulp nodig?",
     "needHelpDesc": "Kom je er niet uit? Geen probleem! Neem contact met ons op via WhatsApp of het contactformulier. We helpen je graag gratis verder.",
     "contactUs": "Neem contact op"
+  },
+  "configurator": {
+    "title": "CAMPERVAN CONFIGURATOR",
+    "subtitle": "Vind het perfecte energiesysteem voor jouw campervan — stap voor stap.",
+    "selectBrand": "KIES JE MERK",
+    "selectModel": "KIES JE MODEL",
+    "selectBody": "KIES JE CARROSSERIE",
+    "selectYear": "WAT IS HET BOUWJAAR?",
+    "selectEngine": "KIES JE MOTORISATIE",
+    "warnings": "BELANGRIJKE WAARSCHUWINGEN",
+    "models": "modellen",
+    "present": "heden",
+    "alsoKnownAs": "Ook bekend als",
+    "recommended": "Aanbevolen",
+    "interior": "Interieur",
+    "volume": "Volume",
+    "payload": "Laadvermogen",
+    "confirmYear": "Bevestig bouwjaar",
+    "conventional": "Conventioneel",
+    "alternator": "Alternator",
+    "noEngines": "Geen motorisaties gevonden voor dit bouwjaar.",
+    "noWarnings": "Geen specifieke waarschuwingen voor jouw configuratie.",
+    "smartAlternatorTitle": "⚡ Smart Alternator Gedetecteerd",
+    "smartAlternatorDesc": "Je voertuig heeft een smart alternator. Een DC-DC lader (B2B) is verplicht voor het laden van je leisure batterij. Een split-charge relay werkt hier NIET.",
+    "nextStep": "Volgende stap",
+    "back": "Terug"
   }
 }

@@ -384,5 +384,31 @@
     "needHelp": "Besoin d'aide ?",
     "needHelpDesc": "Vous n'y arrivez pas ? Pas de problème ! Contactez-nous via WhatsApp ou le formulaire de contact.",
     "contactUs": "Nous contacter"
+  },
+  "configurator": {
+    "title": "CONFIGURATEUR CAMPERVAN",
+    "subtitle": "Trouvez le système énergétique parfait pour votre campervan — étape par étape.",
+    "selectBrand": "CHOISISSEZ VOTRE MARQUE",
+    "selectModel": "CHOISISSEZ VOTRE MODÈLE",
+    "selectBody": "CHOISISSEZ VOTRE CARROSSERIE",
+    "selectYear": "QUELLE EST L'ANNÉE DE CONSTRUCTION ?",
+    "selectEngine": "CHOISISSEZ VOTRE MOTORISATION",
+    "warnings": "AVERTISSEMENTS IMPORTANTS",
+    "models": "modèles",
+    "present": "présent",
+    "alsoKnownAs": "Aussi connu sous",
+    "recommended": "Recommandé",
+    "interior": "Intérieur",
+    "volume": "Volume",
+    "payload": "Charge utile",
+    "confirmYear": "Confirmer l'année",
+    "conventional": "Conventionnel",
+    "alternator": "Alternateur",
+    "noEngines": "Aucune motorisation trouvée pour cette année.",
+    "noWarnings": "Aucun avertissement spécifique pour votre configuration.",
+    "smartAlternatorTitle": "⚡ Alternateur intelligent détecté",
+    "smartAlternatorDesc": "Votre véhicule a un alternateur intelligent. Un chargeur DC-DC (B2B) est obligatoire pour charger votre batterie auxiliaire. Un relais de charge ne fonctionnera PAS.",
+    "nextStep": "Étape suivante",
+    "back": "Retour"
   }
 }
