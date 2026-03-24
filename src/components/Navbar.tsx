@@ -167,12 +167,18 @@ const Navbar = () => {
                   {t("nav.allTools")}
                 </Link>
                 <div className="h-px bg-border my-1 mx-3" />
-                {toolItems.map((item) => (
+                {toolItems.map((item) => item.comingSoon ? (
+                  <button
+                    key={item.href}
+                    onClick={() => toast({ title: t("nav.comingSoon", "Coming soon!") })}
+                    className={`${dropdownLinkClass} flex items-center justify-between opacity-50 cursor-not-allowed`}
+                  >
+                    <span>{item.icon} {t(item.labelKey)}</span>
+                    <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+                  </button>
+                ) : (
                   <Link key={item.href} to={item.href} className={`${dropdownLinkClass} flex items-center justify-between`}>
                     <span>{item.icon} {t(item.labelKey)}</span>
-                    {item.comingSoon && (
-                      <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
-                    )}
                   </Link>
                 ))}
               </div>
