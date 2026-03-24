@@ -28,6 +28,7 @@ import { generatePackage, type PackageItem } from "@/lib/configurator-package";
 interface Props {
   state: ConfiguratorState;
   onBack: () => void;
+  onNext?: () => void;
 }
 
 const iconMap: Record<string, React.ReactNode> = {
