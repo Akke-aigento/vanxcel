@@ -134,7 +134,7 @@ const ConfiguratorWizard = () => {
   }, []);
 
   const completeAppliances = useCallback((appliances: SelectedAppliance[], totalWh: number) => {
-    setState((s) => ({ ...s, selectedAppliances: appliances, totalDailyWh: totalWh, subStep: 11 }));
+    setState((s) => ({ ...s, selectedAppliances: appliances, totalDailyWh: totalWh, subStep: 10 }));
   }, []);
 
   const isStep2Complete = state.usageType && state.climate && state.persons;
