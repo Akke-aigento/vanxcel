@@ -137,7 +137,6 @@ const ConfiguratorWizard = () => {
     setState((s) => ({ ...s, selectedAppliances: appliances, totalDailyWh: totalWh, subStep: 10 }));
   }, []);
 
-  const isStep2Complete = state.usageType && state.climate && state.persons;
 
   return (
     <div className="max-w-4xl mx-auto px-4 pb-24">
