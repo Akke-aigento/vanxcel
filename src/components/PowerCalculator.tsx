@@ -149,7 +149,6 @@ const PowerCalculator = () => {
           </RevealOnScroll>
         </div>
       </div>
-    </section>
   );
 };
 
