@@ -1,4 +1,4 @@
-import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,7 @@ import { useCollections } from "@/integrations/sellqo/hooks";
 import { extractArray } from "@/integrations/sellqo/client";
 import { normalizeCollections } from "@/integrations/sellqo/normalizer";
 import type { Collection } from "@/integrations/sellqo/types";
+import { useCustomerAuth } from "@/integrations/sellqo/CustomerAuthContext";
 
 const toolItems = [
   { labelKey: "toolsHub.tabPower", href: "/calculator", icon: "⚡" },
@@ -21,8 +22,10 @@ const Navbar = () => {
   const [shopExpanded, setShopExpanded] = useState(false);
   const [toolsExpanded, setToolsExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, customer, logout } = useCustomerAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -196,6 +199,41 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4">
           <LanguageSwitcher />
+          {/* Account icon — desktop */}
+          <div className="hidden md:block relative">
+            {isAuthenticated ? (
+              <div className="relative group">
+                <button
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  title={customer?.first_name || ""}
+                >
+                  <User size={20} />
+                </button>
+                {accountOpen && (
+                  <div className="absolute right-0 top-full mt-2 bg-popover border border-border rounded-lg shadow-lg py-2 min-w-[180px] z-50">
+                    <Link
+                      to="/account"
+                      onClick={() => setAccountOpen(false)}
+                      className={dropdownLinkClass}
+                    >
+                      {t("account.myAccount")}
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setAccountOpen(false); }}
+                      className={`${dropdownLinkClass} w-full text-left text-destructive`}
+                    >
+                      {t("account.logout")}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
+                <User size={20} />
+              </Link>
+            )}
+          </div>
           <CartDrawer />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -302,6 +340,22 @@ const Navbar = () => {
                 {link.label}
               </Link>
             )
+          )}
+
+          {/* Account — mobile */}
+          {isAuthenticated ? (
+            <>
+              <Link to="/account" onClick={() => setMobileOpen(false)} className="block py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                {t("account.myAccount")}
+              </Link>
+              <button onClick={() => { logout(); setMobileOpen(false); }} className="block py-3 text-sm text-destructive hover:text-destructive/80 transition-colors w-full text-left">
+                {t("account.logout")}
+              </button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMobileOpen(false)} className="block py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {t("auth.login")}
+            </Link>
           )}
         </div>
       )}
