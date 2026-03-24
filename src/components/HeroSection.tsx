@@ -7,7 +7,7 @@ const HeroSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative h-[95vh] md:h-[85vh] w-full overflow-hidden">
+    <section className="relative h-[100vh] md:h-[90vh] w-full overflow-hidden">
       <img
         src={heroBg}
         alt="VW T3 campervan silhouette against mountain sunset"
