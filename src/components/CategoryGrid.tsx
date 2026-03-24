@@ -7,6 +7,7 @@ import { normalizeCollections } from '@/integrations/sellqo/normalizer';
 import type { Collection } from '@/integrations/sellqo/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import RevealOnScroll from './RevealOnScroll';
+import SplitRevealText from './SplitRevealText';
 
 const categoryImages: Record<string, string> = {
   converters: "https://www.vanxcel.be/cdn/shop/files/Converters_grouped.png?v=1754123623&width=800",
