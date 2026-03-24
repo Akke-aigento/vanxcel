@@ -265,6 +265,15 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
           {t("configurator.downloadPdf")}
         </Button>
       </div>
+
+      {onNext && (
+        <div className="mt-8 text-center">
+          <Button size="lg" className="btn-shimmer gap-2" onClick={onNext}>
+            {t("configurator.nextStep")}
+            <ArrowRight className="w-5 h-5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

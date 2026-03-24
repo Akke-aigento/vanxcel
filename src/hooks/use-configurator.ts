@@ -69,6 +69,50 @@ export const useMotorisations = (vehicleId: string | null, buildYear: number | n
     },
   });
 
+export const useBatteryLocations = (vehicleId: string | null) =>
+  useQuery({
+    queryKey: ["battery-locations", vehicleId],
+    enabled: !!vehicleId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicle_battery_locations")
+        .select("*")
+        .eq("vehicle_id", vehicleId!)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const useCableRoutes = (vehicleId: string | null) =>
+  useQuery({
+    queryKey: ["cable-routes", vehicleId],
+    enabled: !!vehicleId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicle_cable_routes")
+        .select("*")
+        .eq("vehicle_id", vehicleId!)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const useGroundingPoints = (vehicleId: string | null) =>
+  useQuery({
+    queryKey: ["grounding-points", vehicleId],
+    enabled: !!vehicleId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicle_grounding_points")
+        .select("*")
+        .eq("vehicle_id", vehicleId!);
+      if (error) throw error;
+      return data;
+    },
+  });
+
 export const useVehicleWarnings = (
   vehicleId: string | null,
   buildYear: number | null,
