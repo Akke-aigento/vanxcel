@@ -67,7 +67,7 @@ const Navbar = () => {
     "block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-border transition-all duration-300 ${scrolled ? "bg-background/95 shadow-md" : "bg-background/80"}`}>
       <div className="container mx-auto flex items-center justify-between h-20 px-4">
         <Link to="/">
           <img src={logoWhite} alt="VanXcel" className="h-9" />
