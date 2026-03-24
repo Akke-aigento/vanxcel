@@ -11,16 +11,13 @@ import SplitRevealText from './SplitRevealText';
 
 const FeaturedProducts = () => {
   const { t } = useTranslation();
-  const { data: productsData, isLoading } = useProducts({ per_page: 6 });
+  const { data: productsData, isLoading } = useProducts({ collection: 'bestellers', per_page: 6 });
 
   const products: Product[] = useMemo(() => {
     if (productsData) {
       const raw = extractArray(productsData);
       if (raw.length > 0) {
-        const normalized = normalizeProducts(raw);
-        const featured = normalized.filter(p => p.is_featured);
-        const rest = normalized.filter(p => !p.is_featured);
-        return [...featured, ...rest].slice(0, 6);
+        return normalizeProducts(raw);
       }
     }
     return [];
