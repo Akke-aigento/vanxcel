@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 import logoWhite from "@/assets/logo-white.png";
+import MagneticButton from "./MagneticButton";
 
 const HeroSection = () => {
   const { t } = useTranslation();
