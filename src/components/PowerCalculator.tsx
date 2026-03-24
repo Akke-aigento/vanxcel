@@ -120,7 +120,6 @@ const PowerCalculator = () => {
             </div>
           </div>
         </RevealOnScroll>
-      </div>
 
         {/* SEO Content */}
         <div className="max-w-3xl mx-auto mt-16 space-y-8">
