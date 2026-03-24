@@ -271,6 +271,35 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         {t("configurator.installSubtitle")}
       </p>
 
+      {/* Safety banners */}
+      <div className="space-y-3 mb-8">
+        <Alert className="border-destructive/50 bg-destructive/10 text-destructive">
+          <AlertCircle className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyFuseTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyFuseDesc")}</AlertDescription>
+        </Alert>
+
+        {calc.inverterW > 0 && (
+          <Alert className="border-destructive/50 bg-destructive/10 text-destructive">
+            <Zap className="w-4 h-4" />
+            <AlertTitle>{t("configurator.safety230vTitle")}</AlertTitle>
+            <AlertDescription>{t("configurator.safety230vDesc")}</AlertDescription>
+          </Alert>
+        )}
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
+          <Snowflake className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyFrostTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyFrostDesc")}</AlertDescription>
+        </Alert>
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
+          <Cable className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyCableTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyCableDesc")}</AlertDescription>
+        </Alert>
+      </div>
+
       {/* Section 1: Warnings */}
       {warnings && warnings.length > 0 && (
         <div className="space-y-3 mb-8">
