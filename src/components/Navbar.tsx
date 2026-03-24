@@ -199,6 +199,41 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4">
           <LanguageSwitcher />
+          {/* Account icon — desktop */}
+          <div className="hidden md:block relative">
+            {isAuthenticated ? (
+              <div className="relative group">
+                <button
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  title={customer?.first_name || ""}
+                >
+                  <User size={20} />
+                </button>
+                {accountOpen && (
+                  <div className="absolute right-0 top-full mt-2 bg-popover border border-border rounded-lg shadow-lg py-2 min-w-[180px] z-50">
+                    <Link
+                      to="/account"
+                      onClick={() => setAccountOpen(false)}
+                      className={dropdownLinkClass}
+                    >
+                      {t("account.myAccount")}
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setAccountOpen(false); }}
+                      className={`${dropdownLinkClass} w-full text-left text-destructive`}
+                    >
+                      {t("account.logout")}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
+                <User size={20} />
+              </Link>
+            )}
+          </div>
           <CartDrawer />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
