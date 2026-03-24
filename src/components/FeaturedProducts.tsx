@@ -6,6 +6,7 @@ import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeProducts } from '@/integrations/sellqo/normalizer';
 import type { Product } from '@/integrations/sellqo/types';
 import ProductCard from './ProductCard';
+import RevealOnScroll from './RevealOnScroll';
 
 const FeaturedProducts = () => {
   const { t } = useTranslation();
@@ -49,25 +50,31 @@ const FeaturedProducts = () => {
   return (
     <section className="bg-secondary/50 py-20">
       <div className="container mx-auto px-4">
-        <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-          {t("bestsellers.title")}
-        </h2>
-        <p className="text-center text-muted-foreground mb-12">
-          {t("bestsellers.subtitle")}
-        </p>
+        <RevealOnScroll direction="up">
+          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
+            {t("bestsellers.title")}
+          </h2>
+          <p className="text-center text-muted-foreground mb-12">
+            {t("bestsellers.subtitle")}
+          </p>
+        </RevealOnScroll>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} />
+            <RevealOnScroll key={product.id} direction="up" delay={i * 80}>
+              <ProductCard product={product} index={i} />
+            </RevealOnScroll>
           ))}
         </div>
-        <div className="text-center mt-10">
-          <Link
-            to="/shop"
-            className="inline-flex items-center px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
-          >
-            {t("bestsellers.viewAll")}
-          </Link>
-        </div>
+        <RevealOnScroll direction="fade" delay={400}>
+          <div className="text-center mt-10">
+            <Link
+              to="/shop"
+              className="inline-flex items-center px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
+            >
+              {t("bestsellers.viewAll")}
+            </Link>
+          </div>
+        </RevealOnScroll>
       </div>
     </section>
   );

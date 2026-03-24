@@ -1,5 +1,5 @@
 import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CartDrawer from "@/components/CartDrawer";
@@ -20,8 +20,15 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopExpanded, setShopExpanded] = useState(false);
   const [toolsExpanded, setToolsExpanded] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const { t } = useTranslation();
   const { data: collectionsData } = useCollections();
 
@@ -60,7 +67,7 @@ const Navbar = () => {
     "block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-border transition-all duration-300 ${scrolled ? "bg-background/95 shadow-md" : "bg-background/80"}`}>
       <div className="container mx-auto flex items-center justify-between h-20 px-4">
         <Link to="/">
           <img src={logoWhite} alt="VanXcel" className="h-9" />

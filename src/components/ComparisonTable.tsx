@@ -1,5 +1,6 @@
 import { Check, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import RevealOnScroll from "./RevealOnScroll";
 
 const ComparisonTable = () => {
   const { t } = useTranslation();
@@ -18,57 +19,61 @@ const ComparisonTable = () => {
   return (
     <section className="bg-background py-20">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-          {t("comparison.title")}
-        </h2>
-        <p className="text-center text-muted-foreground mb-12">
-          {t("comparison.subtitle")}
-        </p>
+        <RevealOnScroll direction="up">
+          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
+            {t("comparison.title")}
+          </h2>
+          <p className="text-center text-muted-foreground mb-12">
+            {t("comparison.subtitle")}
+          </p>
+        </RevealOnScroll>
 
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <div className="grid grid-cols-3 border-b border-border">
-            <div className="p-4" />
-            <div className="p-4 text-center">
-              <span className="font-display text-lg text-primary">LIFEPO4</span>
+        <RevealOnScroll direction="up" delay={150}>
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <div className="grid grid-cols-3 border-b border-border">
+              <div className="p-4" />
+              <div className="p-4 text-center">
+                <span className="font-display text-lg text-primary">LIFEPO4</span>
+              </div>
+              <div className="p-4 text-center">
+                <span className="font-display text-lg text-muted-foreground">AGM</span>
+              </div>
             </div>
-            <div className="p-4 text-center">
-              <span className="font-display text-lg text-muted-foreground">AGM</span>
-            </div>
+
+            {rows.map((row, i) => (
+              <div
+                key={i}
+                className={`grid grid-cols-3 ${i < rows.length - 1 ? "border-b border-border" : ""} ${
+                  i % 2 === 0 ? "bg-card" : "bg-secondary/30"
+                }`}
+              >
+                <div className="p-4 text-sm text-foreground font-medium">{row.feature}</div>
+                <div className="p-4 text-center text-sm">
+                  {typeof row.lifepo4 === "boolean" ? (
+                    row.lifepo4 ? (
+                      <Check size={18} className="inline text-primary" />
+                    ) : (
+                      <X size={18} className="inline text-destructive" />
+                    )
+                  ) : (
+                    <span className="text-primary font-semibold">{row.lifepo4}</span>
+                  )}
+                </div>
+                <div className="p-4 text-center text-sm">
+                  {typeof row.agm === "boolean" ? (
+                    row.agm ? (
+                      <Check size={18} className="inline text-primary" />
+                    ) : (
+                      <X size={18} className="inline text-muted-foreground" />
+                    )
+                  ) : (
+                    <span className="text-muted-foreground">{row.agm}</span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-
-          {rows.map((row, i) => (
-            <div
-              key={i}
-              className={`grid grid-cols-3 ${i < rows.length - 1 ? "border-b border-border" : ""} ${
-                i % 2 === 0 ? "bg-card" : "bg-secondary/30"
-              }`}
-            >
-              <div className="p-4 text-sm text-foreground font-medium">{row.feature}</div>
-              <div className="p-4 text-center text-sm">
-                {typeof row.lifepo4 === "boolean" ? (
-                  row.lifepo4 ? (
-                    <Check size={18} className="inline text-primary" />
-                  ) : (
-                    <X size={18} className="inline text-destructive" />
-                  )
-                ) : (
-                  <span className="text-primary font-semibold">{row.lifepo4}</span>
-                )}
-              </div>
-              <div className="p-4 text-center text-sm">
-                {typeof row.agm === "boolean" ? (
-                  row.agm ? (
-                    <Check size={18} className="inline text-primary" />
-                  ) : (
-                    <X size={18} className="inline text-muted-foreground" />
-                  )
-                ) : (
-                  <span className="text-muted-foreground">{row.agm}</span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        </RevealOnScroll>
       </div>
     </section>
   );
