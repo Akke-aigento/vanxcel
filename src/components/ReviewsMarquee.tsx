@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import RevealOnScroll from "./RevealOnScroll";
 
 const reviews = [
   { name: "Henk van Dusschoten", text: "De powerstation is degelijk uitgevoerd. Met een goed overzichtelijke display.", product: "1000W Powerstation", stars: 5 },
@@ -38,19 +39,23 @@ const ReviewsMarquee = () => {
 
   return (
     <section className="bg-secondary/50 py-16 overflow-hidden">
-      <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-        {t("reviews.title")}
-      </h2>
-      <p className="text-center text-muted-foreground mb-10">
-        {t("reviews.subtitle")}
-      </p>
-      <div className="relative">
-        <div className="flex marquee-track">
-          {[...reviews, ...reviews].map((review, i) => (
-            <ReviewCard key={i} review={review} />
-          ))}
+      <RevealOnScroll direction="up">
+        <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
+          {t("reviews.title")}
+        </h2>
+        <p className="text-center text-muted-foreground mb-10">
+          {t("reviews.subtitle")}
+        </p>
+      </RevealOnScroll>
+      <RevealOnScroll direction="fade" delay={200}>
+        <div className="relative">
+          <div className="flex marquee-track">
+            {[...reviews, ...reviews].map((review, i) => (
+              <ReviewCard key={i} review={review} />
+            ))}
+          </div>
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 };

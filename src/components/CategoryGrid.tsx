@@ -6,6 +6,7 @@ import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeCollections } from '@/integrations/sellqo/normalizer';
 import type { Collection } from '@/integrations/sellqo/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import RevealOnScroll from './RevealOnScroll';
 
 const categoryImages: Record<string, string> = {
   converters: "https://www.vanxcel.be/cdn/shop/files/Converters_grouped.png?v=1754123623&width=800",
@@ -55,37 +56,40 @@ const CategoryGrid = () => {
   return (
     <section id="products" className="bg-background py-20">
       <div className="container mx-auto px-4">
-        <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-          {t("categories.title")}
-        </h2>
-        <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
-          {t("categories.subtitle")}
-        </p>
+        <RevealOnScroll direction="up">
+          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
+            {t("categories.title")}
+          </h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
+            {t("categories.subtitle")}
+          </p>
+        </RevealOnScroll>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {(isMobile ? collections.slice(0, 3) : collections).map((col) => (
-            <Link
-              key={col.id}
-              to={`/shop?collection=${col.slug}`}
-              className="group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 transition-all duration-300"
-            >
-              <div className="aspect-square p-6 flex items-center justify-center bg-card">
-                {(col.image || categoryImages[col.slug]) ? (
-                  <img
-                    src={col.image || categoryImages[col.slug]}
-                    alt={col.title}
-                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <span className="text-6xl text-muted-foreground">📦</span>
-                )}
-              </div>
-              <div className="p-5">
-                <h3 className="font-display text-xl text-foreground mb-2">{col.title}</h3>
-                {col.product_count != null && col.product_count > 0 && (
-                  <p className="text-sm text-muted-foreground">{col.product_count} {t("categories.products")}</p>
-                )}
-              </div>
-            </Link>
+          {(isMobile ? collections.slice(0, 3) : collections).map((col, i) => (
+            <RevealOnScroll key={col.id} direction="up" delay={i * 100}>
+              <Link
+                to={`/shop?collection=${col.slug}`}
+                className="group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
+              >
+                <div className="aspect-square p-6 flex items-center justify-center bg-card">
+                  {(col.image || categoryImages[col.slug]) ? (
+                    <img
+                      src={col.image || categoryImages[col.slug]}
+                      alt={col.title}
+                      className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <span className="text-6xl text-muted-foreground">📦</span>
+                  )}
+                </div>
+                <div className="p-5">
+                  <h3 className="font-display text-xl text-foreground mb-2">{col.title}</h3>
+                  {col.product_count != null && col.product_count > 0 && (
+                    <p className="text-sm text-muted-foreground">{col.product_count} {t("categories.products")}</p>
+                  )}
+                </div>
+              </Link>
+            </RevealOnScroll>
           ))}
         </div>
         {isMobile && collections.length > 3 && (
