@@ -33,12 +33,14 @@ const Newsletter = () => {
               required
               className="flex-1 px-4 py-3 bg-card border border-border rounded text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
             />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-accent text-accent-foreground rounded font-semibold text-sm hover:brightness-110 transition-all flex items-center gap-2"
-            >
-              <ArrowRight size={16} />
-            </button>
+            <MagneticButton>
+              <button
+                type="submit"
+                className="px-6 py-3 bg-accent text-accent-foreground rounded font-semibold text-sm hover:brightness-110 transition-all flex items-center gap-2"
+              >
+                <ArrowRight size={16} />
+              </button>
+            </MagneticButton>
           </form>
         </RevealOnScroll>
       </div>

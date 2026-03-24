@@ -70,7 +70,12 @@ const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-border transition-all duration-300 ${scrolled ? "bg-background/95 shadow-md" : "bg-background/80"}`}>
       <div className="container mx-auto flex items-center justify-between h-20 px-4">
         <Link to="/">
-          <img src={logoWhite} alt="VanXcel" className="h-9" />
+          <img
+            src={logoWhite}
+            alt="VanXcel"
+            className="h-9 transition-transform duration-300"
+            style={{ transform: scrolled ? "scale(0.85)" : "scale(1)", filter: scrolled ? "drop-shadow(0 0 6px hsl(185 100% 29% / 0.4))" : "none" }}
+          />
         </Link>
 
         {/* Desktop nav */}

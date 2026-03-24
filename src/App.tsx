@@ -35,18 +35,20 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/shop/:slug" element={<ProductDetail />} />
-            <Route path="/build" element={<Build />} />
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/bedankt" element={<ThankYou />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/categories" element={<Categories />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatedOutlet>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/shop/:slug" element={<ProductDetail />} />
+              <Route path="/build" element={<Build />} />
+              <Route path="/calculator" element={<Calculator />} />
+              <Route path="/bedankt" element={<ThankYou />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/categories" element={<Categories />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AnimatedOutlet>
         </BrowserRouter>
       </TooltipProvider>
     </CartProvider>

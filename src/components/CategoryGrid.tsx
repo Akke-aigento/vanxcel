@@ -58,9 +58,11 @@ const CategoryGrid = () => {
     <section id="products" className="bg-background py-20">
       <div className="container mx-auto px-4">
         <RevealOnScroll direction="up">
-          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-            {t("categories.title")}
-          </h2>
+          <SplitRevealText
+            text={t("categories.title")}
+            as="h2"
+            className="font-display text-4xl md:text-5xl text-center text-foreground mb-4"
+          />
           <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
             {t("categories.subtitle")}
           </p>
