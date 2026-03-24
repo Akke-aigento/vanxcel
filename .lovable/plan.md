@@ -1,83 +1,73 @@
 
 
-## Configurator Stap 4: Automatische Berekening
+## Configurator Stap 5: Productpakket
 
 ### Overzicht
-Na subStep 11 (stap 3 compleet) komt subStep 12: een visueel dashboard met 4 geanimeerde kaarten die het complete energiesysteem berekenen op basis van alle voorgaande stappen.
+Na subStep 12 (berekening) vervangt subStep 13 de huidige placeholder met een compleet productpakket-overzicht. Een `generatePackage()` functie stelt op basis van de berekeningsresultaten een lijst hardcoded producten samen met prijzen.
 
 ### Nieuwe bestanden
 
 | Bestand | Beschrijving |
 |---|---|
-| `src/lib/configurator-calculations.ts` | Pure berekeningsfuncties: battery, solar, inverter, DC-DC sizing |
-| `src/components/configurator/StepResults.tsx` | Dashboard met 4 resultaatkaarten + samenvatting + "pas aan" link |
+| `src/lib/configurator-package.ts` | `generatePackage()` functie + `PackageItem` type — stelt productlijst samen op basis van configurator state + berekende waarden |
+| `src/components/configurator/StepPackage.tsx` | Productpakket UI: samenvatting header, productlijst per categorie, actie-buttons, zijpaneel-samenvatting |
 
-### Berekeningslogica (`src/lib/configurator-calculations.ts`)
+### Logica (`configurator-package.ts`)
 
-4 pure functies:
-- `calculateBattery(totalDailyWh, usageType)` → Ah (afgerond naar 50/100/200/300/400)
-- `calculateSolar(totalDailyWh, climate, maxSolarM2)` → Wp (afgerond naar 100)
-- `calculateInverter(selectedApplianceIds, allAppliances)` → W (0/300/600/1000/1500/2000/3000)
-- `calculateDcDc(motorisation, batteryAh)` → A (20/30/50/60)
+```typescript
+interface PackageItem {
+  category: string;        // battery, solar, inverter, dc_dc, cable, fuse, accessory
+  name: string;
+  specs: string;
+  quantity: number;
+  unitPrice: number;
+  reason: string;
+  icon: string;            // lucide icon name
+}
+```
 
-Plus helpers: `getDaysAutark(usageType)`, `getSunHours(climate)`, `getDailySolarYield(wp, climate)`.
+`generatePackage()` ontvangt de configurator state + berekende waarden (batteryAh, solarWp, inverterW, dcDcA) en retourneert een `PackageItem[]` met:
+- Batterij (prijs afhankelijk van Ah, meerdere stuks als >200Ah)
+- Zonnepanelen + MPPT regelaar
+- Omvormer (alleen als 230V apparaten)
+- DC-DC lader
+- Bekabelingspakket (altijd)
+- Zekeringkast (altijd)
+- Battery monitor (als ≥100Ah)
 
-### StepResults component
+### UI (`StepPackage.tsx`)
 
-**4 grote kaarten in 2x2 grid**, elk met:
-- Kleur-gecodeerde accent border (groen/geel/blauw/oranje)
-- CountUp animatie voor het grote getal
-- Staggered fade-in (100ms delay per kaart)
+**Header bar**: aantal items, totaalprijs, "Op maat voor jouw [voertuig]"
 
-**Kaart 1 — Batterij (groen)**:
-- Groot: "200 Ah LiFePO4"
-- Sub: "XXXX Wh/dag × X dagen autonomie"
-- Progress bar: dagelijks verbruik als % van capaciteit
-- Tekst: "X dagen zonder externe stroom"
+**Productlijst per categorie**: kaarten met icoon, naam, specs, reden (accent), prijs × aantal = totaal. Quantity +/- knoppen.
 
-**Kaart 2 — Zonnepanelen (geel)**:
-- Groot: "400 Wp"
-- Sub: "Xx 200W panelen" (berekend)
-- Tekst: "Levert gemiddeld XXXX Wh/dag op in [klimaat]"
-- Waarschuwing als dak te klein: "Max XXX Wp past op je dak"
+**Actie-buttons**:
+- "Voeg alles toe aan winkelwagen" → toast "Komt binnenkort"
+- "Bewaar configuratie" → toast
+- "Download als PDF" → toast
 
-**Kaart 3 — Omvormer (blauw)**:
-- Groot: "2000W" of "Niet nodig"
-- Sub: "Pure sine wave omvormer"
-- Tekst: "X apparaten op 230V, piek XXXX W"
-
-**Kaart 4 — DC-DC Lader (oranje)**:
-- Groot: "50A"
-- Sub: "DC-DC lader" + "(verplicht)" als smart alt
-- Rode banner als smart alternator
-- Tekst: "Laadt via je XXA alternator"
-
-**Onderaan**: compacte samenvattrij + "Pas je verbruikers aan" link (→ subStep 10)
+**Sidebar/onderaan**: compacte systeem-samenvatting met alle specs + totaalprijs
 
 ### ConfiguratorWizard aanpassen
 
-- subStep 11 "next" button → subStep 12
-- subStep 12: `StepResults` met alle benodigde props (state, appliances)
-- StepResults fetcht appliances zelf (voor peak wattage berekening)
+- subStep 13: render `StepPackage` ipv placeholder tekst
+- StepResults `onNext` → subStep 13 (al bestaand)
+- Berekeningswaarden doorgeven aan StepPackage (of herberekenen in component)
 
 ### VehicleSummaryBar
-Optioneel: crumb met "✓ Berekening" bij subStep 12.
+Crumb "Pakket" bij subStep 13.
 
-### i18n keys
-Nieuwe keys in `configurator` sectie voor alle 4 talen:
-- `resultsTitle`, `batteryTitle`, `solarTitle`, `inverterTitle`, `dcDcTitle`
-- `basedOn`, `daysAutark`, `panelCount`, `solarYield`, `roofWarning`
-- `inverterNotNeeded`, `peakPower`, `dcDcRequired`, `dcDcRecommended`
-- `chargesVia`, `adjustAppliances`, `summaryLabel`
+### i18n keys (alle 4 talen)
+Keys voor: `packageTitle`, `packageSubtitle`, `totalItems`, `totalPrice`, `tailoredFor`, `addAllToCart`, `saveConfig`, `downloadPdf`, `comingSoon`, categorie-labels, `perUnit`, `subtotal`, `systemSummary`, `estimatedAutarky`
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/lib/configurator-calculations.ts` | Nieuw |
-| `src/components/configurator/StepResults.tsx` | Nieuw |
-| `src/components/configurator/ConfiguratorWizard.tsx` | subStep 11→12 flow, import StepResults |
-| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb voor berekening |
+| `src/lib/configurator-package.ts` | Nieuw |
+| `src/components/configurator/StepPackage.tsx` | Nieuw |
+| `src/components/configurator/ConfiguratorWizard.tsx` | subStep 13 → StepPackage, import |
+| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb "Pakket" |
 | `src/i18n/locales/nl.json` | Nieuwe keys |
 | `src/i18n/locales/en.json` | Nieuwe keys |
 | `src/i18n/locales/fr.json` | Nieuwe keys |
