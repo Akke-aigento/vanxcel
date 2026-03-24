@@ -386,6 +386,7 @@
     "contactUs": "Kontakt aufnehmen"
   },
   "configurator": {
+    "navLabel": "Konfigurator",
     "title": "CAMPERVAN KONFIGURATOR",
     "subtitle": "Finde das perfekte Energiesystem für deinen Campervan — Schritt für Schritt.",
     "selectBrand": "WÄHLE DEINE MARKE",
