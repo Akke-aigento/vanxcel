@@ -237,5 +237,12 @@
     "fan": "Ventilator",
     "heater": "Diesel kachel",
     "tv": "TV / Monitor"
+  },
+  "toolsHub": {
+    "title": "TOOLS & CALCULATORS",
+    "subtitle": "Bereken, plan en bouw jouw ideale off-grid setup.",
+    "tabPower": "Power Calculator",
+    "tabCable": "Kabelberekening",
+    "tabBuild": "Pakket Simulator"
   }
 }

@@ -237,5 +237,12 @@
     "fan": "Fan",
     "heater": "Diesel heater",
     "tv": "TV / Monitor"
+  },
+  "toolsHub": {
+    "title": "TOOLS & CALCULATORS",
+    "subtitle": "Calculate, plan and build your ideal off-grid setup.",
+    "tabPower": "Power Calculator",
+    "tabCable": "Cable Calculator",
+    "tabBuild": "Package Simulator"
   }
 }

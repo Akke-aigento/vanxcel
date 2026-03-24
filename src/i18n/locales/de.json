@@ -237,5 +237,12 @@
     "fan": "Ventilator",
     "heater": "Dieselheizung",
     "tv": "TV / Monitor"
+  },
+  "toolsHub": {
+    "title": "WERKZEUGE & RECHNER",
+    "subtitle": "Berechne, plane und baue dein ideales Off-Grid-Setup.",
+    "tabPower": "Leistungsrechner",
+    "tabCable": "Kabelrechner",
+    "tabBuild": "Paketsimulator"
   }
 }
