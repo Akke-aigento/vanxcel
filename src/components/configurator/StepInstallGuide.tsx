@@ -153,8 +153,18 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
   const solarToMpptDist =
     cableRoutes?.find((r) => r.route_id === "roof_to_interior")?.distance_meters ?? 3.5;
 
+  const mpptA = calc.solarWp > 0 ? Math.ceil(calc.solarWp / 12) : 0;
+  const minSpecs = {
+    dcDcA: calc.dcDcA,
+    solarWp: calc.solarWp,
+    inverterW: calc.inverterW,
+    totalDailyWh: state.totalDailyWh,
+    mpptA,
+  };
+
   const cablingRows = [
     {
+      circuitId: "starter_to_dcdc",
       from: t("configurator.cableStarterBattery"),
       to: "DC-DC",
       distance: Number(starterToDcDcDist),
@@ -162,6 +172,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       type: t("configurator.cablePosPlusNeg"),
     },
     {
+      circuitId: "dcdc_to_leisure",
       from: "DC-DC",
       to: t("configurator.cableLeisureBattery"),
       distance: 0.5,
@@ -171,15 +182,25 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     ...(calc.solarWp > 0
       ? [
           {
+            circuitId: "solar_to_mppt",
             from: t("configurator.cableSolarPanel"),
             to: "MPPT",
             distance: Number(solarToMpptDist),
-            amps: Math.ceil(calc.solarWp / 12),
+            amps: mpptA,
             type: "MC4 → " + t("configurator.cableLug"),
+          },
+          {
+            circuitId: "mppt_to_battery",
+            from: "MPPT",
+            to: t("configurator.cableBattery"),
+            distance: 0.5,
+            amps: mpptA,
+            type: t("configurator.cablePosPlusNeg"),
           },
         ]
       : []),
     {
+      circuitId: "battery_to_fusebox",
       from: t("configurator.cableBattery"),
       to: t("configurator.cableFuseBox"),
       distance: 0.3,
@@ -189,6 +210,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     ...(calc.inverterW > 0
       ? [
           {
+            circuitId: "battery_to_inverter",
             from: t("configurator.cableBattery"),
             to: t("configurator.cableInverter"),
             distance: 0.5,
