@@ -88,6 +88,7 @@ function getMinCableSize(
       return 16;
     default:
       return 4;
+  }
 }
 
 function getFuseSpec(
@@ -112,7 +113,6 @@ function getFuseSpec(
     default:
       return null;
   }
-}
 }
 
 const severityConfig: Record<string, { icon: React.ReactNode; className: string }> = {
