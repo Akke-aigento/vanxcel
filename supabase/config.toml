@@ -2,3 +2,6 @@ project_id = "jpnacppdutjnasmuikgp"
 
 [functions.sellqo-proxy]
 verify_jwt = false
+
+[functions.sellqo-customer-proxy]
+verify_jwt = false

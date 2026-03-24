@@ -70,6 +70,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </CartProvider>
+    </CustomerAuthProvider>
   </QueryClientProvider>
 );
 
