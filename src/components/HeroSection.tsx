@@ -7,11 +7,11 @@ const HeroSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative h-[85vh] md:h-[75vh] w-full overflow-hidden">
+    <section className="relative h-[95vh] md:h-[85vh] w-full overflow-hidden">
       <img
         src={heroBg}
         alt="VW T3 campervan silhouette against mountain sunset"
-        className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
+        className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
       />
       <div className="absolute inset-0 hero-gradient-overlay" />
       <div className="relative z-10 flex flex-col items-center justify-end h-full pb-24 px-4 text-center">
