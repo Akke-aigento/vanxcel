@@ -67,9 +67,22 @@ const CategoryGrid = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {(isMobile ? collections.slice(0, 3) : collections).map((col, i) => (
             <RevealOnScroll key={col.id} direction="up" delay={i * 100}>
+            <div className="card-3d-tilt">
               <Link
                 to={`/shop?collection=${col.slug}`}
-                className="group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
+                className="card-3d-tilt-inner group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 transition-all duration-300 block"
+                onMouseMove={(e) => {
+                  const el = e.currentTarget;
+                  const rect = el.getBoundingClientRect();
+                  const x = (e.clientX - rect.left) / rect.width - 0.5;
+                  const y = (e.clientY - rect.top) / rect.height - 0.5;
+                  el.style.setProperty("--rx", `${-y * 4}deg`);
+                  el.style.setProperty("--ry", `${x * 4}deg`);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.setProperty("--rx", "0deg");
+                  e.currentTarget.style.setProperty("--ry", "0deg");
+                }}
               >
                 <div className="aspect-square p-6 flex items-center justify-center bg-card">
                   {(col.image || categoryImages[col.slug]) ? (
@@ -89,6 +102,7 @@ const CategoryGrid = () => {
                   )}
                 </div>
               </Link>
+            </div>
             </RevealOnScroll>
           ))}
         </div>

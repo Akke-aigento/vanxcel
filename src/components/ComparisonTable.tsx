@@ -1,6 +1,26 @@
 import { Check, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import RevealOnScroll from "./RevealOnScroll";
+import { useCountUp } from "@/hooks/use-count-up";
+
+const AnimatedNumber = ({ text }: { text: string }) => {
+  // Extract first number from text like "3.000 – 5.000+"
+  const match = text.match(/[\d.]+/);
+  if (!match) return <span className="text-primary font-semibold">{text}</span>;
+
+  const num = parseInt(match[0].replace(/\./g, ""), 10);
+  const { ref, value } = useCountUp(num, 1200);
+
+  // Format with dots as thousand separator
+  const formatted = value.toLocaleString("nl-NL");
+  const display = text.replace(match[0], formatted);
+
+  return (
+    <span ref={ref} className="text-primary font-semibold">
+      {display}
+    </span>
+  );
+};
 
 const ComparisonTable = () => {
   const { t } = useTranslation();
@@ -56,7 +76,7 @@ const ComparisonTable = () => {
                       <X size={18} className="inline text-destructive" />
                     )
                   ) : (
-                    <span className="text-primary font-semibold">{row.lifepo4}</span>
+                    <AnimatedNumber text={row.lifepo4} />
                   )}
                 </div>
                 <div className="p-4 text-center text-sm">

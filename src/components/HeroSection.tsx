@@ -1,19 +1,47 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 import logoWhite from "@/assets/logo-white.png";
 
 const HeroSection = () => {
   const { t } = useTranslation();
+  const [scrollY, setScrollY] = useState(0);
+  const [showIndicator, setShowIndicator] = useState(true);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrollY(window.scrollY);
+      setShowIndicator(window.scrollY < 50);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <section className="relative h-[100vh] md:h-[90vh] w-full overflow-hidden">
-      <img
-        src={heroBg}
-        alt="VW T3 campervan silhouette against mountain sunset"
-        className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
-      />
+      {/* Ken Burns zoom + parallax */}
+      <div
+        className="absolute inset-0 ken-burns-zoom"
+        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+      >
+        <img
+          src={heroBg}
+          alt="VW T3 campervan silhouette against mountain sunset"
+          className="w-full h-full object-cover object-[center_20%] scale-100"
+        />
+      </div>
+
+      {/* Floating glow orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="glow-orb glow-orb-1" />
+        <div className="glow-orb glow-orb-2" />
+        <div className="glow-orb glow-orb-3" />
+      </div>
+
       <div className="absolute inset-0 hero-gradient-overlay" />
+
       <div className="relative z-10 flex flex-col items-center justify-end h-full pb-24 px-4 text-center">
         <img
           src={logoWhite}
@@ -29,7 +57,7 @@ const HeroSection = () => {
         <div className="mt-8 flex flex-col sm:flex-row gap-4 animate-fade-in-up-delay-2">
           <Link
             to="/shop"
-            className="px-8 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded hover:brightness-110 transition-all"
+            className="btn-shimmer px-8 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded hover:brightness-110 transition-all"
           >
             {t("hero.ctaShop")}
           </Link>
@@ -40,6 +68,15 @@ const HeroSection = () => {
             {t("hero.ctaBuild")}
           </Link>
         </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div
+        className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-10 transition-opacity duration-500 ${
+          showIndicator ? "opacity-60" : "opacity-0"
+        }`}
+      >
+        <ChevronDown size={28} className="text-foreground animate-scroll-bounce" />
       </div>
     </section>
   );
