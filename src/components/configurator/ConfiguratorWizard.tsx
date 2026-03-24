@@ -12,6 +12,8 @@ import StepWarnings from "./StepWarnings";
 import StepUsageType from "./StepUsageType";
 import StepClimate from "./StepClimate";
 import StepPersons from "./StepPersons";
+import StepAppliances from "./StepAppliances";
+import type { SelectedAppliance } from "./StepAppliances";
 import type { Tables } from "@/integrations/supabase/types";
 
 export interface ConfiguratorState {
@@ -26,6 +28,8 @@ export interface ConfiguratorState {
   usageType: string | null;
   climate: string | null;
   persons: number | null;
+  selectedAppliances: SelectedAppliance[];
+  totalDailyWh: number;
   subStep: number;
 }
 
