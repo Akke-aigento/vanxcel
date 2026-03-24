@@ -242,6 +242,42 @@ const BuildWizard = () => {
           </button>
         )}
       </div>
+
+      {/* SEO Content */}
+      <div className="max-w-3xl mx-auto mt-16 space-y-8">
+        <div>
+          <h2 className="text-foreground font-bold text-2xl mb-3">{t("buildSeo.title1")}</h2>
+          <p className="text-muted-foreground/70 leading-relaxed">{t("buildSeo.text1")}</p>
+          <p className="text-muted-foreground/70 leading-relaxed mt-4">{t("buildSeo.text1b")}</p>
+        </div>
+        <div>
+          <h2 className="text-foreground font-bold text-2xl mb-3">{t("buildSeo.title2")}</h2>
+          <p className="text-muted-foreground/70 leading-relaxed">{t("buildSeo.text2")}</p>
+          <ul className="space-y-1.5 text-muted-foreground/70 leading-relaxed list-disc list-inside mt-3">
+            <li>{t("buildSeo.comp1")}</li>
+            <li>{t("buildSeo.comp2")}</li>
+            <li>{t("buildSeo.comp3")}</li>
+            <li>{t("buildSeo.comp4")}</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-foreground font-bold text-2xl mb-3">{t("buildSeo.faqTitle")}</h2>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-foreground font-semibold mb-1">{t("buildSeo.faq1q")}</h3>
+              <p className="text-muted-foreground/70 leading-relaxed">{t("buildSeo.faq1a")}</p>
+            </div>
+            <div>
+              <h3 className="text-foreground font-semibold mb-1">{t("buildSeo.faq2q")}</h3>
+              <p className="text-muted-foreground/70 leading-relaxed">{t("buildSeo.faq2a")}</p>
+            </div>
+            <div>
+              <h3 className="text-foreground font-semibold mb-1">{t("buildSeo.faq3q")}</h3>
+              <p className="text-muted-foreground/70 leading-relaxed">{t("buildSeo.faq3a")}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

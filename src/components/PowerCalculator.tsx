@@ -120,6 +120,33 @@ const PowerCalculator = () => {
             </div>
           </div>
         </RevealOnScroll>
+
+        {/* SEO Content */}
+        <div className="max-w-3xl mx-auto mt-16 space-y-8">
+          <RevealOnScroll direction="up">
+            <div>
+              <h2 className="text-foreground font-bold text-2xl mb-3">{t("powerSeo.title1")}</h2>
+              <p className="text-muted-foreground/70 leading-relaxed">{t("powerSeo.text1")}</p>
+              <p className="text-muted-foreground/70 leading-relaxed mt-4">{t("powerSeo.text1b")}</p>
+            </div>
+          </RevealOnScroll>
+          <RevealOnScroll direction="up" delay={100}>
+            <div>
+              <h2 className="text-foreground font-bold text-2xl mb-3">{t("powerSeo.title2")}</h2>
+              <p className="text-muted-foreground/70 leading-relaxed">{t("powerSeo.text2")}</p>
+            </div>
+          </RevealOnScroll>
+          <RevealOnScroll direction="up" delay={200}>
+            <div>
+              <h2 className="text-foreground font-bold text-2xl mb-3">{t("powerSeo.title3")}</h2>
+              <ul className="space-y-2 text-muted-foreground/70 leading-relaxed list-disc list-inside">
+                <li>{t("powerSeo.tip1")}</li>
+                <li>{t("powerSeo.tip2")}</li>
+                <li>{t("powerSeo.tip3")}</li>
+              </ul>
+            </div>
+          </RevealOnScroll>
+        </div>
       </div>
     </section>
   );

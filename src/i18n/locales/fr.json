@@ -277,6 +277,35 @@
     "ctaShop": "Voir la boutique →",
     "ctaContact": "Nous contacter"
   },
+  "powerSeo": {
+    "title1": "Comment calculer la consommation électrique de votre campervan ?",
+    "text1": "La consommation quotidienne dans un campervan se mesure en wattheures (Wh). Calculez-la en multipliant la puissance de chaque appareil (en Watts) par le nombre d'heures d'utilisation par jour. Par exemple, une LED de 10W allumée 4 heures consomme 40Wh par jour.",
+    "text1b": "En additionnant tous vos appareils, vous obtenez votre consommation journalière totale. Sur cette base, vous déterminez la capacité de batterie nécessaire. Une batterie LiFePO4 offre environ 80% de capacité utilisable (ex. 200Ah × 12,8V × 0,8 = ±2 048Wh), contre seulement 50% pour une AGM.",
+    "title2": "LiFePO4 vs AGM — de quelle capacité avez-vous vraiment besoin ?",
+    "text2": "Une erreur courante est de comparer la capacité LiFePO4 et AGM de manière identique. Les batteries AGM ne doivent être déchargées qu'à 50% pour préserver leur durée de vie, tandis que les LiFePO4 supportent 80-90% de décharge. Une batterie LiFePO4 de 200Ah offre autant d'énergie utilisable qu'une AGM de 400Ah — pour la moitié du poids.",
+    "title3": "Conseils pour votre gestion énergétique",
+    "tip1": "Préférez les appareils 12V aux 230V quand c'est possible — un onduleur consomme toujours 10-15% d'énergie.",
+    "tip2": "Les panneaux solaires (100-400Wp) peuvent réduire considérablement votre consommation et doubler votre autonomie.",
+    "tip3": "Surveillez votre consommation avec un moniteur de batterie pour éviter les mauvaises surprises."
+  },
+  "buildSeo": {
+    "title1": "Comment choisir le bon kit off-grid ?",
+    "text1": "Le système énergétique idéal dépend de trois facteurs : votre usage du camper (week-end vs. temps plein), les appareils que vous souhaitez alimenter, et si vous avez des panneaux solaires. Un campeur du week-end avec éclairage LED et téléphone a besoin d'un système très différent d'un voyageur permanent avec frigo, laptop et cafetière.",
+    "text1b": "Notre générateur de kit combine ces facteurs et calcule automatiquement la capacité de batterie et l'onduleur optimaux pour votre situation.",
+    "title2": "Que contient un système énergétique complet pour campervan ?",
+    "text2": "Un système off-grid pour votre campervan se compose de plusieurs éléments qui fonctionnent ensemble :",
+    "comp1": "Batterie LiFePO4 (100-300Ah) — le cœur de votre système, stocke toute l'énergie",
+    "comp2": "Onduleur (1000-3000W) — convertit le 12V en 230V pour les appareils ménagers",
+    "comp3": "Câbles (bonne section !) — connectent tout en toute sécurité",
+    "comp4": "Fusibles & blocs de distribution — protègent votre installation contre les courts-circuits",
+    "faqTitle": "Questions fréquentes",
+    "faq1q": "Puis-je upgrader mon système plus tard ?",
+    "faq1a": "Oui ! Les batteries LiFePO4 peuvent être connectées en parallèle. Commencez avec 200Ah et ajoutez une deuxième batterie plus tard si nécessaire.",
+    "faq2q": "Ai-je besoin d'un onduleur ?",
+    "faq2a": "Uniquement si vous voulez utiliser des appareils 230V (cafetière, sèche-cheveux, etc.). Beaucoup d'appareils pour campervan fonctionnent directement en 12V.",
+    "faq3q": "Quelle est la durée de vie d'une batterie LiFePO4 ?",
+    "faq3a": "Les batteries LiFePO4 durent 3 000 à 5 000 cycles de charge — soit 8 à 15 ans en usage quotidien. En comparaison, une batterie AGM dure en moyenne 300-500 cycles."
+  },
   "toolsHub": {
     "title": "OUTILS & CALCULATEURS",
     "subtitle": "Calculez, planifiez et construisez votre setup off-grid idéal.",
