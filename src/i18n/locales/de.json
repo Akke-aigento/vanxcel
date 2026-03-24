@@ -469,6 +469,24 @@
     "dcDcRecommended": "Ladegerät (empfohlen)",
     "chargesVia": "Lädt über deine",
     "adjustAppliances": "Nicht zufrieden? Passe deine Verbraucher an →",
-    "step4Complete": "Berechnung abgeschlossen! Produktempfehlungen folgen bald."
+    "step4Complete": "Berechnung abgeschlossen! Produktempfehlungen folgen bald.",
+    "packageTitle": "Dein Paket",
+    "packageSubtitle": "Maßgeschneidert für deinen {{vehicle}}",
+    "totalItems": "Gesamtprodukte",
+    "items": "Artikel",
+    "totalPrice": "Gesamtpreis",
+    "addAllToCart": "Alles in den Warenkorb",
+    "saveConfig": "Konfiguration speichern",
+    "downloadPdf": "Als PDF herunterladen",
+    "comingSoon": "Diese Funktion kommt bald!",
+    "systemSummary": "Systemübersicht",
+    "estimatedAutarky": "Geschätzte Autonomie",
+    "packageCatBattery": "Batterie",
+    "packageCatSolar": "Solarpanels",
+    "packageCatInverter": "Wechselrichter",
+    "packageCatDcDc": "DC-DC Ladegerät",
+    "packageCatCable": "Verkabelung",
+    "packageCatFuse": "Sicherungen",
+    "packageCatAccessory": "Zubehör"
   }
 }

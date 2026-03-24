@@ -469,6 +469,24 @@
     "dcDcRecommended": "lader (aanbevolen)",
     "chargesVia": "Laadt via je",
     "adjustAppliances": "Niet tevreden? Pas je verbruikers aan →",
-    "step4Complete": "Berekening compleet! Productaanbevelingen volgen binnenkort."
+    "step4Complete": "Berekening compleet! Productaanbevelingen volgen binnenkort.",
+    "packageTitle": "Jouw Pakket",
+    "packageSubtitle": "Op maat samengesteld voor jouw {{vehicle}}",
+    "totalItems": "Totaal producten",
+    "items": "items",
+    "totalPrice": "Totaalprijs",
+    "addAllToCart": "Voeg alles toe aan winkelwagen",
+    "saveConfig": "Bewaar configuratie",
+    "downloadPdf": "Download als PDF",
+    "comingSoon": "Deze functie komt binnenkort!",
+    "systemSummary": "Systeem samenvatting",
+    "estimatedAutarky": "Geschatte autonomie",
+    "packageCatBattery": "Batterij",
+    "packageCatSolar": "Zonnepanelen",
+    "packageCatInverter": "Omvormer",
+    "packageCatDcDc": "DC-DC Lader",
+    "packageCatCable": "Bekabeling",
+    "packageCatFuse": "Zekeringen",
+    "packageCatAccessory": "Accessoires"
   }
 }
