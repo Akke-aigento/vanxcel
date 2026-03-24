@@ -7,6 +7,7 @@ import { normalizeProducts } from '@/integrations/sellqo/normalizer';
 import type { Product } from '@/integrations/sellqo/types';
 import ProductCard from './ProductCard';
 import RevealOnScroll from './RevealOnScroll';
+import SplitRevealText from './SplitRevealText';
 
 const FeaturedProducts = () => {
   const { t } = useTranslation();
