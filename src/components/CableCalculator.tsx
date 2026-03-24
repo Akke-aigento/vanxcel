@@ -1,9 +1,69 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Check, Zap } from "lucide-react";
+import { Check, Zap, ShoppingBag, ArrowRight } from "lucide-react";
+import { useProducts } from "@/integrations/sellqo/hooks";
+import type { Product } from "@/integrations/sellqo/types";
 
 const cableSizes = [2.5, 4, 6, 10, 16, 25, 35, 50];
+
+function matchCableProduct(products: Product[] | undefined, cableMm: number): Product | null {
+  if (!products?.length) return null;
+  const searchTerms = [`${cableMm}mm`, `${cableMm} mm`, `${cableMm}mm²`, `${cableMm} mm²`];
+  return products.find(p => {
+    const title = p.title.toLowerCase();
+    const variantMatch = p.variants?.some(v => searchTerms.some(t => v.title.toLowerCase().includes(t)));
+    return searchTerms.some(t => title.includes(t)) || variantMatch;
+  }) ?? null;
+}
+
+function matchFuseProduct(products: Product[] | undefined, fuseKey: string): Product | null {
+  if (!products?.length) return null;
+  if (fuseKey === 'mini') {
+    return products.find(p => {
+      const title = p.title.toLowerCase();
+      return title.includes('mini') && (title.includes('zekering') || title.includes('fuse'));
+    }) ?? null;
+  }
+  const ampMatch = fuseKey.replace('A', '');
+  return products.find(p => {
+    const title = p.title.toLowerCase();
+    return title.includes(ampMatch) && (title.includes('zekering') || title.includes('fuse'));
+  }) ?? null;
+}
+
+const RecommendationCard = ({ product, label }: { product: Product; label: string }) => {
+  const { t } = useTranslation();
+  const mainImage = product.images?.[0]?.url;
+  const price = product.price;
+  const currency = product.currency || 'EUR';
+
+  const formattedPrice = new Intl.NumberFormat('nl-NL', {
+    style: 'currency',
+    currency,
+  }).format(price);
+
+  return (
+    <Link
+      to={`/shop/${product.slug}`}
+      className="group flex items-center gap-4 bg-secondary/50 border border-border rounded-xl p-4 hover:border-primary/50 transition-all duration-300"
+    >
+      {mainImage && (
+        <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+          <img src={mainImage} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1">{label}</p>
+        <p className="text-sm font-bold text-foreground truncate">{product.title}</p>
+        <p className="text-primary font-bold text-base mt-1">{formattedPrice}</p>
+      </div>
+      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+        <ArrowRight size={14} />
+      </div>
+    </Link>
+  );
+};
 
 const CableCalculator = () => {
   const { t } = useTranslation();
@@ -12,8 +72,33 @@ const CableCalculator = () => {
   const [inputValue, setInputValue] = useState("");
   const [cableLength, setCableLength] = useState("");
   const [maxDrop, setMaxDrop] = useState("3");
-  const [result, setResult] = useState<null | { current: number; cable: number | null; fuse: string }>(null);
+  const [result, setResult] = useState<null | { current: number; cable: number | null; fuse: string; fuseKey: string }>(null);
   const [error, setError] = useState(false);
+
+  const { data: cablesData } = useProducts({ category: 'kabels', per_page: 50 });
+  const { data: accessoiresData } = useProducts({ category: 'accessoires', per_page: 50 });
+
+  const cableProducts = useMemo(() => {
+    if (!cablesData) return undefined;
+    const raw = cablesData as any;
+    return raw?.data?.products || raw?.products || (Array.isArray(raw) ? raw : undefined);
+  }, [cablesData]);
+
+  const accessoireProducts = useMemo(() => {
+    if (!accessoiresData) return undefined;
+    const raw = accessoiresData as any;
+    return raw?.data?.products || raw?.products || (Array.isArray(raw) ? raw : undefined);
+  }, [accessoiresData]);
+
+  const matchedCable = useMemo(() => {
+    if (!result?.cable) return null;
+    return matchCableProduct(cableProducts, result.cable);
+  }, [result?.cable, cableProducts]);
+
+  const matchedFuse = useMemo(() => {
+    if (!result) return null;
+    return matchFuseProduct(accessoireProducts, result.fuseKey);
+  }, [result?.fuseKey, accessoireProducts]);
 
   const calculate = () => {
     const val = parseFloat(inputValue);
@@ -34,11 +119,12 @@ const CableCalculator = () => {
     const recommended = cableSizes.find(s => s >= requiredArea) ?? null;
 
     let fuse: string;
-    if (current < 50) fuse = t("calcPage.miniSet");
-    else if (current <= 100) fuse = t("calcPage.fuse100");
-    else fuse = t("calcPage.fuse150");
+    let fuseKey: string;
+    if (current < 50) { fuse = t("calcPage.miniSet"); fuseKey = "mini"; }
+    else if (current <= 100) { fuse = t("calcPage.fuse100"); fuseKey = "100A"; }
+    else { fuse = t("calcPage.fuse150"); fuseKey = "150A"; }
 
-    setResult({ current, cable: recommended, fuse });
+    setResult({ current, cable: recommended, fuse, fuseKey });
   };
 
   return (
@@ -111,7 +197,7 @@ const CableCalculator = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-primary text-sm font-semibold">{t("calcPage.recommendedCable")}</span>
                       {result.cable ? (
-                        <Link to="/shop?collection=cables" className="text-primary font-bold text-lg hover:underline">
+                        <Link to="/shop?category=kabels" className="text-primary font-bold text-lg hover:underline">
                           {result.cable} mm²
                         </Link>
                       ) : (
@@ -120,11 +206,29 @@ const CableCalculator = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-primary text-sm font-semibold">{t("calcPage.recommendedFuse")}</span>
-                      <Link to="/shop?collection=accessories" className="text-primary font-bold text-lg hover:underline">
+                      <Link to="/shop?category=accessoires" className="text-primary font-bold text-lg hover:underline">
                         {result.fuse}
                       </Link>
                     </div>
                   </div>
+
+                  {/* Dynamic product recommendations */}
+                  {(matchedCable || matchedFuse) && (
+                    <div className="mt-6 pt-5 border-t border-border/50">
+                      <div className="flex items-center gap-2 mb-4">
+                        <ShoppingBag size={16} className="text-primary" />
+                        <h4 className="text-sm font-bold text-foreground">{t("calcPage.recommendedProducts")}</h4>
+                      </div>
+                      <div className="space-y-3">
+                        {matchedCable && (
+                          <RecommendationCard product={matchedCable} label={t("calcPage.matchingCable")} />
+                        )}
+                        {matchedFuse && (
+                          <RecommendationCard product={matchedFuse} label={t("calcPage.matchingFuse")} />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -155,7 +259,7 @@ const CableCalculator = () => {
               ))}
             </div>
 
-            <Link to="/shop?collection=cables" className="inline-block mt-6 text-sm font-semibold text-primary hover:underline">
+            <Link to="/shop?category=kabels" className="inline-block mt-6 text-sm font-semibold text-primary hover:underline">
               {t("calcPage.viewCables")}
             </Link>
           </div>
