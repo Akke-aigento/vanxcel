@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/integrations/sellqo/CartContext";
+import { CustomerAuthProvider } from "@/integrations/sellqo/CustomerAuthContext";
 import Index from "./pages/Index.tsx";
 import Build from "./pages/Build.tsx";
 import Configurator from "./pages/Configurator.tsx";
