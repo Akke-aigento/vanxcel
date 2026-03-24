@@ -321,12 +321,18 @@ const Navbar = () => {
                 <Link to="/calculator" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t("nav.allTools")}
                 </Link>
-                {toolItems.map((item) => (
+                {toolItems.map((item) => item.comingSoon ? (
+                  <button
+                    key={item.href}
+                    onClick={() => toast({ title: t("nav.comingSoon", "Coming soon!") })}
+                    className="flex items-center justify-between py-2 text-sm text-muted-foreground opacity-50 cursor-not-allowed w-full text-left"
+                  >
+                    <span>{item.icon} {t(item.labelKey)}</span>
+                    <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+                  </button>
+                ) : (
                   <Link key={item.href} to={item.href} onClick={() => setMobileOpen(false)} className="flex items-center justify-between py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                     <span>{item.icon} {t(item.labelKey)}</span>
-                    {item.comingSoon && (
-                      <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
-                    )}
                   </Link>
                 ))}
               </div>
