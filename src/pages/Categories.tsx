@@ -76,7 +76,10 @@ const Categories = () => {
                         <div className="p-6 sm:p-8 flex-1">
                           <h2 className="font-display text-2xl md:text-3xl text-foreground mb-2">{col.title}</h2>
                           {col.description && (
-                            <p className="text-muted-foreground mb-2">{col.description}</p>
+                            <div
+                              className="text-muted-foreground mb-2 prose prose-sm prose-invert max-w-none [&>p]:mb-1 [&>p]:text-muted-foreground line-clamp-3"
+                              dangerouslySetInnerHTML={{ __html: col.description }}
+                            />
                           )}
                           {col.product_count != null && col.product_count > 0 && (
                             <p className="text-sm text-muted-foreground">{col.product_count} {t("categories.products")}</p>
