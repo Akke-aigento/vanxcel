@@ -155,6 +155,42 @@ export function generatePackage(
     });
   }
 
+  // ANL fuse + holder — sizing based on main cable thickness
+  const mainCableSize = inverterW > 2000 ? 50 : inverterW > 1000 ? 35 : 25;
+  const anlFuseA = mainCableSize >= 50 ? 300 : mainCableSize >= 35 ? 200 : 150;
+  const anlFusePrice = anlFuseA >= 300 ? 18 : 15;
+  items.push({
+    category: "fuse",
+    name: `ANL Fuse ${anlFuseA}A + Holder`,
+    specs: `${anlFuseA}A ANL zekering met inline houder`,
+    quantity: 1,
+    unitPrice: anlFusePrice,
+    reason: "VERPLICHT — beschermt tegen kortsluiting. Plaatsen binnen 18cm van de batterij positieve klem.",
+    icon: "shield",
+  });
+
+  // Battery disconnect switch
+  items.push({
+    category: "safety",
+    name: "Battery Disconnect Switch",
+    specs: "300A rated, sleutelschakelaar",
+    quantity: 1,
+    unitPrice: 25,
+    reason: "Noodschakelaar — schakelt het volledige systeem uit. Plaatsen direct NA de hoofdzekering.",
+    icon: "power",
+  });
+
+  // Negative busbar
+  items.push({
+    category: "cable",
+    name: "Negatieve Busbar (6-weg)",
+    specs: "M8 aansluitingen, 250A rated",
+    quantity: 1,
+    unitPrice: 15,
+    reason: "Centraal punt voor alle negatieve kabels. Verbind met 25mm²+ kabel naar chassis-aarding.",
+    icon: "minus",
+  });
+
   const totalPrice = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
 
   return { items, batteryAh, solarWp, inverterW, dcDcA, totalPrice, daysAutark };
