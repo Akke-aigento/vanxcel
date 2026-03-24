@@ -14,6 +14,7 @@ import Shop from "./pages/Shop.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import Categories from "./pages/Categories.tsx";
 import ScrollToTop from "./components/ScrollToTop";
+import AnimatedOutlet from "./components/AnimatedOutlet";
 
 const queryClient = new QueryClient({
   defaultOptions: {
