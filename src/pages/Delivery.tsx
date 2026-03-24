@@ -88,8 +88,8 @@ const Delivery = () => {
           {/* Sustainability */}
           <RevealOnScroll direction="up" delay={400}>
             <div className="border border-border rounded-xl p-8 flex gap-4 items-start">
-              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 mt-1">
-                <Leaf className="text-green-500" size={20} />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
+                <Leaf className="text-primary" size={20} />
               </div>
               <div>
                 <h2 className="font-display text-xl text-foreground mb-2">

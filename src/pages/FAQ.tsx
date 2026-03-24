@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-lite";
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
