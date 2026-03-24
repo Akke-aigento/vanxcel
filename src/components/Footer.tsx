@@ -75,6 +75,21 @@ const Footer = () => {
           <div>
             <h4 className="font-display text-lg text-foreground mb-4">{t("footer.info")}</h4>
             <ul className="space-y-2">
+              <li>
+                <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t("footer.faq")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/delivery" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t("footer.delivery")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/manuals" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t("footer.manuals")}
+                </Link>
+              </li>
               {legalPages.map((page) => (
                 <li key={page.slug}>
                   <a
