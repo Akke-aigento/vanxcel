@@ -566,6 +566,15 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
           ))}
         </div>
       </div>
+
+      {/* Disclaimer */}
+      <Card className="border-muted bg-muted/30">
+        <CardContent className="p-4">
+          <p className="text-xs text-muted-foreground">
+            ⚠️ {t("configurator.disclaimer")}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };
