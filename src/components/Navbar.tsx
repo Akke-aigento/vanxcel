@@ -341,6 +341,22 @@ const Navbar = () => {
               </Link>
             )
           )}
+
+          {/* Account — mobile */}
+          {isAuthenticated ? (
+            <>
+              <Link to="/account" onClick={() => setMobileOpen(false)} className="block py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                {t("account.myAccount")}
+              </Link>
+              <button onClick={() => { logout(); setMobileOpen(false); }} className="block py-3 text-sm text-destructive hover:text-destructive/80 transition-colors w-full text-left">
+                {t("account.logout")}
+              </button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMobileOpen(false)} className="block py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {t("auth.login")}
+            </Link>
+          )}
         </div>
       )}
     </nav>
