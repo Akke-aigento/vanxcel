@@ -62,6 +62,9 @@ const VehicleSummaryBar = ({ state, onStepClick }: Props) => {
     };
     crumbs.push({ label: personsLabels[state.persons] ?? `${state.persons}`, step: 8 });
   }
+  if (state.totalDailyWh > 0) {
+    crumbs.push({ label: `${state.totalDailyWh} Wh/${t("configurator.day")}`, step: 10 });
+  }
 
   if (crumbs.length === 0) return null;
 

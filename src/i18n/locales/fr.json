@@ -433,6 +433,19 @@
     "persons2": "2 personnes",
     "persons34": "3-4 personnes",
     "persons5": "Famille (5+)",
-    "step2Complete": "Utilisation et style de vie enregistrés ! Prêt pour l'étape suivante."
+    "step2Complete": "Utilisation et style de vie enregistrés ! Prêt pour l'étape suivante.",
+    "appliancesTitle": "QU'ALLEZ-VOUS UTILISER ?",
+    "appliancesSubtitle": "Sélectionnez vos appareils et ajustez les heures quotidiennes. Nous calculons votre consommation en direct.",
+    "catCooling": "Réfrigération",
+    "catHeating": "Chauffage",
+    "catKitchen": "Cuisine",
+    "catLighting": "Éclairage",
+    "catComfort": "Confort",
+    "catWork": "Travail & Divertissement",
+    "catSafety": "Sécurité",
+    "catWater": "Eau",
+    "day": "jour",
+    "inverterNeeded": "Onduleur nécessaire",
+    "step3Complete": "Appareils enregistrés ! Prêt pour la recommandation."
   }
 }

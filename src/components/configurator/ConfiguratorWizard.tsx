@@ -255,7 +255,7 @@ const ConfiguratorWizard = () => {
         )}
         {state.subStep === 11 && (
           <div className="animate-fade-in-up text-center py-12">
-            <p className="text-lg font-semibold mb-2">{stats.total} Wh/{t("configurator.day")}</p>
+            <p className="text-lg font-semibold mb-2">{state.totalDailyWh} Wh/{t("configurator.day")}</p>
             <p className="text-muted-foreground mb-6">{t("configurator.step3Complete")}</p>
             <Button size="lg" className="btn-shimmer gap-2">
               {t("configurator.nextStep")}
