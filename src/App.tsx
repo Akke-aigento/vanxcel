@@ -13,6 +13,7 @@ import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import Categories from "./pages/Categories.tsx";
+import About from "./pages/About.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
 
