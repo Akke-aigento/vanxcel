@@ -1,44 +1,40 @@
 
 
-## Over Ons pagina aanmaken
+## SEO-content toevoegen onder PowerCalculator en BuildWizard
 
-### Huidige situatie
-- Navbar linkt naar `/#about` maar er is geen `/about` route of pagina
-- De originele Shopify pagina bevat: intro, verhaal (Mongolië reis), visie, waarom VanXcel, en community CTA
+### Probleem
+De CableCalculator heeft uitgebreide uitleg-content eronder (hoe het werkt, waarom kabeldikte belangrijk is, tips). De PowerCalculator en BuildWizard eindigen abrupt na de tool zelf — geen uitleg, geen SEO-content.
 
-### Plan
+### Aanpak
+Dezelfde stijl als de CableCalculator: onder elke tool een sectie met 2-3 informatieve blokken (H2 + paragraaf), wrapped in RevealOnScroll.
 
-#### 1. Nieuwe pagina: `src/pages/About.tsx`
-Een visueel aantrekkelijke About-pagina met dezelfde design-taal als de rest van de site (dark theme, scroll reveals, animaties). Secties:
+### 1. PowerCalculator — SEO-content toevoegen
+**`src/components/PowerCalculator.tsx`**
 
-- **Hero banner**: Grote titel "OVER VANXCEL" met subtitel, dezelfde stijl als andere pagina's
-- **Intro sectie**: "Welkom bij VanXcel" — missie kort samengevat
-- **Ons Verhaal**: Het persoonlijke verhaal (busjes ombouwen, Mongolië reis 2022), met RevealOnScroll animaties
-- **Onze Visie**: Complete uitrustingssets, richtlijnen, bewezen oplossingen — als icon-cards of feature grid
-- **Waarom VanXcel**: 3 USP's (passie, gemak, kwaliteit) als visuele kaarten
-- **CTA sectie**: "Begin je avontuur" met link naar shop
+Na het resultaat-blok, voeg een sectie toe met:
+- **"Hoe werkt de leistungsrechner?"** — uitleg over Wh berekening en batterijcapaciteit
+- **"LiFePO4 vs AGM — hoeveel capaciteit heb je echt nodig?"** — uitleg over bruikbare capaciteit (80% vs 50%)
+- **"Tips voor je energiehuishouding"** — 3 praktische tips (zuinige apparaten, solar, etc.)
 
-Tekst is gebaseerd op de Shopify content maar iets moderner/strakker herschreven. Veel SEO-relevante keywords: LiFePO4, campervan ombouw, off-grid, België.
+### 2. BuildWizard — SEO-content toevoegen
+**`src/components/BuildWizard.tsx`**
 
-#### 2. Route toevoegen in `src/App.tsx`
-- Import `About` pagina
-- Route: `/about`
+Na de navigatie-buttons, voeg een sectie toe met:
+- **"Hoe kies je het juiste off-grid pakket?"** — uitleg over de factoren (gebruik, solar, batterij)
+- **"Wat zit er in een compleet campervan energiesysteem?"** — opsomming componenten (batterij, omvormer, kabels, zekering)
+- **"Veelgestelde vragen"** — 2-3 korte FAQ's
 
-#### 3. Navbar link fixen in `src/components/Navbar.tsx`
-- `/#about` → `/about`
-
-#### 4. i18n keys toevoegen
-- Nieuwe `about` sectie in alle 4 locale bestanden (nl, en, fr, de)
+### 3. i18n keys toevoegen
+Nieuwe keys in `powerCalc` en `buildWizard` secties voor alle 4 talen (nl, en, fr, de).
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/pages/About.tsx` | Nieuw — volledige Over Ons pagina |
-| `src/App.tsx` | Route `/about` toevoegen |
-| `src/components/Navbar.tsx` | Link `/#about` → `/about` |
-| `src/i18n/locales/nl.json` | About i18n keys (NL) |
-| `src/i18n/locales/en.json` | About i18n keys (EN) |
-| `src/i18n/locales/fr.json` | About i18n keys (FR) |
-| `src/i18n/locales/de.json` | About i18n keys (DE) |
+| `src/components/PowerCalculator.tsx` | SEO-content sectie toevoegen na resultaat |
+| `src/components/BuildWizard.tsx` | SEO-content sectie toevoegen na wizard |
+| `src/i18n/locales/nl.json` | Nieuwe keys |
+| `src/i18n/locales/en.json` | Nieuwe keys |
+| `src/i18n/locales/fr.json` | Nieuwe keys |
+| `src/i18n/locales/de.json` | Nieuwe keys |
 
