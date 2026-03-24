@@ -53,11 +53,40 @@ interface Props {
   onBack: () => void;
 }
 
-const STANDARD_SIZES = [4, 6, 10, 16, 25, 35, 50];
+const STANDARD_SIZES = [2.5, 4, 6, 10, 16, 25, 35, 50];
 
 function calcCableSize(amps: number, lengthM: number): number {
   const raw = (amps * lengthM * 2) / (0.36 * 56);
   return STANDARD_SIZES.find((s) => s >= raw) || 50;
+}
+
+function getMinCableSize(
+  circuitId: string,
+  specs: { dcDcA: number; solarWp: number; inverterW: number; totalDailyWh: number; mpptA: number }
+): number {
+  switch (circuitId) {
+    case "starter_to_dcdc":
+    case "dcdc_to_leisure":
+      if (specs.dcDcA <= 30) return 10;
+      if (specs.dcDcA <= 50) return 16;
+      return 25;
+    case "solar_to_mppt":
+      if (specs.solarWp <= 200) return 2.5;
+      if (specs.solarWp <= 400) return 4;
+      return 6;
+    case "battery_to_fusebox":
+      return specs.totalDailyWh > 1000 ? 25 : 16;
+    case "battery_to_inverter":
+      if (specs.inverterW <= 1000) return 25;
+      if (specs.inverterW <= 2000) return 35;
+      return 50;
+    case "mppt_to_battery":
+      if (specs.mpptA <= 20) return 6;
+      if (specs.mpptA <= 40) return 10;
+      return 16;
+    default:
+      return 4;
+  }
 }
 
 const severityConfig: Record<string, { icon: React.ReactNode; className: string }> = {
@@ -124,8 +153,18 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
   const solarToMpptDist =
     cableRoutes?.find((r) => r.route_id === "roof_to_interior")?.distance_meters ?? 3.5;
 
+  const mpptA = calc.solarWp > 0 ? Math.ceil(calc.solarWp / 12) : 0;
+  const minSpecs = {
+    dcDcA: calc.dcDcA,
+    solarWp: calc.solarWp,
+    inverterW: calc.inverterW,
+    totalDailyWh: state.totalDailyWh,
+    mpptA,
+  };
+
   const cablingRows = [
     {
+      circuitId: "starter_to_dcdc",
       from: t("configurator.cableStarterBattery"),
       to: "DC-DC",
       distance: Number(starterToDcDcDist),
@@ -133,6 +172,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       type: t("configurator.cablePosPlusNeg"),
     },
     {
+      circuitId: "dcdc_to_leisure",
       from: "DC-DC",
       to: t("configurator.cableLeisureBattery"),
       distance: 0.5,
@@ -142,15 +182,25 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     ...(calc.solarWp > 0
       ? [
           {
+            circuitId: "solar_to_mppt",
             from: t("configurator.cableSolarPanel"),
             to: "MPPT",
             distance: Number(solarToMpptDist),
-            amps: Math.ceil(calc.solarWp / 12),
+            amps: mpptA,
             type: "MC4 → " + t("configurator.cableLug"),
+          },
+          {
+            circuitId: "mppt_to_battery",
+            from: "MPPT",
+            to: t("configurator.cableBattery"),
+            distance: 0.5,
+            amps: mpptA,
+            type: t("configurator.cablePosPlusNeg"),
           },
         ]
       : []),
     {
+      circuitId: "battery_to_fusebox",
       from: t("configurator.cableBattery"),
       to: t("configurator.cableFuseBox"),
       distance: 0.3,
@@ -160,6 +210,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     ...(calc.inverterW > 0
       ? [
           {
+            circuitId: "battery_to_inverter",
             from: t("configurator.cableBattery"),
             to: t("configurator.cableInverter"),
             distance: 0.5,
@@ -389,6 +440,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
           {t("configurator.cablingOverview")}
         </h3>
+        <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-400 mb-4">
+          <Info className="w-4 h-4" />
+          <AlertDescription className="text-sm font-medium">
+            {t("configurator.cableSafetyNote")}
+          </AlertDescription>
+        </Alert>
         <Card>
           <div className="overflow-x-auto">
             <Table>
@@ -402,21 +459,31 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {cablingRows.map((row, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="font-medium whitespace-nowrap">
-                      {row.from} → {row.to}
-                    </TableCell>
-                    <TableCell>{row.distance}m</TableCell>
-                    <TableCell className="font-semibold">
-                      {calcCableSize(row.amps, row.distance)} mm²
-                    </TableCell>
-                    <TableCell>{row.amps}A</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {row.type}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {cablingRows.map((row, i) => {
+                  const calculated = calcCableSize(row.amps, row.distance);
+                  const minimum = getMinCableSize(row.circuitId, minSpecs);
+                  const finalSize = Math.max(calculated, minimum);
+                  return (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {row.from} → {row.to}
+                      </TableCell>
+                      <TableCell>{row.distance}m</TableCell>
+                      <TableCell>
+                        <span className="font-semibold">{finalSize} mm²</span>
+                        {finalSize >= 16 && (
+                          <p className="text-xs text-destructive mt-1">
+                            {t("configurator.cableLugWarning")}
+                          </p>
+                        )}
+                      </TableCell>
+                      <TableCell>{row.amps}A</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {row.type}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

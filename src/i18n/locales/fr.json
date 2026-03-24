@@ -518,6 +518,8 @@
     "cablePosPlusNeg": "Positif + Négatif",
     "cablePos": "Positif",
     "cableLug": "cosse",
+    "cableSafetyNote": "Toutes les sections de câble indiquées sont des valeurs MINIMALES. En cas de doute : choisissez toujours une taille supérieure. Un câble trop épais n'est jamais un problème — un câble trop fin est un risque d'incendie.",
+    "cableLugWarning": "Utilisez des cosses soudées ou serties, JAMAIS des bornes à vis.",
     "installTips": "Conseils d'installation",
     "tipFuse": "Placez TOUJOURS un fusible dans les 30cm de chaque connexion positive de batterie.",
     "tipLabel": "Étiquetez tous vos câbles avec de la couleur ou du ruban — votre futur vous remerciera.",
