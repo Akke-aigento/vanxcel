@@ -103,6 +103,73 @@
   .card-hover-glow:hover {
     box-shadow: 0 8px 30px hsl(var(--primary) / 0.08);
   }
+
+  /* 3D tilt card */
+  .card-3d-tilt {
+    perspective: 800px;
+    transform-style: preserve-3d;
+  }
+
+  .card-3d-tilt-inner {
+    transition: transform 0.15s ease-out, box-shadow 0.3s ease-out;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    will-change: transform;
+  }
+
+  .card-3d-tilt-inner:hover {
+    box-shadow: 0 20px 40px hsl(var(--primary) / 0.12), 0 8px 16px hsl(0 0% 0% / 0.3);
+  }
+
+  /* Shimmer button effect */
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-shimmer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      hsl(0 0% 100% / 0.15) 45%,
+      hsl(0 0% 100% / 0.25) 50%,
+      hsl(0 0% 100% / 0.15) 55%,
+      transparent 60%
+    );
+    transition: left 0.6s ease-in-out;
+  }
+
+  .btn-shimmer:hover::after {
+    left: 125%;
+  }
+
+  /* Animated underline for section titles */
+  .section-title-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 60px;
+    height: 2px;
+    background: hsl(var(--primary));
+    transition: transform 0.6s ease-out 0.3s;
+    transform-origin: center;
+  }
+
+  .section-title-visible::after {
+    transform: translateX(-50%) scaleX(1);
+  }
 }
 
 @media (max-width: 1024px) {
@@ -115,6 +182,76 @@
   .marquee-track {
     animation-duration: 20s;
   }
+}
+
+/* Ken Burns slow zoom */
+@keyframes ken-burns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+
+.ken-burns-zoom img {
+  animation: ken-burns 20s ease-in-out infinite alternate;
+}
+
+/* Floating glow orbs */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.06;
+}
+
+.glow-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: hsl(var(--primary));
+  top: 10%;
+  left: -5%;
+  animation: float-drift-1 12s ease-in-out infinite alternate;
+}
+
+.glow-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: hsl(var(--accent));
+  top: 30%;
+  right: -8%;
+  animation: float-drift-2 15s ease-in-out infinite alternate;
+}
+
+.glow-orb-3 {
+  width: 250px;
+  height: 250px;
+  background: hsl(var(--primary));
+  bottom: 20%;
+  left: 30%;
+  animation: float-drift-3 18s ease-in-out infinite alternate;
+}
+
+@keyframes float-drift-1 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 40px); }
+}
+
+@keyframes float-drift-2 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-40px, 50px); }
+}
+
+@keyframes float-drift-3 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, -30px); }
+}
+
+/* Scroll bounce indicator */
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+
+.animate-scroll-bounce {
+  animation: scroll-bounce 2s ease-in-out infinite;
 }
 
 @keyframes marquee {
@@ -150,4 +287,17 @@
 .animate-fade-in-up-delay-3 {
   animation: fade-in-up 0.8s ease-out 0.45s forwards;
   opacity: 0;
+}
+
+/* Disable heavy animations for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns-zoom img,
+  .glow-orb,
+  .animate-scroll-bounce,
+  .marquee-track {
+    animation: none !important;
+  }
+  .card-3d-tilt-inner {
+    transform: none !important;
+  }
 }
