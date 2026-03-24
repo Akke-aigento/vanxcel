@@ -433,6 +433,19 @@
     "persons2": "2 people",
     "persons34": "3-4 people",
     "persons5": "Family (5+)",
-    "step2Complete": "Usage & lifestyle recorded! Ready for the next step."
+    "step2Complete": "Usage & lifestyle recorded! Ready for the next step.",
+    "appliancesTitle": "WHAT DO YOU WANT TO USE?",
+    "appliancesSubtitle": "Select your appliances and adjust daily hours. We calculate your total consumption live.",
+    "catCooling": "Cooling",
+    "catHeating": "Heating",
+    "catKitchen": "Kitchen",
+    "catLighting": "Lighting",
+    "catComfort": "Comfort",
+    "catWork": "Work & Entertainment",
+    "catSafety": "Safety",
+    "catWater": "Water",
+    "day": "day",
+    "inverterNeeded": "Inverter needed",
+    "step3Complete": "Appliances recorded! Ready for the recommendation."
   }
 }

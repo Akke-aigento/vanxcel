@@ -12,6 +12,8 @@ import StepWarnings from "./StepWarnings";
 import StepUsageType from "./StepUsageType";
 import StepClimate from "./StepClimate";
 import StepPersons from "./StepPersons";
+import StepAppliances from "./StepAppliances";
+import type { SelectedAppliance } from "./StepAppliances";
 import type { Tables } from "@/integrations/supabase/types";
 
 export interface ConfiguratorState {
@@ -26,6 +28,8 @@ export interface ConfiguratorState {
   usageType: string | null;
   climate: string | null;
   persons: number | null;
+  selectedAppliances: SelectedAppliance[];
+  totalDailyWh: number;
   subStep: number;
 }
 
@@ -41,6 +45,8 @@ const initialState: ConfiguratorState = {
   usageType: null,
   climate: null,
   persons: null,
+  selectedAppliances: [],
+  totalDailyWh: 0,
   subStep: 0,
 };
 
@@ -122,6 +128,10 @@ const ConfiguratorWizard = () => {
 
   const selectPersons = useCallback((persons: number) => {
     setState((s) => ({ ...s, persons, subStep: 9 }));
+  }, []);
+
+  const completeAppliances = useCallback((appliances: SelectedAppliance[], totalWh: number) => {
+    setState((s) => ({ ...s, selectedAppliances: appliances, totalDailyWh: totalWh, subStep: 11 }));
   }, []);
 
   const isStep2Complete = state.usageType && state.climate && state.persons;
@@ -226,6 +236,27 @@ const ConfiguratorWizard = () => {
         {state.subStep === 9 && isStep2Complete && (
           <div className="animate-fade-in-up text-center py-12">
             <p className="text-muted-foreground mb-6">{t("configurator.step2Complete")}</p>
+            <Button size="lg" className="btn-shimmer gap-2" onClick={() => goTo(10)}>
+              {t("configurator.nextStep")}
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        )}
+
+        {/* Step 3: Appliances */}
+        {state.subStep === 10 && (
+          <div className="animate-fade-in-up">
+            <StepAppliances
+              usageType={state.usageType}
+              onComplete={completeAppliances}
+              onBack={() => goTo(8)}
+            />
+          </div>
+        )}
+        {state.subStep === 11 && (
+          <div className="animate-fade-in-up text-center py-12">
+            <p className="text-lg font-semibold mb-2">{state.totalDailyWh} Wh/{t("configurator.day")}</p>
+            <p className="text-muted-foreground mb-6">{t("configurator.step3Complete")}</p>
             <Button size="lg" className="btn-shimmer gap-2">
               {t("configurator.nextStep")}
               <ArrowRight className="w-5 h-5" />
