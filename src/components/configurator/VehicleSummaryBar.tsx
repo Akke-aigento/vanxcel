@@ -1,12 +1,28 @@
 import type { ConfiguratorState } from "./ConfiguratorWizard";
 import { ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   state: ConfiguratorState;
   onStepClick: (step: number) => void;
 }
 
+const usageLabelKeys: Record<string, string> = {
+  weekend: "configurator.usageWeekend",
+  regular: "configurator.usageRegular",
+  fulltime: "configurator.usageFulltime",
+  stealth: "configurator.usageStealth",
+};
+
+const climateLabelKeys: Record<string, string> = {
+  benelux: "configurator.climateBenelux",
+  southern_europe: "configurator.climateSouth",
+  scandinavia: "configurator.climateNorth",
+  all_season: "configurator.climateAll",
+};
+
 const VehicleSummaryBar = ({ state, onStepClick }: Props) => {
+  const { t } = useTranslation();
   const crumbs: { label: string; step: number }[] = [];
 
   if (state.brand) {
@@ -28,8 +44,23 @@ const VehicleSummaryBar = ({ state, onStepClick }: Props) => {
     const label = `${state.motorisation.engine_family} ${state.motorisation.power_hp ?? ""}pk`;
     crumbs.push({ label, step: 4 });
     if (state.motorisation.has_smart_alternator) {
-      crumbs.push({ label: "⚡ Smart alternator", step: 4 });
+      crumbs.push({ label: "⚡ Smart alt.", step: 4 });
     }
+  }
+  if (state.usageType && usageLabelKeys[state.usageType]) {
+    crumbs.push({ label: t(usageLabelKeys[state.usageType]), step: 6 });
+  }
+  if (state.climate && climateLabelKeys[state.climate]) {
+    crumbs.push({ label: t(climateLabelKeys[state.climate]), step: 7 });
+  }
+  if (state.persons) {
+    const personsLabels: Record<number, string> = {
+      1: t("configurator.persons1"),
+      2: t("configurator.persons2"),
+      4: t("configurator.persons34"),
+      5: t("configurator.persons5"),
+    };
+    crumbs.push({ label: personsLabels[state.persons] ?? `${state.persons}`, step: 8 });
   }
 
   if (crumbs.length === 0) return null;
