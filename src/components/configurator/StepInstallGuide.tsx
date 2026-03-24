@@ -214,7 +214,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
             from: t("configurator.cableBattery"),
             to: t("configurator.cableInverter"),
             distance: 0.5,
-            amps: Math.ceil(calc.inverterW / 12),
+            amps: Math.ceil(calc.inverterW / 12 * 1.25),
             type: t("configurator.cablePosPlusNeg"),
           },
         ]
