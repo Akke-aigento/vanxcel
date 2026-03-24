@@ -521,10 +521,20 @@
     "cableSafetyNote": "Alle genannten Kabelquerschnitte sind MINDESTWERTE. Im Zweifel: immer eine Größe dicker wählen. Ein zu dickes Kabel ist nie ein Problem — ein zu dünnes Kabel ist ein Brandrisiko.",
     "cableLugWarning": "Verwende geschweißte oder gecrimpte Kabelschuhe, NIEMALS Schraubklemmen.",
     "installTips": "Installationstipps",
-    "tipFuse": "Platziere IMMER eine Sicherung innerhalb von 30cm jeder positiven Batterie-Verbindung.",
+    "tipFuse": "Platziere IMMER eine Sicherung innerhalb von 18cm jeder positiven Batterie-Verbindung.",
     "tipLabel": "Beschrifte alle Kabel mit Farbe oder Klebeband — dein zukünftiges Ich wird es dir danken.",
     "tipTest": "Teste das gesamte System BEVOR du die Verkleidungen wieder anbringst.",
-    "tipPhotos": "Mache Fotos von jedem Schritt — unverzichtbar bei späteren Fehlerbehebungen."
+    "tipPhotos": "Mache Fotos von jedem Schritt — unverzichtbar bei späteren Fehlerbehebungen.",
+    "fuse": "Sicherung",
+    "safetyFuseTitle": "🔴 SICHERHEIT ZUERST",
+    "safetyFuseDesc": "Platziere IMMER eine Sicherung innerhalb von 18cm jeder positiven Batterie-Verbindung. Jedes positive Kabel, das die Batterie verlässt, MUSS abgesichert sein. Das ist dein Schutz gegen Kurzschlüsse und Brand.",
+    "safety230vTitle": "🔴 230V WARNUNG",
+    "safety230vDesc": "Eine 230V-Installation in einem Metallfahrzeug ist lebensgefährlich ohne korrekte Erdung und einen FI-Schutzschalter (RCD/RCCB 30mA). Lass die 230V-Installation IMMER von einem zertifizierten Elektriker prüfen.",
+    "safetyFrostTitle": "🟠 LiFePO4 & FROST",
+    "safetyFrostDesc": "LiFePO4-Batterien dürfen NICHT bei Temperaturen unter 0°C geladen werden. Dies verursacht permanente Schäden (Lithium-Plating). Verwende eine Batterie mit eingebauter Heizfunktion oder deaktiviere alle Ladequellen bei Minustemperaturen.",
+    "safetyCableTitle": "🟠 KABELQUALITÄT",
+    "safetyCableDesc": "Verwende ausschließlich verzinntes Kupfer-Marinekabel oder Automotive-Kabel (min. 105°C Isolation). Verwende NIEMALS billiges Baumarkt-Kabel. Verwende gecrimpte Kabelschuhe mit einer Hydraulik-Crimpzange. NIEMALS schwere Kabel löten (>10mm²).",
+    "disclaimer": "HAFTUNGSAUSSCHLUSS: Dieser Konfigurator gibt Richtlinien und Empfehlungen auf Basis allgemeiner Best Practices für Campervan-Elektroinstallationen. VanXcel übernimmt keine Haftung für Installationen, die auf Grundlage dieser Informationen durchgeführt werden. Lass deine Installation immer von einem qualifizierten Elektriker prüfen."
   },
   "auth": {
     "login": "Anmelden",

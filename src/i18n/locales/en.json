@@ -521,10 +521,20 @@
     "cableSafetyNote": "All listed cable sizes are MINIMUM values. When in doubt: always choose one size thicker. A cable that's too thick is never a problem — a cable that's too thin is a fire hazard.",
     "cableLugWarning": "Use welded or crimped cable lugs, NEVER screw terminals.",
     "installTips": "Installation tips",
-    "tipFuse": "ALWAYS place a fuse within 30cm of every positive battery connection.",
+    "tipFuse": "ALWAYS place a fuse within 18cm of every positive battery connection.",
     "tipLabel": "Label all your cables with colour or tape — your future self will thank you.",
     "tipTest": "Test the entire system BEFORE you put the panels back.",
-    "tipPhotos": "Take photos of every step — invaluable for troubleshooting later."
+    "tipPhotos": "Take photos of every step — invaluable for troubleshooting later.",
+    "fuse": "Fuse",
+    "safetyFuseTitle": "🔴 SAFETY FIRST",
+    "safetyFuseDesc": "ALWAYS place a fuse within 18cm of every positive battery connection. Every positive cable leaving the battery MUST be fused. This is your protection against short circuits and fire.",
+    "safety230vTitle": "🔴 230V WARNING",
+    "safety230vDesc": "A 230V installation in a metal vehicle is life-threatening without proper grounding and an RCD/RCCB (30mA). ALWAYS have the 230V installation inspected by a certified electrician. VanXcel advises on the 12V system — the 230V side is a matter for a professional.",
+    "safetyFrostTitle": "🟠 LiFePO4 & FROST",
+    "safetyFrostDesc": "LiFePO4 batteries must NOT be charged at temperatures below 0°C. This causes permanent damage (lithium plating). Use a battery with built-in heating or disable all charging sources in freezing temperatures.",
+    "safetyCableTitle": "🟠 CABLE QUALITY",
+    "safetyCableDesc": "Use only tinned copper marine cable or automotive-grade cable (min. 105°C insulation). NEVER use cheap hardware store cable. Use crimped cable lugs with a hydraulic crimping tool. NEVER solder heavy cables (>10mm²).",
+    "disclaimer": "DISCLAIMER: This configurator provides guidelines and recommendations based on general best practices for campervan electrical installations. VanXcel accepts no liability for installations carried out based on this information. Always have your installation checked by a qualified electrician before putting the system into use. When in doubt: consult a professional."
   },
   "auth": {
     "login": "Log in",

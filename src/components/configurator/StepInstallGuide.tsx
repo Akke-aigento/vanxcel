@@ -31,6 +31,8 @@ import {
   Camera,
   Tag,
   Zap,
+  Snowflake,
+  Cable,
 } from "lucide-react";
 import type { ConfiguratorState } from "./ConfiguratorWizard";
 import {
@@ -86,6 +88,30 @@ function getMinCableSize(
       return 16;
     default:
       return 4;
+  }
+}
+
+function getFuseSpec(
+  circuitId: string,
+  specs: { dcDcA: number; inverterW: number }
+): string | null {
+  switch (circuitId) {
+    case "starter_to_dcdc":
+    case "dcdc_to_leisure": {
+      const rating = Math.ceil(specs.dcDcA * 1.25 / 5) * 5;
+      return `MIDI ${rating}A`;
+    }
+    case "battery_to_fusebox": {
+      const mainCable = specs.inverterW > 2000 ? 50 : specs.inverterW > 1000 ? 35 : 25;
+      const anlA = mainCable >= 50 ? 300 : mainCable >= 35 ? 200 : 150;
+      return `ANL ${anlA}A`;
+    }
+    case "battery_to_inverter": {
+      const invAnl = specs.inverterW > 2000 ? 300 : specs.inverterW > 1000 ? 200 : 150;
+      return `ANL ${invAnl}A`;
+    }
+    default:
+      return null;
   }
 }
 
@@ -214,7 +240,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
             from: t("configurator.cableBattery"),
             to: t("configurator.cableInverter"),
             distance: 0.5,
-            amps: Math.ceil(calc.inverterW / 12),
+            amps: Math.ceil(calc.inverterW / 12 * 1.25),
             type: t("configurator.cablePosPlusNeg"),
           },
         ]
@@ -244,6 +270,35 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       <p className="text-muted-foreground mb-8">
         {t("configurator.installSubtitle")}
       </p>
+
+      {/* Safety banners */}
+      <div className="space-y-3 mb-8">
+        <Alert className="border-destructive/50 bg-destructive/10 text-destructive">
+          <AlertCircle className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyFuseTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyFuseDesc")}</AlertDescription>
+        </Alert>
+
+        {calc.inverterW > 0 && (
+          <Alert className="border-destructive/50 bg-destructive/10 text-destructive">
+            <Zap className="w-4 h-4" />
+            <AlertTitle>{t("configurator.safety230vTitle")}</AlertTitle>
+            <AlertDescription>{t("configurator.safety230vDesc")}</AlertDescription>
+          </Alert>
+        )}
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
+          <Snowflake className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyFrostTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyFrostDesc")}</AlertDescription>
+        </Alert>
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
+          <Cable className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyCableTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyCableDesc")}</AlertDescription>
+        </Alert>
+      </div>
 
       {/* Section 1: Warnings */}
       {warnings && warnings.length > 0 && (
@@ -455,6 +510,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                   <TableHead>{t("configurator.distance")}</TableHead>
                   <TableHead>{t("configurator.cableSize")}</TableHead>
                   <TableHead>{t("configurator.current")}</TableHead>
+                  <TableHead>{t("configurator.fuse")}</TableHead>
                   <TableHead>{t("configurator.cableType")}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -463,6 +519,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                   const calculated = calcCableSize(row.amps, row.distance);
                   const minimum = getMinCableSize(row.circuitId, minSpecs);
                   const finalSize = Math.max(calculated, minimum);
+                  const fuse = getFuseSpec(row.circuitId, { dcDcA: calc.dcDcA, inverterW: calc.inverterW });
                   return (
                     <TableRow key={i}>
                       <TableCell className="font-medium whitespace-nowrap">
@@ -478,6 +535,9 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                         )}
                       </TableCell>
                       <TableCell>{row.amps}A</TableCell>
+                      <TableCell className="text-xs">
+                        {fuse ?? "—"}
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {row.type}
                       </TableCell>
@@ -506,6 +566,15 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
           ))}
         </div>
       </div>
+
+      {/* Disclaimer */}
+      <Card className="border-muted bg-muted/30">
+        <CardContent className="p-4">
+          <p className="text-xs text-muted-foreground">
+            ⚠️ {t("configurator.disclaimer")}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };

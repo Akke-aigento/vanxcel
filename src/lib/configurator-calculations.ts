@@ -56,8 +56,8 @@ export function calculateInverter(
 export function calculateDcDc(motorisation: Motorisation | null, batteryAh: number): number {
   if (!motorisation) return 30;
   const altAmps = motorisation.alternator_rated_amps ?? 150;
-  const maxFromAlt = motorisation.has_smart_alternator ? altAmps * 0.3 : altAmps * 0.4;
-  const maxFromBattery = batteryAh * 0.25;
+  const maxFromAlt = altAmps * 0.25;
+  const maxFromBattery = batteryAh * 0.2;
   const ideal = Math.min(maxFromAlt, maxFromBattery);
   const sizes = [20, 30, 50, 60];
   return sizes.find((s) => s >= ideal) || 60;

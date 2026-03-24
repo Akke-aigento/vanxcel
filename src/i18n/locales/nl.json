@@ -521,10 +521,20 @@
     "cableSafetyNote": "Alle genoemde kabeldiktes zijn MINIMUM waarden. Bij twijfel: kies altijd een maat dikker. Een te dikke kabel is nooit een probleem, een te dunne kabel is een brandgevaar.",
     "cableLugWarning": "Gebruik gelaste of geperste kabelschoenen, NOOIT schroefklemmen.",
     "installTips": "Installatietips",
-    "tipFuse": "Plaats ALTIJD een zekering binnen 30cm van elke positieve batterij-aansluiting.",
+    "tipFuse": "Plaats ALTIJD een zekering binnen 18cm van elke positieve batterij-aansluiting.",
     "tipLabel": "Label al je kabels met kleur of tape — je toekomstige zelf zal je dankbaar zijn.",
     "tipTest": "Test het hele systeem VOOR je de bekledingpanelen terugplaatst.",
-    "tipPhotos": "Maak foto's van elke stap — onmisbaar bij troubleshooting later."
+    "tipPhotos": "Maak foto's van elke stap — onmisbaar bij troubleshooting later.",
+    "fuse": "Zekering",
+    "safetyFuseTitle": "🔴 VEILIGHEID EERST",
+    "safetyFuseDesc": "Plaats ALTIJD een zekering binnen 18cm van elke positieve batterij-aansluiting. Elke positieve kabel die de batterij verlaat MOET gezekerd zijn. Dit is je bescherming tegen kortsluiting en brand.",
+    "safety230vTitle": "🔴 230V WAARSCHUWING",
+    "safety230vDesc": "Een 230V installatie in een metalen voertuig is levensgevaarlijk zonder correcte aarding en een aardlekschakelaar (RCD/RCCB 30mA). Laat de 230V installatie ALTIJD keuren door een erkend elektricien. VanXcel adviseert over het 12V systeem — de 230V kant is een zaak voor een professional.",
+    "safetyFrostTitle": "🟠 LiFePO4 & VORST",
+    "safetyFrostDesc": "LiFePO4 batterijen mogen NIET geladen worden bij temperaturen onder 0°C. Dit veroorzaakt permanente schade (lithium plating). Gebruik een batterij met ingebouwde verwarmingsfunctie of schakel alle laadbronnen uit bij vriestemperaturen.",
+    "safetyCableTitle": "🟠 KABELKWALITEIT",
+    "safetyCableDesc": "Gebruik uitsluitend vertind koperen scheepskabel of automotive-grade kabel (min. 105°C isolatie). Gebruik NOOIT goedkope bouwmarkt-kabel. Gebruik gecrimpe kabelschoenen met een hydraulische krimptang. NOOIT solderen op zware kabels (>10mm²).",
+    "disclaimer": "DISCLAIMER: Deze configurator geeft richtlijnen en aanbevelingen op basis van algemene best practices voor campervan elektrische installaties. VanXcel aanvaardt geen aansprakelijkheid voor installaties uitgevoerd op basis van deze informatie. Laat je installatie altijd controleren door een gekwalificeerde elektricien voordat je het systeem in gebruik neemt. Bij twijfel: raadpleeg een professional."
   },
   "auth": {
     "login": "Inloggen",

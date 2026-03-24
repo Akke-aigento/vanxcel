@@ -521,10 +521,20 @@
     "cableSafetyNote": "Toutes les sections de câble indiquées sont des valeurs MINIMALES. En cas de doute : choisissez toujours une taille supérieure. Un câble trop épais n'est jamais un problème — un câble trop fin est un risque d'incendie.",
     "cableLugWarning": "Utilisez des cosses soudées ou serties, JAMAIS des bornes à vis.",
     "installTips": "Conseils d'installation",
-    "tipFuse": "Placez TOUJOURS un fusible dans les 30cm de chaque connexion positive de batterie.",
+    "tipFuse": "Placez TOUJOURS un fusible dans les 18cm de chaque connexion positive de batterie.",
     "tipLabel": "Étiquetez tous vos câbles avec de la couleur ou du ruban — votre futur vous remerciera.",
     "tipTest": "Testez l'ensemble du système AVANT de remettre les panneaux de garniture.",
-    "tipPhotos": "Prenez des photos de chaque étape — indispensable pour le dépannage ultérieur."
+    "tipPhotos": "Prenez des photos de chaque étape — indispensable pour le dépannage ultérieur.",
+    "fuse": "Fusible",
+    "safetyFuseTitle": "🔴 SÉCURITÉ D'ABORD",
+    "safetyFuseDesc": "Placez TOUJOURS un fusible dans les 18cm de chaque connexion positive de batterie. Chaque câble positif quittant la batterie DOIT être protégé par un fusible. C'est votre protection contre les courts-circuits et les incendies.",
+    "safety230vTitle": "🔴 AVERTISSEMENT 230V",
+    "safety230vDesc": "Une installation 230V dans un véhicule métallique est mortelle sans mise à la terre correcte et un différentiel (RCD/RCCB 30mA). Faites TOUJOURS vérifier l'installation 230V par un électricien certifié.",
+    "safetyFrostTitle": "🟠 LiFePO4 & GEL",
+    "safetyFrostDesc": "Les batteries LiFePO4 ne doivent PAS être chargées à des températures inférieures à 0°C. Cela provoque des dommages permanents (placage au lithium). Utilisez une batterie avec chauffage intégré ou désactivez toutes les sources de charge par temps de gel.",
+    "safetyCableTitle": "🟠 QUALITÉ DES CÂBLES",
+    "safetyCableDesc": "Utilisez uniquement du câble cuivre étamé marine ou du câble de qualité automobile (isolation min. 105°C). N'utilisez JAMAIS de câble bon marché. Utilisez des cosses serties avec une pince hydraulique. Ne JAMAIS souder les câbles lourds (>10mm²).",
+    "disclaimer": "AVERTISSEMENT : Ce configurateur fournit des directives et recommandations basées sur les meilleures pratiques générales pour les installations électriques de camping-car. VanXcel décline toute responsabilité pour les installations réalisées sur la base de ces informations. Faites toujours vérifier votre installation par un électricien qualifié."
   },
   "auth": {
     "login": "Se connecter",
