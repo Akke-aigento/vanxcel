@@ -31,6 +31,8 @@ import {
   Camera,
   Tag,
   Zap,
+  Snowflake,
+  Cable,
 } from "lucide-react";
 import type { ConfiguratorState } from "./ConfiguratorWizard";
 import {
