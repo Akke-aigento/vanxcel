@@ -19,6 +19,9 @@ import About from "./pages/About.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import Delivery from "./pages/Delivery.tsx";
 import Manuals from "./pages/Manuals.tsx";
+import Login from "./pages/Login.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
+import Account from "./pages/Account.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
 
