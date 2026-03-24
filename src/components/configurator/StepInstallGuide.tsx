@@ -53,11 +53,40 @@ interface Props {
   onBack: () => void;
 }
 
-const STANDARD_SIZES = [4, 6, 10, 16, 25, 35, 50];
+const STANDARD_SIZES = [2.5, 4, 6, 10, 16, 25, 35, 50];
 
 function calcCableSize(amps: number, lengthM: number): number {
   const raw = (amps * lengthM * 2) / (0.36 * 56);
   return STANDARD_SIZES.find((s) => s >= raw) || 50;
+}
+
+function getMinCableSize(
+  circuitId: string,
+  specs: { dcDcA: number; solarWp: number; inverterW: number; totalDailyWh: number; mpptA: number }
+): number {
+  switch (circuitId) {
+    case "starter_to_dcdc":
+    case "dcdc_to_leisure":
+      if (specs.dcDcA <= 30) return 10;
+      if (specs.dcDcA <= 50) return 16;
+      return 25;
+    case "solar_to_mppt":
+      if (specs.solarWp <= 200) return 2.5;
+      if (specs.solarWp <= 400) return 4;
+      return 6;
+    case "battery_to_fusebox":
+      return specs.totalDailyWh > 1000 ? 25 : 16;
+    case "battery_to_inverter":
+      if (specs.inverterW <= 1000) return 25;
+      if (specs.inverterW <= 2000) return 35;
+      return 50;
+    case "mppt_to_battery":
+      if (specs.mpptA <= 20) return 6;
+      if (specs.mpptA <= 40) return 10;
+      return 16;
+    default:
+      return 4;
+  }
 }
 
 const severityConfig: Record<string, { icon: React.ReactNode; className: string }> = {
