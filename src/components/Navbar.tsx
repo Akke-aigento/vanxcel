@@ -1,4 +1,4 @@
-import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,7 @@ import { useCollections } from "@/integrations/sellqo/hooks";
 import { extractArray } from "@/integrations/sellqo/client";
 import { normalizeCollections } from "@/integrations/sellqo/normalizer";
 import type { Collection } from "@/integrations/sellqo/types";
+import { useCustomerAuth } from "@/integrations/sellqo/CustomerAuthContext";
 
 const toolItems = [
   { labelKey: "toolsHub.tabPower", href: "/calculator", icon: "⚡" },
