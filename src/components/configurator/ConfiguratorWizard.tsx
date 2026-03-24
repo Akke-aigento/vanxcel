@@ -236,6 +236,27 @@ const ConfiguratorWizard = () => {
         {state.subStep === 9 && isStep2Complete && (
           <div className="animate-fade-in-up text-center py-12">
             <p className="text-muted-foreground mb-6">{t("configurator.step2Complete")}</p>
+            <Button size="lg" className="btn-shimmer gap-2" onClick={() => goTo(10)}>
+              {t("configurator.nextStep")}
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        )}
+
+        {/* Step 3: Appliances */}
+        {state.subStep === 10 && (
+          <div className="animate-fade-in-up">
+            <StepAppliances
+              usageType={state.usageType}
+              onComplete={completeAppliances}
+              onBack={() => goTo(8)}
+            />
+          </div>
+        )}
+        {state.subStep === 11 && (
+          <div className="animate-fade-in-up text-center py-12">
+            <p className="text-lg font-semibold mb-2">{stats.total} Wh/{t("configurator.day")}</p>
+            <p className="text-muted-foreground mb-6">{t("configurator.step3Complete")}</p>
             <Button size="lg" className="btn-shimmer gap-2">
               {t("configurator.nextStep")}
               <ArrowRight className="w-5 h-5" />
