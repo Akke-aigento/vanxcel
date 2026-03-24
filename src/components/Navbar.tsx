@@ -315,8 +315,11 @@ const Navbar = () => {
                   {t("nav.allTools")}
                 </Link>
                 {toolItems.map((item) => (
-                  <Link key={item.href} to={item.href} onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    {item.icon} {t(item.labelKey)}
+                  <Link key={item.href} to={item.href} onClick={() => setMobileOpen(false)} className="flex items-center justify-between py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <span>{item.icon} {t(item.labelKey)}</span>
+                    {item.comingSoon && (
+                      <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+                    )}
                   </Link>
                 ))}
               </div>

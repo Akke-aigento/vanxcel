@@ -386,6 +386,7 @@
     "contactUs": "Neem contact op"
   },
   "configurator": {
+    "navLabel": "Configurator",
     "title": "CAMPERVAN CONFIGURATOR",
     "subtitle": "Vind het perfecte energiesysteem voor jouw campervan — stap voor stap.",
     "selectBrand": "KIES JE MERK",
