@@ -2,6 +2,7 @@ import { Menu, X, ChevronDown, ChevronRight, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "@/hooks/use-toast";
 import CartDrawer from "@/components/CartDrawer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logoWhite from "@/assets/logo-white.png";
