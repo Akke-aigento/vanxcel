@@ -9,6 +9,9 @@ import StepBodyTypeSelect from "./StepBodyTypeSelect";
 import StepBuildYear from "./StepBuildYear";
 import StepMotorisationSelect from "./StepMotorisationSelect";
 import StepWarnings from "./StepWarnings";
+import StepUsageType from "./StepUsageType";
+import StepClimate from "./StepClimate";
+import StepPersons from "./StepPersons";
 import type { Tables } from "@/integrations/supabase/types";
 
 export interface ConfiguratorState {
@@ -20,6 +23,9 @@ export interface ConfiguratorState {
   buildYear: number | null;
   motorisationId: string | null;
   motorisation: Tables<"vehicle_motorisations"> | null;
+  usageType: string | null;
+  climate: string | null;
+  persons: number | null;
   subStep: number;
 }
 
@@ -32,6 +38,9 @@ const initialState: ConfiguratorState = {
   buildYear: null,
   motorisationId: null,
   motorisation: null,
+  usageType: null,
+  climate: null,
+  persons: null,
   subStep: 0,
 };
 
@@ -54,6 +63,9 @@ const ConfiguratorWizard = () => {
       buildYear: null,
       motorisationId: null,
       motorisation: null,
+      usageType: null,
+      climate: null,
+      persons: null,
       subStep: 1,
     }));
   }, []);
@@ -100,12 +112,19 @@ const ConfiguratorWizard = () => {
     }));
   }, []);
 
-  const isComplete =
-    state.brand &&
-    state.vehicleId &&
-    state.bodyTypeId &&
-    state.buildYear &&
-    state.motorisationId;
+  const selectUsageType = useCallback((usageType: string) => {
+    setState((s) => ({ ...s, usageType, subStep: 7 }));
+  }, []);
+
+  const selectClimate = useCallback((climate: string) => {
+    setState((s) => ({ ...s, climate, subStep: 8 }));
+  }, []);
+
+  const selectPersons = useCallback((persons: number) => {
+    setState((s) => ({ ...s, persons, subStep: 9 }));
+  }, []);
+
+  const isStep2Complete = state.usageType && state.climate && state.persons;
 
   return (
     <div className="max-w-4xl mx-auto px-4 pb-24">
@@ -167,14 +186,50 @@ const ConfiguratorWizard = () => {
               motorisation={state.motorisation}
               onBack={() => goTo(4)}
             />
-            {isComplete && (
-              <div className="mt-8 text-center">
-                <Button size="lg" className="btn-shimmer gap-2">
-                  {t("configurator.nextStep")}
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-              </div>
-            )}
+            <div className="mt-8 text-center">
+              <Button size="lg" className="btn-shimmer gap-2" onClick={() => goTo(6)}>
+                {t("configurator.nextStep")}
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Usage & Lifestyle */}
+        {state.subStep === 6 && (
+          <div className="animate-fade-in-up">
+            <StepUsageType
+              onSelect={selectUsageType}
+              onBack={() => goTo(5)}
+              selected={state.usageType}
+            />
+          </div>
+        )}
+        {state.subStep === 7 && (
+          <div className="animate-fade-in-up">
+            <StepClimate
+              onSelect={selectClimate}
+              onBack={() => goTo(6)}
+              selected={state.climate}
+            />
+          </div>
+        )}
+        {state.subStep === 8 && (
+          <div className="animate-fade-in-up">
+            <StepPersons
+              onSelect={selectPersons}
+              onBack={() => goTo(7)}
+              selected={state.persons}
+            />
+          </div>
+        )}
+        {state.subStep === 9 && isStep2Complete && (
+          <div className="animate-fade-in-up text-center py-12">
+            <p className="text-muted-foreground mb-6">{t("configurator.step2Complete")}</p>
+            <Button size="lg" className="btn-shimmer gap-2">
+              {t("configurator.nextStep")}
+              <ArrowRight className="w-5 h-5" />
+            </Button>
           </div>
         )}
       </div>
