@@ -10,9 +10,16 @@ import { extractArray } from "@/integrations/sellqo/client";
 import { normalizeCollections } from "@/integrations/sellqo/normalizer";
 import type { Collection } from "@/integrations/sellqo/types";
 
+const toolItems = [
+  { labelKey: "toolsHub.tabPower", href: "/calculator", icon: "⚡" },
+  { labelKey: "toolsHub.tabCable", href: "/calculator?tab=cable", icon: "🔌" },
+  { labelKey: "toolsHub.tabBuild", href: "/calculator?tab=build", icon: "🛠️" },
+];
+
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopExpanded, setShopExpanded] = useState(false);
+  const [toolsExpanded, setToolsExpanded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -29,7 +36,6 @@ const Navbar = () => {
 
   const navLinks = [
     { label: t("nav.home"), href: "/" },
-    { label: t("nav.tools"), href: "/calculator" },
     { label: t("nav.about"), href: "/#about" },
     { label: t("nav.contact"), href: "/contact" },
   ];
@@ -50,6 +56,9 @@ const Navbar = () => {
     setMobileOpen(false);
   };
 
+  const dropdownLinkClass =
+    "block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors";
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between h-20 px-4">
@@ -57,27 +66,30 @@ const Navbar = () => {
           <img src={logoWhite} alt="VanXcel" className="h-9" />
         </Link>
 
+        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
+          {/* Home */}
+          <Link
+            to="/"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("nav.home")}
+          </Link>
+
           {/* Shop dropdown */}
           <div className="relative group">
-            <Link
-              to="/shop"
+            <button
               className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
             >
               {t("nav.shop")}
               <ChevronDown size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
-            </Link>
+            </button>
             <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
               <div className="bg-popover border border-border rounded-lg shadow-lg py-2 min-w-[220px]">
-                <Link
-                  to="/shop"
-                  className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
-                >
+                <Link to="/shop" className={dropdownLinkClass}>
                   {t("nav.allProducts")}
                 </Link>
-                {topLevel.length > 0 && (
-                  <div className="h-px bg-border my-1 mx-3" />
-                )}
+                {topLevel.length > 0 && <div className="h-px bg-border my-1 mx-3" />}
                 {topLevel.map((col) => {
                   const children = getChildren(col.id);
                   if (children.length > 0) {
@@ -96,7 +108,7 @@ const Navbar = () => {
                               <Link
                                 key={child.id}
                                 to={`/shop?collection=${child.slug}`}
-                                className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
+                                className={dropdownLinkClass}
                               >
                                 {child.title}
                               </Link>
@@ -107,11 +119,7 @@ const Navbar = () => {
                     );
                   }
                   return (
-                    <Link
-                      key={col.id}
-                      to={`/shop?collection=${col.slug}`}
-                      className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
-                    >
+                    <Link key={col.id} to={`/shop?collection=${col.slug}`} className={dropdownLinkClass}>
                       {col.title}
                     </Link>
                   );
@@ -119,10 +127,7 @@ const Navbar = () => {
                 {topLevel.length > 0 && (
                   <>
                     <div className="h-px bg-border my-1 mx-3" />
-                    <Link
-                      to="/categories"
-                      className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
-                    >
+                    <Link to="/categories" className={dropdownLinkClass}>
                       {t("nav.allCategories")}
                     </Link>
                   </>
@@ -131,8 +136,31 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Other nav links */}
-          {navLinks.map((link) =>
+          {/* Tools dropdown */}
+          <div className="relative group">
+            <button
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              {t("nav.tools")}
+              <ChevronDown size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+            </button>
+            <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="bg-popover border border-border rounded-lg shadow-lg py-2 min-w-[220px]">
+                <Link to="/calculator" className={dropdownLinkClass}>
+                  {t("nav.allTools")}
+                </Link>
+                <div className="h-px bg-border my-1 mx-3" />
+                {toolItems.map((item) => (
+                  <Link key={item.href} to={item.href} className={dropdownLinkClass}>
+                    {item.icon} {t(item.labelKey)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* About & Contact */}
+          {navLinks.slice(1).map((link) =>
             link.href.startsWith("/#") ? (
               <a
                 key={link.label}
@@ -166,9 +194,19 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-background border-t border-border px-4 pb-4">
-          {/* Shop expandable section */}
+          {/* Home */}
+          <Link
+            to="/"
+            onClick={() => setMobileOpen(false)}
+            className="block py-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("nav.home")}
+          </Link>
+
+          {/* Shop expandable */}
           <div>
             <button
               onClick={() => setShopExpanded(!shopExpanded)}
@@ -179,33 +217,20 @@ const Navbar = () => {
             </button>
             {shopExpanded && (
               <div className="pl-4 pb-2 space-y-1">
-                <Link
-                  to="/shop"
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
+                <Link to="/shop" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t("nav.allProducts")}
                 </Link>
                 {topLevel.map((col) => {
                   const children = getChildren(col.id);
                   return (
                     <div key={col.id}>
-                      <Link
-                        to={`/shop?collection=${col.slug}`}
-                        onClick={() => setMobileOpen(false)}
-                        className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
+                      <Link to={`/shop?collection=${col.slug}`} onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                         {col.title}
                       </Link>
                       {children.length > 0 && (
                         <div className="pl-4">
                           {children.map((child) => (
-                            <Link
-                              key={child.id}
-                              to={`/shop?collection=${child.slug}`}
-                              onClick={() => setMobileOpen(false)}
-                              className="block py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                            >
+                            <Link key={child.id} to={`/shop?collection=${child.slug}`} onClick={() => setMobileOpen(false)} className="block py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                               {child.title}
                             </Link>
                           ))}
@@ -214,19 +239,38 @@ const Navbar = () => {
                     </div>
                   );
                 })}
-                <Link
-                  to="/categories"
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
-                >
+                <Link to="/categories" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   {t("nav.allCategories")}
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Other nav links */}
-          {navLinks.map((link) =>
+          {/* Tools expandable */}
+          <div>
+            <button
+              onClick={() => setToolsExpanded(!toolsExpanded)}
+              className="flex items-center justify-between w-full py-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t("nav.tools")}
+              <ChevronDown size={16} className={`transition-transform ${toolsExpanded ? "rotate-180" : ""}`} />
+            </button>
+            {toolsExpanded && (
+              <div className="pl-4 pb-2 space-y-1">
+                <Link to="/calculator" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t("nav.allTools")}
+                </Link>
+                {toolItems.map((item) => (
+                  <Link key={item.href} to={item.href} onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    {item.icon} {t(item.labelKey)}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* About & Contact */}
+          {navLinks.slice(1).map((link) =>
             link.href.startsWith("/#") ? (
               <a
                 key={link.label}
