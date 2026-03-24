@@ -14,6 +14,7 @@ import StepClimate from "./StepClimate";
 import StepPersons from "./StepPersons";
 import StepAppliances from "./StepAppliances";
 import StepResults from "./StepResults";
+import StepPackage from "./StepPackage";
 import type { SelectedAppliance } from "./StepAppliances";
 import type { Tables } from "@/integrations/supabase/types";
 
