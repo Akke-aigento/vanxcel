@@ -1,83 +1,63 @@
 
 
-## Configurator Stap 6: Installatiegids (subStep 14)
+## Klantaccount-systeem via SellQo Customer API
 
 ### Overzicht
-Na het productpakket (subStep 13) komt subStep 14: een technische installatiegids met voertuig-specifieke data uit 4 Supabase tabellen. De StepPackage krijgt een "Volgende" button die naar subStep 14 navigeert.
+Een compleet klantaccount-systeem dat communiceert met de SellQo `storefront-customer-api` via een nieuwe proxy edge function. Geen Supabase Auth — eigen JWT-token systeem op de SellQo storefront_customers tabel.
 
-### Nieuw bestand
+### Nieuwe bestanden
 
 | Bestand | Beschrijving |
 |---|---|
-| `src/components/configurator/StepInstallGuide.tsx` | Volledige installatiegids met 5 secties + tips |
+| `supabase/functions/sellqo-customer-proxy/index.ts` | Proxy naar `storefront-customer-api`, injecteert `SELLQO_API_KEY`, forwardt `x-storefront-token` |
+| `src/integrations/sellqo/customerClient.ts` | `customerApiFetch(action, params, token)` helper |
+| `src/integrations/sellqo/CustomerAuthContext.tsx` | Context met customer state, token in localStorage, login/register/logout/updateProfile |
+| `src/integrations/sellqo/useCustomerApi.ts` | Hook voor orders, addresses, password, wishlist calls |
+| `src/pages/Login.tsx` | Tabbed login/register + "wachtwoord vergeten" link |
+| `src/pages/ResetPassword.tsx` | Twee flows: email invoeren OF nieuw wachtwoord met token |
+| `src/pages/Account.tsx` | Dashboard met tabs: profiel, adressen, bestellingen, wachtwoord, uitloggen |
 
-### Data hooks toevoegen aan `use-configurator.ts`
+### Bestaande bestanden aanpassen
 
-3 nieuwe hooks:
-- `useBatteryLocations(vehicleId)` — fetcht `vehicle_battery_locations`
-- `useCableRoutes(vehicleId)` — fetcht `vehicle_cable_routes`
-- `useGroundingPoints(vehicleId)` — fetcht `vehicle_grounding_points`
-
-De bestaande `useVehicleWarnings` hook wordt hergebruikt.
-
-### Component: StepInstallGuide
-
-Props: `state: ConfiguratorState`, `onBack: () => void`
-
-Intern berekent het de systeem-waarden (batteryAh, solarWp, inverterW, dcDcA) via de bestaande `configurator-calculations.ts` functies, en fetcht de voertuig-specifieke data.
-
-**5 secties:**
-
-1. **Waarschuwingen** — hergebruikt `useVehicleWarnings`, alert banners (rood/oranje/blauw per severity)
-
-2. **Batterij locaties** — `useBatteryLocations`, kaarten met afmetingen, montage-instructies, geschiktheidsbadge, populariteit-sortering
-
-3. **Kabelroutes** — `useCableRoutes`, Collapsible/Accordion kaarten met route beschrijving, afstand, moeilijkheidsgraad (groen/geel/rood badge), aanbevolen kabeldikte berekend op basis van dcDcA, gereedschappen lijst, gevaren
-
-4. **Aardpunten** — `useGroundingPoints`, simpele lijst met locatie, bout maat, max kabeldikte, bestaand/nieuw indicator
-
-5. **Bekabelingsoverzicht** — berekende tabel met alle kabels. Formule: `mm² = (I × L × 2) / (0.36 × 56)` afgerond naar standaard maten (4, 6, 10, 16, 25, 35, 50 mm²). Rijen:
-   - Starterbatterij → DC-DC (afstand uit cable_routes of 1.0m default)
-   - DC-DC → Leisurebatterij (0.5m)
-   - Zonnepaneel → MPPT (uit cable_routes of 3.5m)
-   - Batterij → Zekeringkast (0.3m)
-   - Batterij → Omvormer (0.5m, alleen als inverter > 0)
-
-**Onderaan:** 4 tips als een grid van info-cards.
-
-### ConfiguratorWizard aanpassen
-
-- StepPackage krijgt een `onNext` prop
-- subStep 14: render `StepInstallGuide`
-- Import toevoegen
-
-### VehicleSummaryBar
-
-Crumb "✓ Installatiegids" bij subStep >= 14.
-
-### i18n keys (alle 4 talen)
-
-Nieuwe keys in `configurator` sectie:
-- `installTitle`, `installSubtitle`
-- `warningsSection`, `batteryLocationSection`, `cableRoutesSection`, `groundingSection`, `cablingOverview`
-- `location`, `dimensions`, `mountingNotes`, `suitability`
-- `routeDistance`, `difficulty`, `difficultyEasy`, `difficultyModerate`, `difficultyHard`
-- `recommendedCableSize`, `toolsRequired`, `hazards`
-- `boltSize`, `maxCableSize`, `existingGround`, `needsDrilling`
-- `from`, `to`, `distance`, `cableSize`, `current`, `type`
-- `tipFuse`, `tipLabel`, `tipTest`, `tipPhotos`, `installTips`
-
-### Bestanden
-
-| Bestand | Actie |
+| Bestand | Wijziging |
 |---|---|
-| `src/components/configurator/StepInstallGuide.tsx` | Nieuw |
-| `src/hooks/use-configurator.ts` | 3 nieuwe hooks |
-| `src/components/configurator/ConfiguratorWizard.tsx` | subStep 14 + StepPackage onNext |
-| `src/components/configurator/StepPackage.tsx` | onNext prop + "Volgende" button |
-| `src/components/configurator/VehicleSummaryBar.tsx` | Crumb voor installatiegids |
-| `src/i18n/locales/nl.json` | Nieuwe keys |
-| `src/i18n/locales/en.json` | Nieuwe keys |
-| `src/i18n/locales/fr.json` | Nieuwe keys |
-| `src/i18n/locales/de.json` | Nieuwe keys |
+| `supabase/config.toml` | `[functions.sellqo-customer-proxy]` met `verify_jwt = false` |
+| `src/App.tsx` | `CustomerAuthProvider` wrappen, routes `/login`, `/reset-password`, `/account` toevoegen |
+| `src/components/Navbar.tsx` | Account-icoon: niet ingelogd → `/login`, ingelogd → dropdown (Mijn account, Uitloggen) |
+| `src/i18n/locales/nl.json` | Keys voor auth, account, adressen, bestellingen |
+| `src/i18n/locales/en.json` | Engelse vertalingen |
+| `src/i18n/locales/fr.json` | Franse vertalingen |
+| `src/i18n/locales/de.json` | Duitse vertalingen |
+
+### Edge Function: `sellqo-customer-proxy`
+
+- POST-only proxy naar `https://gczmfcabnoofnmfpzeop.supabase.co/functions/v1/storefront-customer-api`
+- Body: `{ action, tenant_id, params }` — forwardt als-is met `X-API-Key` header
+- Forwardt `x-storefront-token` header van client naar upstream
+- Zelfde CORS headers als bestaande `sellqo-proxy`
+
+### CustomerAuthContext
+
+- State: `customer`, `token`, `isAuthenticated`, `loading`
+- Token in `localStorage` key `storefront_token_vanxcel`
+- Bij mount: token uit storage → `get_profile` validatie
+- Functies: `login`, `register`, `logout`, `updateProfile`, `refreshProfile`
+
+### Account pagina tabs
+
+1. **Profiel** — naam, email (readonly), telefoon — `update_profile`
+2. **Adressen** — lijst + CRUD via `get_addresses`, `add_address`, `update_address`, `delete_address`
+3. **Bestellingen** — overzicht via `get_orders`, detail via `get_order`
+4. **Wachtwoord** — `change_password`
+5. **Uitloggen**
+
+### Navbar integratie
+
+- `User` icoon naast winkelwagen
+- Niet ingelogd: klik → `/login`
+- Ingelogd: dropdown met "Mijn account" + "Uitloggen"
+
+### Protected route
+
+`/account` redirect naar `/login` als niet ingelogd (check in Account.tsx zelf, geen route guard nodig).
 
