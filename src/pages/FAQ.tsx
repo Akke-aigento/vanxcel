@@ -60,12 +60,16 @@ const FAQ = () => {
     ),
   };
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(faqJsonLd);
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  });
+
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
       <Navbar />
       <main className="min-h-screen bg-background pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-3xl">
