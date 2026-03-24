@@ -34,7 +34,7 @@ const HeroSection = () => {
             {t("hero.ctaShop")}
           </Link>
           <Link
-            to="/build"
+            to="/calculator?tab=build"
             className="px-8 py-3 border border-foreground/30 text-foreground font-semibold text-sm rounded hover:bg-foreground/10 transition-all"
           >
             {t("hero.ctaBuild")}

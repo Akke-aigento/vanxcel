@@ -4,6 +4,7 @@
     "shop": "Boutique",
     "products": "Produits",
     "calculator": "Calculateur",
+    "tools": "Outils",
     "about": "À propos",
     "contact": "Contact"
   },
@@ -236,5 +237,12 @@
     "fan": "Ventilateur",
     "heater": "Chauffage diesel",
     "tv": "TV / Moniteur"
+  },
+  "toolsHub": {
+    "title": "OUTILS & CALCULATEURS",
+    "subtitle": "Calculez, planifiez et construisez votre setup off-grid idéal.",
+    "tabPower": "Calculateur de puissance",
+    "tabCable": "Section de câble",
+    "tabBuild": "Simulateur de kit"
   }
 }
