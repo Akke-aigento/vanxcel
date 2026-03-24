@@ -88,7 +88,31 @@ function getMinCableSize(
       return 16;
     default:
       return 4;
+}
+
+function getFuseSpec(
+  circuitId: string,
+  specs: { dcDcA: number; inverterW: number }
+): string | null {
+  switch (circuitId) {
+    case "starter_to_dcdc":
+    case "dcdc_to_leisure": {
+      const rating = Math.ceil(specs.dcDcA * 1.25 / 5) * 5;
+      return `MIDI ${rating}A`;
+    }
+    case "battery_to_fusebox": {
+      const mainCable = specs.inverterW > 2000 ? 50 : specs.inverterW > 1000 ? 35 : 25;
+      const anlA = mainCable >= 50 ? 300 : mainCable >= 35 ? 200 : 150;
+      return `ANL ${anlA}A`;
+    }
+    case "battery_to_inverter": {
+      const invAnl = specs.inverterW > 2000 ? 300 : specs.inverterW > 1000 ? 200 : 150;
+      return `ANL ${invAnl}A`;
+    }
+    default:
+      return null;
   }
+}
 }
 
 const severityConfig: Record<string, { icon: React.ReactNode; className: string }> = {
