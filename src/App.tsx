@@ -14,6 +14,9 @@ import Shop from "./pages/Shop.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import Categories from "./pages/Categories.tsx";
 import About from "./pages/About.tsx";
+import FAQ from "./pages/FAQ.tsx";
+import Delivery from "./pages/Delivery.tsx";
+import Manuals from "./pages/Manuals.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
 
@@ -47,6 +50,9 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/about" element={<About />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/delivery" element={<Delivery />} />
+              <Route path="/manuals" element={<Manuals />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
