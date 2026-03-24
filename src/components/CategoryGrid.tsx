@@ -7,6 +7,7 @@ import { normalizeCollections } from '@/integrations/sellqo/normalizer';
 import type { Collection } from '@/integrations/sellqo/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import RevealOnScroll from './RevealOnScroll';
+import SplitRevealText from './SplitRevealText';
 
 const categoryImages: Record<string, string> = {
   converters: "https://www.vanxcel.be/cdn/shop/files/Converters_grouped.png?v=1754123623&width=800",
@@ -57,9 +58,11 @@ const CategoryGrid = () => {
     <section id="products" className="bg-background py-20">
       <div className="container mx-auto px-4">
         <RevealOnScroll direction="up">
-          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
-            {t("categories.title")}
-          </h2>
+          <SplitRevealText
+            text={t("categories.title")}
+            as="h2"
+            className="font-display text-4xl md:text-5xl text-center text-foreground mb-4"
+          />
           <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
             {t("categories.subtitle")}
           </p>

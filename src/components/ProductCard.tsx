@@ -51,12 +51,26 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         onMouseLeave={handleMouseLeave}
         className="card-3d-tilt-inner group bg-card border border-border rounded-lg overflow-hidden hover:border-primary/30 transition-all duration-300 block"
       >
-        <div className="relative aspect-square bg-foreground/[0.03] p-6 flex items-center justify-center overflow-hidden">
+        <div
+          className="relative aspect-square bg-foreground/[0.03] p-6 flex items-center justify-center overflow-hidden"
+          onMouseMove={(e) => {
+            const img = e.currentTarget.querySelector("img");
+            if (!img) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            img.style.transformOrigin = `${x}% ${y}%`;
+          }}
+          onMouseLeave={(e) => {
+            const img = e.currentTarget.querySelector("img");
+            if (img) img.style.transformOrigin = "center center";
+          }}
+        >
           {mainImage ? (
             <img
               src={mainImage}
               alt={product.title}
-              className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
+              className="max-h-full max-w-full object-contain group-hover:scale-[1.15] transition-transform duration-500"
               loading="lazy"
             />
           ) : (

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 import logoWhite from "@/assets/logo-white.png";
+import MagneticButton from "./MagneticButton";
 
 const HeroSection = () => {
   const { t } = useTranslation();
@@ -55,18 +56,22 @@ const HeroSection = () => {
           {t("hero.subtitle")}
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 animate-fade-in-up-delay-2">
-          <Link
-            to="/shop"
-            className="btn-shimmer px-8 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded hover:brightness-110 transition-all"
-          >
-            {t("hero.ctaShop")}
-          </Link>
-          <Link
-            to="/calculator?tab=build"
-            className="px-8 py-3 border border-foreground/30 text-foreground font-semibold text-sm rounded hover:bg-foreground/10 transition-all"
-          >
-            {t("hero.ctaBuild")}
-          </Link>
+          <MagneticButton>
+            <Link
+              to="/shop"
+              className="btn-shimmer px-8 py-3 bg-accent text-accent-foreground font-semibold text-sm rounded hover:brightness-110 transition-all inline-block"
+            >
+              {t("hero.ctaShop")}
+            </Link>
+          </MagneticButton>
+          <MagneticButton>
+            <Link
+              to="/calculator?tab=build"
+              className="px-8 py-3 border border-foreground/30 text-foreground font-semibold text-sm rounded hover:bg-foreground/10 transition-all inline-block"
+            >
+              {t("hero.ctaBuild")}
+            </Link>
+          </MagneticButton>
         </div>
       </div>
 

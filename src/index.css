@@ -289,6 +289,27 @@
   opacity: 0;
 }
 
+/* Page transitions */
+.page-transition {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.page-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Magnetic button wrapper */
+.magnetic-wrapper {
+  display: inline-block;
+  transition: transform 0.2s ease-out;
+}
+
 /* Disable heavy animations for reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .ken-burns-zoom img,
@@ -298,6 +319,13 @@
     animation: none !important;
   }
   .card-3d-tilt-inner {
+    transform: none !important;
+  }
+  .page-transition {
+    transition: none !important;
+  }
+  .magnetic-wrapper {
+    transition: none !important;
     transform: none !important;
   }
 }
