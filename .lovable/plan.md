@@ -1,50 +1,72 @@
 
 
-## Fix kabeldikte-berekeningen in Installatiegids
+## Kritieke Veiligheidsupdate Configurator
 
-### Probleem
-De `calcCableSize()` functie in `StepInstallGuide.tsx` berekent puur wiskundig, zonder minimumwaarden per circuittype. Resultaat: gevaarlijk dunne kabels (bijv. 4mm² als accukabel).
+### Overzicht
+6 veiligheidsverbeteringen: conservatievere DC-DC sizing, omvormer-kabel op piekstroom, extra producten in pakket, zekeringenkolom in bekabelingstabel, 4 veiligheidswaarschuwingen bovenaan installatiegids, en een disclaimer onderaan.
 
-### Aanpak
+### 1. DC-DC conservatiever (`configurator-calculations.ts`)
 
-**1. Nieuwe functie `getMinCableSize()` in StepInstallGuide.tsx**
+Wijzig `calculateDcDc`: alle alternators → 25% (was 30/40%), charge rate → 0.2C (was 0.25C).
 
-Bepaalt het minimum per circuittype op basis van de systeemwaarden:
+### 2. Omvormer-kabel op piekstroom (`StepInstallGuide.tsx`)
 
-| Circuit ID | Conditie | Minimum mm² |
+De `battery_to_inverter` rij berekent amps nu als `inverterW / 12`. Wijzig naar: `Math.ceil(inverterW / 12 * 1.25)` (piekstroom + 25% marge). Voeg max 1.5m lengte-advies toe als extra tekst onder de omvormer-rij.
+
+### 3. Extra producten in pakket (`configurator-package.ts`)
+
+Na de bestaande items, voeg toe:
+
+| Item | Conditie | Prijs |
 |---|---|---|
-| `starter_to_dcdc` | ≤30A: 10, ≤50A: 16, >50A: 25 |
-| `dcdc_to_leisure` | Zelfde als starter_to_dcdc |
-| `solar_to_mppt` | ≤200Wp: 2.5, ≤400Wp: 4, >400Wp: 6 |
-| `battery_to_fusebox` | ≤1000Wh/dag: 16, >1000Wh/dag: 25 |
-| `battery_to_inverter` | ≤1000W: 25, ≤2000W: 35, >2000W: 50 |
-| `mppt_to_battery` | ≤20A: 6, ≤40A: 10, >40A: 16 |
+| ANL Fuse + holder | Altijd | €15-18 (op basis van kabeldikte) |
+| Battery Disconnect Switch | Altijd | €25 |
+| Negatieve Busbar 6-weg | Altijd | €15 |
 
-**2. Update `cablingRows` array**
+Sizing ANL fuse: 150A bij 25mm², 200A bij 35mm², 300A bij 50mm² (gebaseerd op hoofd-kabeldikte, afgeleid van batterij→omvormer of batterij→fusebox).
 
-Elk row krijgt een `circuitId` veld. De weergegeven kabeldikte wordt `Math.max(calcCableSize(...), getMinCableSize(circuitId))`.
+### 4. Zekeringenkolom in bekabelingstabel (`StepInstallGuide.tsx`)
 
-**3. Voeg MPPT → Batterij rij toe** (ontbreekt nu)
+Extra `<TableHead>` kolom "Zekering" met per circuit:
 
-**4. Waarschuwing per zware kabel**
+| Circuit | Zekering |
+|---|---|
+| starter_to_dcdc | MIDI fuse, 125% van dcDcA |
+| dcdc_to_leisure | MIDI fuse, 125% van dcDcA |
+| solar_to_mppt | — |
+| mppt_to_battery | — |
+| battery_to_fusebox | ANL fuse (zelfde als in pakket) |
+| battery_to_inverter | ANL fuse (op basis van inverterW) |
 
-Als resultaat ≥ 16mm²: toon "Gebruik gelaste of geperste kabelschoenen" tekst in de tabelcel.
+### 5. Veiligheidswaarschuwingen bovenaan installatiegids (`StepInstallGuide.tsx`)
 
-**5. Algemene waarschuwing bovenaan bekabelingssectie**
+4 hardcoded banners BOVEN de voertuig-specifieke waarschuwingen:
 
-Alert banner: "Alle genoemde kabeldiktes zijn MINIMUM waarden. Bij twijfel: kies altijd een maat dikker."
+1. **ROOD** (altijd): Zekering binnen 18cm van batterij
+2. **ROOD** (alleen als inverterW > 0): 230V waarschuwing + RCD/aardlekschakelaar
+3. **ORANJE** (altijd): LiFePO4 & vorst
+4. **ORANJE** (altijd): Kabelkwaliteit + crimpen
 
-**6. i18n keys toevoegen** (4 talen)
+### 6. Disclaimer onderaan installatiegids (`StepInstallGuide.tsx`)
 
-- `cableSafetyNote`: de algemene waarschuwing
-- `cableLugWarning`: kabelschoenen waarschuwing
-- `cableMppt` / `cableMpptToBattery`: labels voor nieuwe rij
+Na de tips-sectie: een disclaimer card met aansprakelijkheidsbeperking.
+
+### i18n keys (alle 4 talen)
+
+Nieuwe keys voor:
+- 4 veiligheidsbanner-titels + beschrijvingen
+- Disclaimer tekst
+- Zekering kolom label + per-circuit zekering beschrijvingen
+- Omvormer kabel max lengte advies
+- ANL fuse, disconnect switch, busbar namen/reasons
 
 ### Bestanden
 
 | Bestand | Actie |
 |---|---|
-| `src/components/configurator/StepInstallGuide.tsx` | Minimumlogica, MPPT→batterij rij, waarschuwingen |
+| `src/lib/configurator-calculations.ts` | DC-DC conservatiever (0.25 alt, 0.2C) |
+| `src/lib/configurator-package.ts` | 3 nieuwe items: ANL fuse, disconnect switch, busbar |
+| `src/components/configurator/StepInstallGuide.tsx` | Veiligheidswaarschuwingen, zekeringenkolom, omvormer piekstroom, disclaimer |
 | `src/i18n/locales/nl.json` | Nieuwe keys |
 | `src/i18n/locales/en.json` | Nieuwe keys |
 | `src/i18n/locales/fr.json` | Nieuwe keys |
