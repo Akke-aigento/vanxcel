@@ -13,6 +13,7 @@ import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import Categories from "./pages/Categories.tsx";
+import About from "./pages/About.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
 
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/bedankt" element={<ThankYou />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/categories" element={<Categories />} />
+              <Route path="/about" element={<About />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
