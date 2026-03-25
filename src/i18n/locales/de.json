@@ -520,6 +520,8 @@
     "cableLug": "Kabelschuh",
     "cableSafetyNote": "Alle genannten Kabelquerschnitte sind MINDESTWERTE. Im Zweifel: immer eine Größe dicker wählen. Ein zu dickes Kabel ist nie ein Problem — ein zu dünnes Kabel ist ein Brandrisiko.",
     "cableLugWarning": "Verwende geschweißte oder gecrimpte Kabelschuhe, NIEMALS Schraubklemmen.",
+    "cableChassisGround": "Chassis-Masse",
+    "cableNeg": "Negativ (Masse)",
     "installTips": "Installationstipps",
     "tipFuse": "Platziere IMMER eine Sicherung innerhalb von 18cm jeder positiven Batterie-Verbindung.",
     "tipLabel": "Beschrifte alle Kabel mit Farbe oder Klebeband — dein zukünftiges Ich wird es dir danken.",

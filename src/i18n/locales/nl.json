@@ -520,6 +520,8 @@
     "cableLug": "kabelschoen",
     "cableSafetyNote": "Alle genoemde kabeldiktes zijn MINIMUM waarden. Bij twijfel: kies altijd een maat dikker. Een te dikke kabel is nooit een probleem, een te dunne kabel is een brandgevaar.",
     "cableLugWarning": "Gebruik gelaste of geperste kabelschoenen, NOOIT schroefklemmen.",
+    "cableChassisGround": "Chassis aarding",
+    "cableNeg": "Negatief (aarding)",
     "installTips": "Installatietips",
     "tipFuse": "Plaats ALTIJD een zekering binnen 18cm van elke positieve batterij-aansluiting.",
     "tipLabel": "Label al je kabels met kleur of tape — je toekomstige zelf zal je dankbaar zijn.",
