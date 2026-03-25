@@ -202,13 +202,21 @@ const ConfiguratorWizard = () => {
             <StepBrandSelect onSelect={selectBrand} selected={state.brand} />
           </div>
         )}
-        {state.subStep === 1 && (
+        {state.subStep === 1 && !state.isOtherVehicle && (
           <div className="animate-fade-in-up">
             <StepModelSelect
               brand={state.brand!}
               onSelect={selectVehicle}
               onBack={() => goTo(0)}
               selected={state.vehicleId}
+            />
+          </div>
+        )}
+        {state.subStep === 1 && state.isOtherVehicle && (
+          <div className="animate-fade-in-up">
+            <StepOtherVehicle
+              onComplete={completeOtherVehicle}
+              onBack={() => goTo(0)}
             />
           </div>
         )}
