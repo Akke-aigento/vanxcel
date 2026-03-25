@@ -98,7 +98,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
   }, [appliances, state, cableRoutes, priceMap]);
 
   if (!pkg) {
-    return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t("configurator.loading")}</div>;
   }
 
   const handleNotifySubmit = async (sku: string, productName: string) => {
@@ -309,7 +309,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
             <span className="font-semibold text-right">{pkg.solarWp} Wp</span>
             <span className="text-muted-foreground">{t("configurator.altChargeTitle")}</span>
             <span className="font-semibold text-right">25A ({t("configurator.builtIn")})</span>
-            <span className="text-muted-foreground">{t("configurator.day")}verbruik</span>
+            <span className="text-muted-foreground">{t("configurator.dailyConsumption")}</span>
             <span className="font-semibold text-right">{state.totalDailyWh} Wh</span>
             <span className="text-muted-foreground">{t("configurator.estimatedAutarky")}</span>
             <span className="font-semibold text-right">

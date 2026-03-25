@@ -41,7 +41,7 @@ const VehicleSummaryBar = ({ state, onStepClick }: Props) => {
     crumbs.push({ label: String(state.buildYear), step: 3 });
   }
   if (state.motorisation) {
-    const label = `${state.motorisation.engine_family} ${state.motorisation.power_hp ?? ""}pk`;
+    const label = `${state.motorisation.engine_family} ${state.motorisation.power_hp ?? ""}${t("configurator.hpUnit")}`;
     crumbs.push({ label, step: 4 });
     if (state.motorisation.has_smart_alternator) {
       crumbs.push({ label: "⚡ Smart alt.", step: 4 });

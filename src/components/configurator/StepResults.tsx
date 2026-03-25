@@ -194,7 +194,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
   }, [appliances, state, priceMap]);
 
   if (!results) {
-    return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t("configurator.loading")}</div>;
   }
 
   const climateLabels: Record<string, string> = {

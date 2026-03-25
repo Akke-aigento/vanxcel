@@ -150,12 +150,12 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       {
         id: "anl", label: "ANL", x: anlX, y: anlY, w: 22, h: 22,
         fill: C.pos, stroke: C.pos, phase: 1,
-        tooltip: "ANL hoofdzekering",
+        tooltip: t("configurator.anlMainFuse"),
       },
       {
         id: "switch", label: "⊘", x: switchX, y: switchY + 2, w: 18, h: 18,
         fill: C.pos, stroke: C.pos, phase: 1, shape: "circle" as const,
-        tooltip: "Batterij disconnect schakelaar",
+        tooltip: t("configurator.batterySwitch"),
       },
       {
         id: "fusebox", label: "Fuse box", x: fuseBoxX, y: fuseBoxY, w: 55, h: 25,
@@ -171,18 +171,18 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         id: "solar", label: `${calc.solarWp}Wp`, x: ox + bus.cabinW + 40, y: oy - 12, w: bus.w - bus.cabinW - 80, h: 20,
         fill: C.yellow, stroke: C.yellow, phase: 3, dashed: true,
         visible: hasSolar,
-        tooltip: `Zonnepaneel ${calc.solarWp}Wp (op dak)`,
+        tooltip: t("configurator.solarPanelRoof", { wp: calc.solarWp }),
       },
       {
         id: "shore", label: "AC IN", x: shoreX, y: shoreY, w: 30, h: 20,
         fill: C.ac, stroke: C.ac, phase: 4,
         visible: hasAC,
-        tooltip: "Walstroom inlaat (230V)",
+        tooltip: t("configurator.shoreInlet"),
       },
       {
         id: "ground", label: "⏚", x: groundX, y: groundY, w: 20, h: 16,
         fill: C.darkGrey, stroke: C.green, phase: 4,
-        tooltip: "Chassis aardpunt",
+        tooltip: t("configurator.chassisGround"),
       },
     ].filter((c) => c.visible !== false);
   }, [state, calc, topBatteryLocation, batteryRear, hasSolar, hasAC, bus, t, ox, oy]);
@@ -318,11 +318,11 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       />
       {/* Cabin label */}
       <text x={ox + bus.cabinW / 2} y={oy + 16} textAnchor="middle" fontSize={10} fill="hsl(0 0% 50%)">
-        Cabine
+        {t("configurator.cabin")}
       </text>
       {/* Cargo label */}
       <text x={ox + bus.cabinW + (bus.w - bus.cabinW) / 2} y={oy + 16} textAnchor="middle" fontSize={10} fill="hsl(0 0% 50%)">
-        Laadruimte
+        {t("configurator.cargoArea")}
       </text>
 
       {/* Wheels */}
@@ -344,7 +344,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         stroke="hsl(185 100% 29%)" strokeWidth={3} strokeLinecap="round"
       />
       <text x={ox + bus.cabinW + 60} y={oy + bus.h + 14} textAnchor="middle" fontSize={8} fill="hsl(0 0% 50%)">
-        Schuifdeur
+        {t("configurator.slidingDoor")}
       </text>
 
       {/* Rear doors (dashed) */}
@@ -448,11 +448,11 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
 
   /* ── Legend data ── */
   const legendItems = [
-    { color: C.pos, label: "12V+ (positief)" },
-    { color: C.neg, label: "12V– (negatief)" },
-    ...(hasSolar ? [{ color: C.solar, label: "Solar (MC4)" }] : []),
-    ...(hasAC ? [{ color: C.ac, label: "230V AC" }] : []),
-    { color: C.green, label: "Aarding" },
+    { color: C.pos, label: t("configurator.legend12vPos") },
+    { color: C.neg, label: t("configurator.legend12vNeg") },
+    ...(hasSolar ? [{ color: C.solar, label: t("configurator.legendSolar") }] : []),
+    ...(hasAC ? [{ color: C.ac, label: t("configurator.legend230v") }] : []),
+    { color: C.green, label: t("configurator.legendGround") },
   ];
 
   return (
@@ -460,10 +460,10 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       <div className="mb-8">
         {/* Title */}
         <h3 className="text-xl font-display font-bold tracking-tight mb-1 uppercase">
-          Jouw Bedradingsschema
+          {t("configurator.wiringTitle")}
         </h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Klik op een component voor installatie-instructies
+          {t("configurator.wiringSubtitle")}
         </p>
 
         {/* SVG container */}
@@ -477,7 +477,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
               size="icon"
               className="h-8 w-8 bg-background/80 backdrop-blur"
               onClick={() => setFullscreen(true)}
-              aria-label="Volledig scherm"
+              aria-label={t("configurator.fullscreen")}
             >
               <Maximize2 className="h-4 w-4" />
             </Button>
@@ -486,7 +486,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
               size="icon"
               className="h-8 w-8 bg-background/80 backdrop-blur"
               onClick={handleDownload}
-              aria-label="Download als afbeelding"
+              aria-label={t("configurator.downloadImage")}
             >
               <Download className="h-4 w-4" />
             </Button>
@@ -506,7 +506,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         {/* Fullscreen dialog */}
         <Dialog open={fullscreen} onOpenChange={setFullscreen}>
           <DialogContent className="max-w-[95vw] max-h-[95vh] p-4">
-            <DialogTitle className="sr-only">Bedradingsschema</DialogTitle>
+            <DialogTitle className="sr-only">{t("configurator.wiringDiagram")}</DialogTitle>
             <div className="overflow-auto">
               {renderSVG(svgW, svgH)}
             </div>
