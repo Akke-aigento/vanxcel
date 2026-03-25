@@ -154,7 +154,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       },
       {
         id: "switch", label: "⊘", x: switchX, y: switchY + 2, w: 18, h: 18,
-        fill: C.pos, stroke: C.pos, phase: 1, shape: "circle",
+        fill: C.pos, stroke: C.pos, phase: 1, shape: "circle" as const,
         tooltip: "Batterij disconnect schakelaar",
       },
       {
