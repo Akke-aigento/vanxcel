@@ -126,6 +126,7 @@ const ResultCard = ({
 
 const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
   const { t } = useTranslation();
+  const { priceMap } = useVanXcelPrices();
 
   const { data: appliances } = useQuery({
     queryKey: ["appliances"],
