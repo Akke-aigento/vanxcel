@@ -492,8 +492,25 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </div>
       )}
 
+      {/* ═══ WIRING DIAGRAM ═══ */}
+      <WiringDiagram
+        state={state}
+        calc={calc}
+        topBatteryLocation={topBatteryLocation ? { location_id: topBatteryLocation.location_id, label: topBatteryLocation.label } : null}
+        activePhase={activePhase}
+        onComponentClick={handleComponentClick}
+      />
+
       {/* ═══════════ 7 PHASES ═══════════ */}
-      <Accordion type="multiple" defaultValue={["phase-0"]} className="space-y-3">
+      <Accordion
+        type="multiple"
+        defaultValue={["phase-0"]}
+        className="space-y-3"
+        onValueChange={(values) => {
+          const last = values[values.length - 1] ?? null;
+          setActivePhase(last);
+        }}
+      >
 
         {/* ── PHASE 0: PREPARATION ── */}
         <AccordionItem value="phase-0" className="border rounded-lg overflow-hidden">
