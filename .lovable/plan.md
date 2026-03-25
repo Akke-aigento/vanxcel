@@ -1,69 +1,107 @@
 
 
-## Transformatie StepInstallGuide naar Stapsgewijze Handleiding
+## VanXcel Product-Centric Configurator Overhaul
 
-### Overzicht
-Volledige herschrijving van `StepInstallGuide.tsx` (~592 regels) naar een fasegerichte installatiegids met 7 fasen (0-6). De huidige losse secties (waarschuwingen, batterijlocaties, kabelroutes, aardpunten, kabeltabel) worden geïntegreerd IN de relevante fasen. De bekabelingstabel wordt een uitklapbare referentiesectie onderaan.
+This is a large restructuring across 7 areas. Here is the implementation plan.
 
-### Structuur
+### 1. Create Product Catalog
 
-**Bovenaan (blijft):**
-- Terug-button + titel
-- 4 veiligheidswaarschuwingen (rood/oranje banners)
-- Voertuig-specifieke waarschuwingen uit DB
-- **Nieuw: Progress indicator** — "Fase X van 6" met visuele balk
+**New file: `src/lib/vanxcel-products.ts`**
+- Contains the full `VanXcelProduct` interface and `vanxcelProducts` array with all ~45 SKUs as specified
+- Helper lookup functions: `getProduct(sku)`, `getProductsByCategory(cat)`
 
-**7 Accordion fasen (elke fase is een Card met AccordionTrigger):**
+### 2. Rewrite Calculation Logic
 
-| Fase | Titel | Tijd | Moeilijkheid | Dynamische content |
-|---|---|---|---|---|
-| 0 | Voorbereiding & Planning | 1-2u | Makkelijk | Starterbatterij locatie uit `motorisation.starter_battery_location`, gereedschapslijst |
-| 1 | Leisure batterij monteren | 1-3u | Gemiddeld | Batterijlocaties uit DB, ANL fuse maat, batterij Ah |
-| 2 | Zekeringkast & busbars | 1-2u | Makkelijk | Statisch + zekering-waarden |
-| 3 | Kabels trekken | 3-6u | Moeilijk | Cable routes uit DB (afstand, beschrijving, gevaren, bescherming), berekende kabeldiktes, conditionele routes (solar/omvormer) |
-| 4 | Alles aansluiten | 2-4u | Gemiddeld | Conditionele stappen (MPPT/omvormer/DC-DC), batterij Ah |
-| 5 | Systeem testen | 1-2u | Makkelijk | Conditionele tests per component |
-| 6 | Afwerken & documenteren | 1-2u | Makkelijk | 230V keuring waarschuwing conditioneel |
+**Edit: `src/lib/configurator-calculations.ts`**
+- Keep existing helpers: `getDaysAutark`, `getSunHours`, `getDailySolarYield`, `calculateBattery`, `calculateSolar`, `get230vStats`
+- Add new functions that return VanXcel products:
+  - `selectConverter(peakW, has230v)` — always returns a converter (1000W default, 1500W for heavier loads, warning if >1500W with 3000W coming soon mention)
+  - `selectBattery(requiredAh)` — maps to VXBAT100S/200/300 or multiple 200Ah units
+  - `selectSolar(requiredWp)` — caps at 500Wp (converter limit), returns panel product + quantity + warning
+  - `selectANLFuse(converterSku)` — returns matching ANL fuse based on converter's `fuseRequired` spec
+- Remove `calculateInverter` and `calculateDcDc` (replaced by converter selection)
 
-**Elke fase bevat:**
-- Header: nummer + titel + badges (tijd, moeilijkheid)
-- Genummerde instructielijst (`<ol>`)
-- "Let op" Alert-blokken (oranje/rood) inline
-- "Benodigde materialen" compact blokje met iconen
-- `<Checkbox>` "Fase afgerond" onderaan (lokale useState array, niet persistent)
+### 3. Rewrite Package Generation
 
-**Conditionele rendering:**
-- Solar-gerelateerde stappen alleen als `calc.solarWp > 0`
-- Omvormer-gerelateerde stappen alleen als `calc.inverterW > 0`
-- Batterijlocatie-instructies op basis van eerste (meest populaire) `batteryLocations` entry
-- Kabeldiktes, afstanden, gevaren uit DB hooks + berekeningen
+**Edit: `src/lib/configurator-package.ts`**
+- New `PackageItem` interface adds: `sku`, `inStock`, `comingSoon`, `shopUrl`, `configuratorUse`
+- New `PackageResult` adds: `converterProduct`, `batteryProduct`, `totalInStock`, `totalComingSoon`, `savingsHighlight`
+- `generatePackage()` builds package from real VanXcel SKUs:
+  - Converter (always), Battery, Solar + mounting kit + roof gland (if solar>0), ANL fuse (matched to converter), Battery disconnect, Negative busbar, Fuse box (12-slot for regular/fulltime, 6-slot for weekend/stealth), Blade fuse pack, Cables (per route with calculated lengths from DB data), Heatshrink, Cable ties, Ring terminals, Switch panel (if >3 appliances), 230V outlets (if converter present), USB outlets (if USB appliances selected), Battery monitor shunt (if >=100Ah), CEE-16A shore power (if regular/fulltime)
+- Cable items use per-meter pricing and calculated route distances
 
-**Onderaan:**
-- Uitklapbare "Bekabelingsoverzicht" Accordion met de bestaande kabeltabel (verplaatst)
-- Disclaimer (blijft)
+### 4. Rewrite StepResults (Result Cards)
 
-### Technische aanpak
+**Edit: `src/components/configurator/StepResults.tsx`**
+- Card 1: **VanXcel Converter** — teal accent (#008593), "5-IN-1" badge, feature list (inverter W, 25A DC-DC, 500Wp MPPT, 230V shore power, 25ms UPS), price. Warning if peak > continuous rating.
+- Card 2: **Battery** — green accent, product name + price, capacity progress bar
+- Card 3: **Solar** — yellow accent, panel count + Wp, "Direct op VanXcel Converter (MC4)". Warning if >500Wp needed.
+- Card 4: **Alternator Laden** — orange accent, "25A DC-DC Ingebouwd", no separate product, "Zit in je VanXcel Converter"
+- Summary row: battery Ah, solar Wp, VanXcel converter W, estimated total price
 
-De bestaande helper-functies (`calcCableSize`, `getMinCableSize`, `getFuseSpec`, severity/difficulty configs) blijven. De hooks en calc useMemo blijven. Alleen de JSX return wordt herschreven.
+### 5. Rewrite StepPackage (Product List)
 
-Lokale state voor checkboxes:
-```typescript
-const [completedPhases, setCompletedPhases] = useState<number[]>([]);
+**Edit: `src/components/configurator/StepPackage.tsx`**
+- Each product card shows: name, price x qty, availability badge (green "Op voorraad" / orange "Tijdelijk uitverkocht" / blue "Coming soon")
+- In-stock items: "Voeg toe" button (links to shopUrl)
+- Out-of-stock/coming soon: "Notificeer mij" button -> inline email input -> saves to `product_notifications` table -> toast confirmation
+- New category order: converter, battery, solar, fuse, safety, cable, panel, accessory
+- Price split summary: "Direct bestelbaar: EUR X | Coming soon: EUR Y | Totaal: EUR Z"
+- Savings highlight banner: "De VanXcel 5-in-1 Converter vervangt een losse omvormer, DC-DC lader, MPPT regelaar en walstroomlader -- besparing van meer dan EUR 500!"
+
+### 6. Database Migration
+
+**New table: `product_notifications`**
+```sql
+CREATE TABLE product_notifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text NOT NULL,
+  product_sku text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  notified boolean DEFAULT false
+);
+ALTER TABLE product_notifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can subscribe" ON product_notifications FOR INSERT WITH CHECK (true);
 ```
 
-De fasen worden opgebouwd als een array van objecten die conditioneel stappen bevatten, zodat de rendering clean blijft.
+### 7. Update StepInstallGuide References
 
-### i18n
+**Edit: `src/components/configurator/StepInstallGuide.tsx`**
+- Replace generic "omvormer", "DC-DC lader", "MPPT regelaar" references with "VanXcel Converter"
+- Update Phase 4 connection instructions to reference the 5-in-1 (single device connections instead of 3 separate devices)
+- Note that 16mm² battery cables are included with the converter
 
-Grote hoeveelheid nieuwe keys (50+) voor alle fase-titels, instructies, waarschuwingen, materialen. Alle 4 talen.
+### 8. Step Flow Cleanup
 
-### Bestanden
+**Edit: `src/components/configurator/ConfiguratorWizard.tsx`**
+- Verify no dead confirmation steps exist between usage/appliances/results transitions
+- Current flow already skips from persons (subStep 8) -> appliances (9) -> results (10) which looks correct
 
-| Bestand | Actie |
+### 9. Localization
+
+**Edit all 4 locale files** (`nl.json`, `en.json`, `fr.json`, `de.json`)
+- Add ~40 new keys for: converter card labels, 5-in-1 feature descriptions, stock status badges, notify-me UI, savings highlight, price split labels
+
+### Safety Preserved
+
+All previous safety measures carry over:
+- ANL fuse now maps to specific VanXcel SKU (200A for 1000W, 250A for 1500W)
+- Battery disconnect = VXSWITCH200
+- Negative busbar = VXBUSBAR
+- Minimum cable sizes enforced (unchanged logic in install guide)
+- LiFePO4 0C warning, 230V RCD warning, disclaimer all remain
+
+### Files Summary
+
+| File | Action |
 |---|---|
-| `src/components/configurator/StepInstallGuide.tsx` | Volledige herschrijving — fasegerichte accordion-structuur met dynamische content |
-| `src/i18n/locales/nl.json` | ~60 nieuwe keys voor fase-titels, instructies, materialen, waarschuwingen |
-| `src/i18n/locales/en.json` | Engelse vertalingen |
-| `src/i18n/locales/fr.json` | Franse vertalingen |
-| `src/i18n/locales/de.json` | Duitse vertalingen |
+| `src/lib/vanxcel-products.ts` | Create (product catalog) |
+| `src/lib/configurator-calculations.ts` | Rewrite (add product selectors, remove old inverter/dcdc) |
+| `src/lib/configurator-package.ts` | Rewrite (VanXcel products, availability, cables by route) |
+| `src/components/configurator/StepResults.tsx` | Rewrite (4 VanXcel-centric cards) |
+| `src/components/configurator/StepPackage.tsx` | Rewrite (availability badges, notify-me, savings) |
+| `src/components/configurator/StepInstallGuide.tsx` | Update references to VanXcel Converter |
+| `src/components/configurator/ConfiguratorWizard.tsx` | Verify step flow (minor if any) |
+| `src/i18n/locales/*.json` | Add ~40 new keys per file |
+| DB migration | Create `product_notifications` table |
 
