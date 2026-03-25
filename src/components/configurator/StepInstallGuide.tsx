@@ -549,12 +549,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 1: BATTERY MOUNTING ── */}
-        <AccordionItem value="phase-1" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-1" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-1"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={1} difficulty="moderate" time="1-3h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
-            {/* Battery location recommendations */}
+            <PhaseIllustration phase={1} batteryLocation={topBatteryLocation?.location_id} batteryAh={calc.batteryAh} />
             {topBatteryLocation && (
               <Card className="mb-4 border-primary/30">
                 <CardContent className="p-4">
