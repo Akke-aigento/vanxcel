@@ -1,37 +1,33 @@
 
+## Sticky header fix (definitief)
 
-## Contactpagina Redesign
+### Waarschijnlijke root-cause
+De header staat `position: fixed`, maar alle pagina’s zitten binnen `AnimatedOutlet` met een CSS `transform` op `.page-enter/.page-exit` (`translateY(...)`).  
+Een getransformeerde parent breekt fixed-position gedrag (header kan “meescrollen” of vreemd positioneren).
 
-### Huidige situatie
-Een saaie witte card met 4 velden op een lege pagina. Geen visuele aantrekkingskracht, geen extra context.
+### Plan van aanpak
 
-### Nieuw ontwerp
+1. **Route-transitie aanpassen zodat fixed header niet meer breekt**
+   - In `src/index.css`:
+     - `.page-transition`: transition alleen op `opacity` (geen `transform`).
+     - `.page-enter`: `opacity: 1` (zonder transform).
+     - `.page-exit`: `opacity: 0` (zonder transform).
+   - Resultaat: page-fade blijft, maar navbar blijft echt viewport-fixed.
 
-**Layout: Twee-koloms (desktop) / gestapeld (mobiel)**
+2. **Header-offsets uniform maken op pagina’s met te weinig top spacing**
+   - `src/pages/Build.tsx` en `src/pages/Configurator.tsx` gebruiken nu `pt-16` terwijl navbar `h-20` is.
+   - Verhogen naar minimaal `pt-20` (of `pt-24` voor extra lucht) zodat content niet onder de header schuift.
 
-Linkerkolom (of boven op mobiel):
-- Grote heading + subtekst
-- Direct contact opties: WhatsApp knop, e-mail adres, responstijd indicator
-- Kleine FAQ hints ("Gemiddelde reactietijd: < 2 uur")
-- Subtle decoratieve achtergrond (gradient/glow passend bij het donkere thema)
-
-Rechterkolom (of onder op mobiel):
-- Het formulier met verbeterde styling
-- **Nieuw optioneel veld: Ordernummer** (tussen subject en message)
-- Betere visuele hiërarchie
-
-**Formulier aanpassingen:**
-- Nieuw veld `orderNumber` (optioneel, maxLength 50, placeholder "VX-12345")
-- Wordt meegestuurd in de API call als het ingevuld is
-- Niet verplicht — geen validatie nodig
+3. **Controle op regressies in navigatie/transities**
+   - Bevestigen dat dropdowns/mobile menu van `Navbar` ongewijzigd blijven.
+   - Verifiëren dat fade-transitie nog netjes werkt tussen routes.
 
 ### Bestanden
+- `src/index.css` (page transition classes)
+- `src/pages/Build.tsx` (top padding)
+- `src/pages/Configurator.tsx` (top padding)
 
-| Bestand | Wijziging |
-|---|---|
-| `src/pages/Contact.tsx` | Volledige redesign: twee-koloms layout, contactinfo links, ordernummer veld, verbeterde styling |
-| `src/i18n/locales/nl.json` | Keys: `contact.orderNumber`, `contact.orderNumberPlaceholder`, `contact.orderNumberHint`, `contact.whatsapp`, `contact.responseTime`, `contact.directContact` |
-| `src/i18n/locales/en.json` | Engelse vertalingen |
-| `src/i18n/locales/fr.json` | Franse vertalingen |
-| `src/i18n/locales/de.json` | Duitse vertalingen |
-
+### Acceptatiecriteria
+- Header blijft zichtbaar bij scroll op alle pagina’s (desktop + mobiel).
+- Geen “meescrollende” of verschuivende navbar meer tijdens routewissels.
+- Geen overlap van page content onder de navbar op Build/Configurator.
