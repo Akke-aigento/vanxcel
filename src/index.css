@@ -291,17 +291,15 @@
 
 /* Page transitions */
 .page-transition {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease;
 }
 
 .page-enter {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .page-exit {
   opacity: 0;
-  transform: translateY(8px);
 }
 
 /* Magnetic button wrapper */
