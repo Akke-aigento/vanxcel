@@ -171,7 +171,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         id: "solar", label: `${calc.solarWp}Wp`, x: ox + bus.cabinW + 40, y: oy - 12, w: bus.w - bus.cabinW - 80, h: 20,
         fill: C.yellow, stroke: C.yellow, phase: 3, dashed: true,
         visible: hasSolar,
-        tooltip: `Zonnepaneel ${calc.solarWp}Wp (op dak)`,
+        tooltip: t("configurator.solarPanelRoof", { wp: calc.solarWp }),
       },
       {
         id: "shore", label: "AC IN", x: shoreX, y: shoreY, w: 30, h: 20,
