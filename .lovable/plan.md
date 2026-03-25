@@ -1,76 +1,61 @@
 
 
-## Bugfix: Motorisatie-gaten + Fallback + "Ander voertuig"
+## Fact-Check Correcties — Database Updates
 
-### Drie onderdelen:
+### Status check
+- **FIX 4 (Ducato L3 wielbasis)**: Al correct in database (4035mm). ✅ Geen actie nodig.
+- **FIX 9 (Vito batterijlocatie)**: Al een waarschuwing aanwezig ("Starterbatterij locatie verschilt per variant"). Batterijlocatie in motorisatie is "engine_bay" — update naar "varies".
 
----
+### Uit te voeren fixes
 
-### 1. Database: Ontbrekende motorisaties toevoegen
+**FIX 1: VW T5 smart alternator waarschuwing + BMT motorisatie**
+- UPDATE warning `aafabbcd-...` met nieuwe title/description/solution
+- INSERT nieuwe motorisatie CAAC_140_BMT voor T5 (vehicle_id: `a1b2c3d4-1111-4000-8000-000000000015`)
 
-Insert ~9 nieuwe motorisaties + 1 waarschuwing via de insert tool:
+**FIX 2: Sprinter VS30 starterbatterij locatie**
+- UPDATE 3 motorisaties (`3bdc4d65`, `551ae168`, `13592f82`): starter_battery_location → "under_cab_floor_driver"
+- INSERT nieuwe waarschuwing (noodbatterij ≠ starterbatterij)
 
-| Voertuig | Motor | Jaren |
+**FIX 3: Jumper + Boxer vroege 2.2 HDi motorisatie**
+- INSERT 2 motorisaties (DW10_130_HDI) voor Jumper (`4a0eb30a`) en Boxer (`0950836e`)
+- UPDATE 2 "technisch identiek" waarschuwingen (`50029deb`, `07baf6c3`) met genuanceerde tekst
+
+**FIX 5: Ford Transit Custom startjaar**
+- UPDATE vehicle `8bd3280e`: production_year_start → 2012
+
+**FIX 6: Gewichtswaarschuwing**
+- Dit is een globale tip voor de installatiegids — INSERT als waarschuwing op alle grote voertuigen of implementeer als hardcoded tip in de install guide component. Beter: voeg als i18n-tekst toe aan de installatiegids.
+
+**FIX 7: Universele alternator check-tip**
+- Append tekst aan notes van alle conventionele-alternator motorisaties (~29 records)
+
+**FIX 8: T6 alternator output variatie**
+- UPDATE notes van 3 T6 motorisaties + 2 T6.1 motorisaties
+
+**FIX 9: Vito batterijlocatie**
+- UPDATE motorisatie `bbe7eb16`: starter_battery_location → "varies"
+
+### Technische details
+
+Alle wijzigingen via de Supabase insert tool (UPDATE/INSERT operaties). Geen schema-wijzigingen nodig.
+
+| Fix | Operatie | Records |
 |---|---|---|
-| UAZ Bukhanka | 2.5 UMZ-451 (dynamo) | 1965-1985 |
-| UAZ Bukhanka | 2.9 UMZ-4218 | 1985-2008 |
-| Toyota LC70 | 3.4L 3B Diesel | 1984-1990 |
-| Toyota LC70 | 4.2L 1HZ Diesel | 1990-2007 |
-| Citroën Type H | 1.9L Traction (dynamo) | 1947-1963 |
-| VW T3 | 2.0 Boxer luchtgekoeld | 1979-1982 |
-| Toyota LiteAce | 2.0 Benzine 3Y | 1985-1992 |
-| Renault Estafette | 0.8L Ventoux (dynamo) | 1959-1962 |
-| Fiat Scudo III | 2.0 BlueHDi 145pk | 2022-heden |
+| 1 | UPDATE 1 warning + INSERT 1 motorisatie | 2 |
+| 2 | UPDATE 3 motorisaties + INSERT 1 warning | 4 |
+| 3 | INSERT 2 motorisaties + UPDATE 2 warnings | 4 |
+| 5 | UPDATE 1 vehicle | 1 |
+| 6 | Toevoegen als i18n key in installatiegids component | 4 taalbestanden |
+| 7 | UPDATE ~29 motorisatie notes | ~29 |
+| 8 | UPDATE 5 motorisatie notes (T6 + T6.1) | 5 |
+| 9 | UPDATE 1 motorisatie | 1 |
 
-Plus UAZ dynamo-waarschuwing voor 1965-1985 en sort_order updates voor bestaande motoren.
-
----
-
-### 2. Fallback logica in de motorisatie-stap
-
-**`src/hooks/use-configurator.ts`** — Wijzig `useMotorisations` hook:
-- Haal ALLE motorisaties op voor het voertuig (zonder client-side jaar-filter)
-- Return zowel de gefilterde als alle motors
-
-**`src/components/configurator/StepMotorisationSelect.tsx`** — Voeg fallback logica toe:
-- Filter eerst op exacte jaar-match
-- Als geen match: sorteer op "afstand" tot het bouwjaar, toon top 1-2
-- Toon oranje waarschuwingsbanner: "Geen exacte motordata voor bouwjaar [jaar]. We tonen de dichtstbijzijnde specificatie(s). Controleer je alternator fysiek."
-
----
-
-### 3. "Ander voertuig" optie in merkselectie
-
-**`src/components/configurator/StepBrandSelect.tsx`** — Voeg een extra kaart toe onderaan:
-- Label: "Ander voertuig"
-- Icoon: vraagteken of plus
-- Klikhandler: `onSelect("__other__")`
-
-**`src/components/configurator/StepOtherVehicle.tsx`** — Nieuw component:
-- 3 vragen: smart alternator (ja/nee/weet niet), spanning (12V/24V), grootte (klein/medium/groot/extra groot)
-- Bij "weet niet" smart alternator: uitleg met multimeter test
-- Bij 24V: waarschuwing dat VanXcel alleen 12V is
-- Sla antwoorden op in state en ga naar stap 6 (usage type)
-
-**`src/components/configurator/ConfiguratorWizard.tsx`** — Aanpassingen:
-- Herken `brand === "__other__"` en routeer naar `StepOtherVehicle` i.p.v. model/body/year/motor stappen
-- Na StepOtherVehicle: spring naar subStep 6 (usage type)
-- ConfiguratorState uitbreiden met `isOtherVehicle`, `otherSmartAlternator`, `otherVoltage`, `otherSize`
-- In latere stappen (results, package, install guide): check `isOtherVehicle` en verberg voertuig-specifieke content
-
-**Vertalingen** — 4 taalbestanden: ~15 nieuwe keys voor "ander voertuig", fallback message, smart alternator vraag, spanning vraag, grootte vraag.
-
----
+**Totaal: ~46 database operaties + 4 taalbestanden voor de gewichtswaarschuwing**
 
 ### Bestanden
-
 | Bestand | Wijziging |
 |---|---|
-| Database | 9 motorisaties insert + 1 waarschuwing + sort_order updates |
-| `src/hooks/use-configurator.ts` | useMotorisations retourneert alle motors + exacte matches |
-| `src/components/configurator/StepMotorisationSelect.tsx` | Fallback logica + waarschuwingsbanner |
-| `src/components/configurator/StepBrandSelect.tsx` | "Ander voertuig" kaart |
-| `src/components/configurator/StepOtherVehicle.tsx` | Nieuw: 3 vragen voor onbekend voertuig |
-| `src/components/configurator/ConfiguratorWizard.tsx` | State uitbreiden + routing voor "other" |
-| `src/i18n/locales/{nl,en,de,fr}.json` | ~15 nieuwe keys |
+| Database | ~46 UPDATE/INSERT operaties |
+| `src/i18n/locales/{nl,en,de,fr}.json` | Gewichtswaarschuwing key voor installatiegids |
+| `src/components/configurator/StepInstallGuide.tsx` | Gewichtswaarschuwing tonen |
 
