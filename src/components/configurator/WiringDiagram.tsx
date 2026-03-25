@@ -134,7 +134,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
     return [
       {
         id: "starter", label: "Starter", x: starterX, y: starterY, w: 50, h: 30,
-        fill: C.grey, stroke: C.grey, phase: 3, shape: "rect",
+        fill: C.grey, stroke: C.grey, phase: 3, shape: "rect" as const,
         tooltip: `${t("configurator.cableStarterBattery")} — ${starterLoc}`,
       },
       {
