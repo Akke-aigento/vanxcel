@@ -256,6 +256,14 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     );
   };
 
+  const handleComponentClick = useCallback((phaseId: string) => {
+    setActivePhase(phaseId);
+    const el = phaseRefs.current[phaseId];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
   const totalPhases = 7;
   const progressPercent = (completedPhases.length / totalPhases) * 100;
 
