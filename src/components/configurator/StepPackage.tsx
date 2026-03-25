@@ -90,11 +90,12 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
   });
 
   const { data: cableRoutes } = useCableRoutes(state.vehicleId);
+  const { priceMap } = useVanXcelPrices();
 
   const pkg = useMemo(() => {
     if (!appliances) return null;
-    return generatePackage(state, appliances, cableRoutes);
-  }, [appliances, state, cableRoutes]);
+    return generatePackage(state, appliances, cableRoutes, priceMap);
+  }, [appliances, state, cableRoutes, priceMap]);
 
   if (!pkg) {
     return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
