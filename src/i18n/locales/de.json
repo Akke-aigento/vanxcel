@@ -548,6 +548,8 @@
     "safetyFrostDesc": "LiFePO4-Batterien dürfen NICHT unter 0°C geladen werden. Verwende eine Batterie mit eingebauter Heizung oder deaktiviere alle Ladequellen bei Frost.",
     "safetyCableTitle": "🟠 KABELQUALITÄT",
     "safetyCableDesc": "Verwende ausschließlich verzinntes Kupfer-Marinekabel oder Automotive-Kabel (min. 105°C). NIEMALS billiges Baumarkt-Kabel. Gecrimpte Kabelschuhe mit Hydraulik-Zange. NIEMALS schwere Kabel löten (>10mm²).",
+    "safetyWeightTitle": "⚖️ GESAMTGEWICHT PRÜFEN",
+    "safetyWeightDesc": "Nach dem Einbau von Batterien, Wandler, Solarpanels, Möbeln, Wassertank usw. kann dein Fahrzeug das zulässige Gesamtgewicht (zGG) überschreiten. Das ist unsicher UND illegal. Prüfe das Gesamtgewicht auf einer Fahrzeugwaage nach dem Umbau. Eine LiFePO4-Batterie ist ~50% leichter als eine AGM gleicher Kapazität.",
 
     "phase0Title": "Vorbereitung & Planung",
     "phase0Step1": "Sammle alle Komponenten und überprüfe ob alles vollständig ist.",

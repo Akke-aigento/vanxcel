@@ -548,6 +548,8 @@
     "safetyFrostDesc": "LiFePO4 batteries must NOT be charged at temperatures below 0°C. This causes permanent damage (lithium plating). Use a battery with built-in heating or disable all charging sources in freezing temperatures.",
     "safetyCableTitle": "🟠 CABLE QUALITY",
     "safetyCableDesc": "Use only tinned copper marine cable or automotive-grade cable (min. 105°C insulation). NEVER use cheap hardware store cable. Use crimped cable lugs with a hydraulic crimping tool. NEVER solder heavy cables (>10mm²).",
+    "safetyWeightTitle": "⚖️ CHECK TOTAL VEHICLE WEIGHT",
+    "safetyWeightDesc": "After installing batteries, converter, solar panels, furniture, water tank, etc., your vehicle may exceed the maximum allowed weight (GVW). This is unsafe AND illegal. Check the total weight at a weighbridge after conversion. A LiFePO4 battery is ~50% lighter than an AGM of the same capacity — choose LiFePO4 to save weight.",
 
     "phase0Title": "Preparation & Planning",
     "phase0Step1": "Gather all your components and verify everything is complete. Lay everything out on a clean workspace.",

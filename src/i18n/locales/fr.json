@@ -548,6 +548,8 @@
     "safetyFrostDesc": "Les batteries LiFePO4 ne doivent PAS être chargées sous 0°C. Utilisez une batterie avec chauffage intégré ou désactivez toutes les sources de charge par temps de gel.",
     "safetyCableTitle": "🟠 QUALITÉ DES CÂBLES",
     "safetyCableDesc": "Utilisez uniquement du câble cuivre étamé marine ou automobile (isolation min. 105°C). N'utilisez JAMAIS de câble bon marché. Cosses serties avec pince hydraulique. Ne JAMAIS souder les câbles lourds (>10mm²).",
+    "safetyWeightTitle": "⚖️ VÉRIFIEZ LE POIDS TOTAL",
+    "safetyWeightDesc": "Après l'installation des batteries, convertisseur, panneaux solaires, meubles, réservoir d'eau, etc., votre véhicule peut dépasser le poids total autorisé (PTAC). C'est dangereux ET illégal. Vérifiez le poids total sur un pont-bascule après la conversion. Une batterie LiFePO4 est ~50% plus légère qu'une AGM de même capacité.",
 
     "phase0Title": "Préparation & Planification",
     "phase0Step1": "Rassemblez tous vos composants et vérifiez que tout est complet.",
