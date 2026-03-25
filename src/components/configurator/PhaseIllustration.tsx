@@ -316,8 +316,8 @@ const Phase4 = ({ t }: { t: (k: string) => string }) => (
     {/* ⑥ Batterij */}
     <line x1={320} y1={260} x2={300} y2={340} stroke={S.red} strokeWidth={3} />
     <line x1={360} y1={260} x2={380} y2={340} stroke={S.darkGrey} strokeWidth={3} />
-    <text x={290} y={360} textAnchor="middle" fontSize={9} fill={S.red}>{`+ (${t("configurator.illustRedCable").replace("{{size}}", "16mm²")})`?.includes("{{") ? `+ (red 16mm²)` : t("configurator.illustRedCable").replace("{{size}}", "16mm²")}</text>
-    <text x={400} y={360} textAnchor="middle" fontSize={9} fill={S.darkGrey}>{t("configurator.illustBlackCable").replace("{{size}}", "16mm²")}</text>
+    <text x={290} y={360} textAnchor="middle" fontSize={9} fill={S.red}>+ (rood 16mm²)</text>
+    <text x={400} y={360} textAnchor="middle" fontSize={9} fill={S.darkGrey}>– (zwart 16mm²)</text>
     <circle cx={340} cy={262} r={10} fill={S.teal + "33"} stroke={S.teal} strokeWidth={1.5} />
     <text x={340} y={266} textAnchor="middle" fontSize={9} fill="hsl(0 0% 90%)" fontWeight="700">⑥</text>
     <text x={340} y={375} textAnchor="middle" fontSize={9} fill={S.labelFill} fontWeight="600">{t("configurator.illustConnectLast")}</text>
