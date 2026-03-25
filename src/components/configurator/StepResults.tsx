@@ -254,7 +254,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           description={`${results.daysAutark} ${t("configurator.daysAutarkDesc")} · ${Math.round(results.batteryWhCapacity)} Wh ${t("configurator.usableCapacity")}`}
           accentClass="border-green-500/30"
           progress={results.dailyPercent}
-          price={results.batteryProduct.price * results.batteryQty}
+          price={results.batteryPrice ? results.batteryPrice * results.batteryQty : undefined}
           delay={100}
         />
 
