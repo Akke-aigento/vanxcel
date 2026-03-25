@@ -219,11 +219,17 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
                           <p className="text-xs text-primary italic">{item.reason}</p>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
-                          <p className="font-bold">€{(item.unitPrice * item.quantity).toFixed(2)}</p>
-                          {item.quantity > 1 && (
-                            <p className="text-xs text-muted-foreground">
-                              {item.isPerMeter ? `${item.quantity}m × €${item.unitPrice}` : `${item.quantity}× €${item.unitPrice}`}
-                            </p>
+                          {item.comingSoon ? (
+                            <p className="text-sm text-muted-foreground italic">—</p>
+                          ) : (
+                            <>
+                              <p className="font-bold">€{(item.unitPrice * item.quantity).toFixed(2)}</p>
+                              {item.quantity > 1 && (
+                                <p className="text-xs text-muted-foreground">
+                                  {item.isPerMeter ? `${item.quantity}m × €${item.unitPrice}` : `${item.quantity}× €${item.unitPrice}`}
+                                </p>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
