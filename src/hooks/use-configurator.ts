@@ -29,7 +29,7 @@ export const useVehiclesByBrand = (brand: string | null) =>
         .select("*")
         .eq("brand", brand!)
         .eq("is_active", true)
-        .order("popularity_rank", { ascending: true });
+        .order("production_year_start", { ascending: true });
       if (error) throw error;
       return data;
     },
