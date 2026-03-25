@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +58,8 @@ import {
 } from "@/lib/configurator-calculations";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import WiringDiagram from "./WiringDiagram";
+import PhaseIllustration from "./PhaseIllustration";
 
 interface Props {
   state: ConfiguratorState;
@@ -175,7 +177,8 @@ const phaseIcons = [
 const StepInstallGuide = ({ state, onBack }: Props) => {
   const { t } = useTranslation();
   const [completedPhases, setCompletedPhases] = useState<number[]>([]);
-
+  const [activePhase, setActivePhase] = useState<string | null>("phase-0");
+  const phaseRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { data: warnings } = useVehicleWarnings(
     state.vehicleId,
     state.buildYear,
@@ -207,6 +210,14 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     const dcDcA = 25; // Built into VanXcel 5-in-1 Converter
     return { batteryAh, solarWp, inverterW, dcDcA };
   }, [appliances, state]);
+
+  const handleComponentClick = useCallback((phaseId: string) => {
+    setActivePhase(phaseId);
+    const el = phaseRefs.current[phaseId];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
 
   if (!calc) {
     return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
@@ -252,6 +263,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       prev.includes(phase) ? prev.filter((p) => p !== phase) : [...prev, phase]
     );
   };
+
 
   const totalPhases = 7;
   const progressPercent = (completedPhases.length / totalPhases) * 100;
@@ -481,15 +493,33 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </div>
       )}
 
+      {/* ═══ WIRING DIAGRAM ═══ */}
+      <WiringDiagram
+        state={state}
+        calc={calc}
+        topBatteryLocation={topBatteryLocation ? { location_id: topBatteryLocation.location_id, label: topBatteryLocation.label } : null}
+        activePhase={activePhase}
+        onComponentClick={handleComponentClick}
+      />
+
       {/* ═══════════ 7 PHASES ═══════════ */}
-      <Accordion type="multiple" defaultValue={["phase-0"]} className="space-y-3">
+      <Accordion
+        type="multiple"
+        defaultValue={["phase-0"]}
+        className="space-y-3"
+        onValueChange={(values) => {
+          const last = values[values.length - 1] ?? null;
+          setActivePhase(last);
+        }}
+      >
 
         {/* ── PHASE 0: PREPARATION ── */}
-        <AccordionItem value="phase-0" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-0" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-0"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={0} difficulty="easy" time="1-2h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={0} />
             <ol className="list-decimal list-inside space-y-3 text-sm leading-relaxed">
               <li>{t("configurator.phase0Step1")}</li>
               <li>{t("configurator.phase0Step2")}</li>
@@ -520,12 +550,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 1: BATTERY MOUNTING ── */}
-        <AccordionItem value="phase-1" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-1" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-1"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={1} difficulty="moderate" time="1-3h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
-            {/* Battery location recommendations */}
+            <PhaseIllustration phase={1} batteryLocation={topBatteryLocation?.location_id} batteryAh={calc.batteryAh} />
             {topBatteryLocation && (
               <Card className="mb-4 border-primary/30">
                 <CardContent className="p-4">
@@ -583,11 +613,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 2: FUSE BOX & BUSBARS ── */}
-        <AccordionItem value="phase-2" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-2" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-2"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={2} difficulty="easy" time="1-2h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={2} />
             <ol className="list-decimal list-inside space-y-3 text-sm leading-relaxed">
               <li>{t("configurator.phase2Step1")}</li>
               <li>{t("configurator.phase2Step2")}</li>
@@ -609,13 +640,13 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 3: CABLE ROUTING ── */}
-        <AccordionItem value="phase-3" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-3" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-3"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={3} difficulty="hard" time="3-6h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={3} />
             <p className="text-sm text-muted-foreground mb-4">{t("configurator.phase3Intro")}</p>
-
             {/* Route 1: Starter → DC-DC */}
             <div className="space-y-4">
               <h4 className="font-semibold text-sm flex items-center gap-2">
@@ -740,13 +771,13 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 4: CONNECT EVERYTHING ── */}
-        <AccordionItem value="phase-4" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-4" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-4"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={4} difficulty="moderate" time="2-4h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={4} inverterW={calc.inverterW} />
             <DangerBlock text={t("configurator.phase4OrderWarning")} />
-
             <ol className="list-decimal list-inside space-y-4 text-sm leading-relaxed">
               {/* Step 1: Consumers to fuse box */}
               <li>
@@ -818,11 +849,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 5: TESTING ── */}
-        <AccordionItem value="phase-5" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-5" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-5"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={5} difficulty="easy" time="1-2h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={5} />
             <ol className="list-decimal list-inside space-y-3 text-sm leading-relaxed">
               <li>{t("configurator.phase5Step1")}</li>
               <li>{t("configurator.phase5Step2")}</li>
@@ -838,11 +870,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 6: FINISHING ── */}
-        <AccordionItem value="phase-6" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-6" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-6"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={6} difficulty="easy" time="1-2h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={6} />
             <ol className="list-decimal list-inside space-y-3 text-sm leading-relaxed">
               <li>{t("configurator.phase6Step1")}</li>
               <li>{t("configurator.phase6Step2")}</li>
