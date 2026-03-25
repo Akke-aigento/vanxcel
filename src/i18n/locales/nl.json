@@ -548,6 +548,8 @@
     "safetyFrostDesc": "LiFePO4 batterijen mogen NIET geladen worden bij temperaturen onder 0°C. Dit veroorzaakt permanente schade (lithium plating). Gebruik een batterij met ingebouwde verwarmingsfunctie of schakel alle laadbronnen uit bij vriestemperaturen.",
     "safetyCableTitle": "🟠 KABELKWALITEIT",
     "safetyCableDesc": "Gebruik uitsluitend vertind koperen scheepskabel of automotive-grade kabel (min. 105°C isolatie). Gebruik NOOIT goedkope bouwmarkt-kabel. Gebruik gecrimpe kabelschoenen met een hydraulische krimptang. NOOIT solderen op zware kabels (>10mm²).",
+    "safetyWeightTitle": "⚖️ CONTROLEER HET TOTAALGEWICHT",
+    "safetyWeightDesc": "Na het installeren van batterijen, converter, zonnepanelen, meubels, watertank, etc. kan je voertuig boven het maximaal toegestane gewicht (GVW/MTM) komen. Dit is onveilig EN illegaal. Controleer het totaalgewicht op een weegbrug na de conversie. Een LiFePO4 batterij is ~50% lichter dan een AGM van dezelfde capaciteit — kies bewust voor LiFePO4 om gewicht te besparen.",
 
     "phase0Title": "Voorbereiding & Planning",
     "phase0Step1": "Verzamel al je componenten en controleer of alles compleet is. Leg alles uit op een schone werkplek.",

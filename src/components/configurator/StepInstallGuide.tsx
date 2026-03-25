@@ -467,6 +467,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
           <AlertTitle>{t("configurator.safetyCableTitle")}</AlertTitle>
           <AlertDescription>{t("configurator.safetyCableDesc")}</AlertDescription>
         </Alert>
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
+          <AlertTriangle className="w-4 h-4" />
+          <AlertTitle>{t("configurator.safetyWeightTitle")}</AlertTitle>
+          <AlertDescription>{t("configurator.safetyWeightDesc")}</AlertDescription>
+        </Alert>
       </div>
 
       {/* Vehicle-specific warnings */}
