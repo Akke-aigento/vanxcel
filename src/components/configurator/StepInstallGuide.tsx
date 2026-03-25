@@ -53,8 +53,8 @@ import {
 import {
   calculateBattery,
   calculateSolar,
-  calculateInverter,
-  calculateDcDc,
+  get230vStats,
+  selectConverter,
 } from "@/lib/configurator-calculations";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";

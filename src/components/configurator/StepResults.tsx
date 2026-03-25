@@ -9,16 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ArrowRight, Battery, Sun, Zap, Plug, AlertTriangle } from "lucide-react";
 import { useCountUp } from "@/hooks/use-count-up";
 import type { ConfiguratorState } from "./ConfiguratorWizard";
-import type { SelectedAppliance } from "./StepAppliances";
 import {
   calculateBattery,
   calculateSolar,
-  calculateInverter,
-  calculateDcDc,
+  get230vStats,
   getDaysAutark,
   getSunHours,
   getDailySolarYield,
-  get230vStats,
+  selectConverter,
+  selectBatteryProduct,
+  selectSolarProduct,
 } from "@/lib/configurator-calculations";
 
 interface Props {
@@ -39,10 +39,13 @@ const ResultCard = ({
   warning,
   progress,
   delay,
+  badge,
+  features,
+  price,
 }: {
   icon: React.ReactNode;
   title: string;
-  value: number;
+  value: number | string;
   unit: string;
   subtitle: string;
   description: string;
@@ -50,8 +53,13 @@ const ResultCard = ({
   warning?: string;
   progress?: number;
   delay: number;
+  badge?: string;
+  features?: string[];
+  price?: number;
 }) => {
-  const { ref, value: animatedValue } = useCountUp(value, 1200);
+  const numericValue = typeof value === 'number' ? value : 0;
+  const { ref, value: animatedValue } = useCountUp(numericValue, 1200);
+  const displayValue = typeof value === 'string' ? value : animatedValue;
 
   return (
     <div ref={ref}>
@@ -65,10 +73,15 @@ const ResultCard = ({
             <span className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {title}
             </span>
+            {badge && (
+              <Badge className="text-xs bg-[#008593] text-white hover:bg-[#006d78]">
+                {badge}
+              </Badge>
+            )}
           </div>
 
           <div className="mb-2">
-            <span className="text-4xl font-bold tracking-tight">{animatedValue}</span>
+            <span className="text-4xl font-bold tracking-tight">{displayValue}</span>
             <span className="text-xl text-muted-foreground ml-1">{unit}</span>
           </div>
 
@@ -78,12 +91,24 @@ const ResultCard = ({
             <div className="mb-3">
               <Progress value={Math.min(progress, 100)} className="h-2" />
               <span className="text-xs text-muted-foreground mt-1 block">
-                {Math.round(progress)}% {unit === "Ah" ? "dagelijks verbruik" : ""}
+                {Math.round(progress)}%
               </span>
             </div>
           )}
 
+          {features && features.length > 0 && (
+            <ul className="space-y-1 mb-3">
+              {features.map((f, i) => (
+                <li key={i} className="text-sm text-foreground/80">{f}</li>
+              ))}
+            </ul>
+          )}
+
           <p className="text-sm text-foreground/80">{description}</p>
+
+          {price !== undefined && (
+            <p className="text-lg font-bold mt-2">€{price}</p>
+          )}
 
           {warning && (
             <div className="mt-3 flex items-start gap-2 rounded-md bg-destructive/10 border border-destructive/30 p-3">
@@ -116,33 +141,46 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
     const maxSolarM2 = state.bodyType?.solar_max_area_m2
       ? Number(state.bodyType.solar_max_area_m2)
       : 4;
-    const solarWp = calculateSolar(state.totalDailyWh, state.climate ?? "benelux", maxSolarM2);
-    const inverterW = calculateInverter(state.selectedAppliances, appliances);
-    const dcDcA = calculateDcDc(state.motorisation, batteryAh);
+    const solarWpRaw = calculateSolar(state.totalDailyWh, state.climate ?? "benelux", maxSolarM2);
     const stats230v = get230vStats(state.selectedAppliances, appliances);
     const daysAutark = getDaysAutark(state.usageType ?? "regular");
     const sunHours = getSunHours(state.climate ?? "benelux");
+
+    // VanXcel product selections
+    const converterSel = selectConverter(stats230v.peakW, stats230v.count > 0);
+    const converterW = Number(converterSel.product.specs.continuousW);
+    const batterySel = selectBatteryProduct(batteryAh);
+    const solarSel = selectSolarProduct(solarWpRaw);
+    const solarWp = solarSel.cappedWp;
     const solarYield = getDailySolarYield(solarWp, state.climate ?? "benelux");
-    const maxSolarWp = Math.round(maxSolarM2 * 180);
-    const solarCapped = solarWp >= maxSolarWp && maxSolarM2 < 10;
+
     const batteryWhCapacity = batteryAh * 12.8 * 0.8;
     const dailyPercent = (state.totalDailyWh / batteryWhCapacity) * 100;
-    const panelCount = solarWp <= 200 ? 1 : Math.ceil(solarWp / 200);
+
+    // Estimated total price (converter + battery + solar)
+    const estimatedPrice = converterSel.product.price
+      + (batterySel.product.price * batterySel.quantity)
+      + (solarWp > 0 ? solarSel.product.price * solarSel.quantity : 0);
 
     return {
       batteryAh,
       solarWp,
-      inverterW,
-      dcDcA,
+      converterW,
+      converterProduct: converterSel.product,
+      converterWarning: converterSel.warning,
+      converterExceeds: converterSel.exceeds,
+      batteryProduct: batterySel.product,
+      batteryQty: batterySel.quantity,
+      solarProduct: solarSel.product,
+      solarQty: solarSel.quantity,
+      solarWarning: solarSel.warning,
       stats230v,
       daysAutark,
       sunHours,
       solarYield,
-      solarCapped,
-      maxSolarWp,
       dailyPercent,
-      panelCount,
       batteryWhCapacity,
+      estimatedPrice,
     };
   }, [appliances, state]);
 
@@ -156,8 +194,6 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
     scandinavia: t("configurator.climateNorth"),
     all_season: t("configurator.climateAll"),
   };
-
-  const isSmartAlt = state.motorisation?.has_smart_alternator;
 
   return (
     <div className="pb-8">
@@ -177,6 +213,29 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {/* Card 1: VanXcel Converter */}
+        <ResultCard
+          icon={<Zap className="w-5 h-5 text-[#008593]" />}
+          title={t("configurator.converterTitle")}
+          value={`VanXcel ${results.converterW}W`}
+          unit=""
+          badge="5-IN-1"
+          subtitle={t("configurator.converterSubtitle")}
+          features={[
+            `⚡ ${t("configurator.converterInverter")}: ${results.converterW}W pure sine wave`,
+            `🔌 ${t("configurator.converterDcDc")}: 25A`,
+            `☀️ ${t("configurator.converterMppt")}: ${t("configurator.converterMpptMax")}`,
+            `🏠 ${t("configurator.converterShore")}: 230V AC IN`,
+            `🔄 UPS: 25ms switchover`,
+          ]}
+          description={results.converterProduct.configuratorUse}
+          accentClass="border-[#008593]/30"
+          price={results.converterProduct.price}
+          warning={results.converterWarning ?? undefined}
+          delay={0}
+        />
+
+        {/* Card 2: Battery */}
         <ResultCard
           icon={<Battery className="w-5 h-5 text-green-500" />}
           title={t("configurator.batteryTitle")}
@@ -186,53 +245,32 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           description={`${results.daysAutark} ${t("configurator.daysAutarkDesc")} · ${Math.round(results.batteryWhCapacity)} Wh ${t("configurator.usableCapacity")}`}
           accentClass="border-green-500/30"
           progress={results.dailyPercent}
-          delay={0}
+          price={results.batteryProduct.price * results.batteryQty}
+          delay={100}
         />
 
+        {/* Card 3: Solar */}
         <ResultCard
           icon={<Sun className="w-5 h-5 text-yellow-500" />}
           title={t("configurator.solarTitle")}
           value={results.solarWp}
           unit="Wp"
-          subtitle={`${results.panelCount}× ${Math.round(results.solarWp / results.panelCount)}W ${t("configurator.panels")}`}
-          description={`${t("configurator.solarYieldPrefix")} ${results.solarYield} Wh/${t("configurator.day")} ${t("configurator.inClimate")} ${climateLabels[state.climate ?? "benelux"]}`}
+          subtitle={`${results.solarQty}× ${Number(results.solarProduct.specs.wattage)}W ${t("configurator.panels")}`}
+          description={`${t("configurator.solarYieldPrefix")} ${results.solarYield} Wh/${t("configurator.day")} ${t("configurator.inClimate")} ${climateLabels[state.climate ?? "benelux"]}. ${t("configurator.solarConverterDirect")}`}
           accentClass="border-yellow-500/30"
-          warning={results.solarCapped ? `${t("configurator.roofWarning")} ${results.maxSolarWp} Wp` : undefined}
-          delay={100}
-        />
-
-        <ResultCard
-          icon={<Zap className="w-5 h-5 text-blue-500" />}
-          title={t("configurator.inverterTitle")}
-          value={results.inverterW}
-          unit={results.inverterW > 0 ? "W" : ""}
-          subtitle={results.inverterW > 0 ? t("configurator.pureSineWave") : t("configurator.inverterNotNeeded")}
-          description={
-            results.inverterW > 0
-              ? `${results.stats230v.count} ${t("configurator.appliancesOn230v")} · ${t("configurator.peakPower")} ${results.stats230v.peakW}W`
-              : t("configurator.no230vAppliances")
-          }
-          accentClass="border-blue-500/30"
+          warning={results.solarWarning ?? undefined}
           delay={200}
         />
 
+        {/* Card 4: Alternator Charging (built into converter) */}
         <ResultCard
           icon={<Plug className="w-5 h-5 text-orange-500" />}
-          title={t("configurator.dcDcTitle")}
-          value={results.dcDcA}
-          unit="A"
-          subtitle={
-            isSmartAlt
-              ? `DC-DC ${t("configurator.dcDcRequired")}`
-              : `DC-DC ${t("configurator.dcDcRecommended")}`
-          }
-          description={`${t("configurator.chargesVia")} ${state.motorisation?.alternator_rated_amps ?? "?"}A ${t("configurator.alternator").toLowerCase()}`}
+          title={t("configurator.altChargeTitle")}
+          value={25}
+          unit="A DC-DC"
+          subtitle={t("configurator.altChargeSubtitle")}
+          description={t("configurator.altChargeDesc")}
           accentClass="border-orange-500/30"
-          warning={
-            isSmartAlt
-              ? t("configurator.smartAlternatorDesc")
-              : undefined
-          }
           delay={300}
         />
       </div>
@@ -248,11 +286,11 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
         </span>
         <span className="text-muted-foreground">|</span>
         <span className="flex items-center gap-1 font-semibold">
-          <Zap className="w-4 h-4 text-blue-500" /> {results.inverterW > 0 ? `${results.inverterW}W` : "—"}
+          <Zap className="w-4 h-4 text-[#008593]" /> VanXcel {results.converterW}W 5-in-1
         </span>
         <span className="text-muted-foreground">|</span>
         <span className="flex items-center gap-1 font-semibold">
-          <Plug className="w-4 h-4 text-orange-500" /> {results.dcDcA}A DC-DC
+          💰 ~€{results.estimatedPrice}
         </span>
       </div>
 

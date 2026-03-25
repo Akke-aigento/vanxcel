@@ -162,6 +162,30 @@ export type Database = {
           },
         ]
       }
+      product_notifications: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          notified: boolean | null
+          product_sku: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          notified?: boolean | null
+          product_sku: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          notified?: boolean | null
+          product_sku?: string
+        }
+        Relationships: []
+      }
       vehicle_battery_locations: {
         Row: {
           accessibility: string | null

@@ -1,8 +1,8 @@
 import type { Tables } from "@/integrations/supabase/types";
 import type { SelectedAppliance } from "@/components/configurator/StepAppliances";
+import { vanxcelProducts, type VanXcelProduct } from "./vanxcel-products";
 
 type Appliance = Tables<"appliances">;
-type Motorisation = Tables<"vehicle_motorisations">;
 
 export function getDaysAutark(usageType: string): number {
   const map: Record<string, number> = { weekend: 2, regular: 3, fulltime: 2, stealth: 1 };
@@ -37,32 +37,6 @@ export function calculateSolar(totalDailyWh: number, climate: string, maxSolarM2
   return Math.ceil(cappedWp / 100) * 100;
 }
 
-export function calculateInverter(
-  selectedAppliances: SelectedAppliance[],
-  allAppliances: Appliance[]
-): number {
-  const active230v = selectedAppliances
-    .map((sa) => allAppliances.find((a) => a.id === sa.id))
-    .filter((a): a is Appliance => !!a && !!a.requires_inverter);
-
-  if (active230v.length === 0) return 0;
-
-  const maxPeakW = active230v.reduce((sum, a) => sum + (a.wattage_peak ?? a.wattage_typical), 0);
-  const withMargin = maxPeakW * 1.2;
-  const sizes = [300, 600, 1000, 1500, 2000, 3000];
-  return sizes.find((s) => s >= withMargin) || 3000;
-}
-
-export function calculateDcDc(motorisation: Motorisation | null, batteryAh: number): number {
-  if (!motorisation) return 30;
-  const altAmps = motorisation.alternator_rated_amps ?? 150;
-  const maxFromAlt = altAmps * 0.25;
-  const maxFromBattery = batteryAh * 0.2;
-  const ideal = Math.min(maxFromAlt, maxFromBattery);
-  const sizes = [20, 30, 50, 60];
-  return sizes.find((s) => s >= ideal) || 60;
-}
-
 export function get230vStats(
   selectedAppliances: SelectedAppliance[],
   allAppliances: Appliance[]
@@ -74,4 +48,74 @@ export function get230vStats(
     count: active.length,
     peakW: active.reduce((sum, a) => sum + (a.wattage_peak ?? a.wattage_typical), 0),
   };
+}
+
+// === VanXcel Product Selectors ===
+
+export interface ConverterSelection {
+  product: VanXcelProduct;
+  warning: string | null;
+  exceeds: boolean;
+}
+
+export function selectConverter(maxPeak230V: number, has230Vappliances: boolean): ConverterSelection {
+  // Converter is ALWAYS needed (DC-DC + MPPT are built in)
+  if (!has230Vappliances || maxPeak230V <= 1000) {
+    return { product: vanxcelProducts.find(p => p.sku === 'VX1000CV')!, warning: null, exceeds: false };
+  } else if (maxPeak230V <= 1500) {
+    return { product: vanxcelProducts.find(p => p.sku === 'VX1500CV')!, warning: null, exceeds: false };
+  } else {
+    // > 1500W: recommend 1500W with warning about 3000W coming soon
+    return {
+      product: vanxcelProducts.find(p => p.sku === 'VX1500CV')!,
+      warning: `Je hebt ${maxPeak230V}W piek nodig. De VanXcel 1500W Converter kan dit aan als niet alle apparaten tegelijk draaien. De 3000W versie komt binnenkort!`,
+      exceeds: true,
+    };
+  }
+}
+
+export interface BatterySelection {
+  product: VanXcelProduct;
+  quantity: number;
+}
+
+export function selectBatteryProduct(requiredAh: number): BatterySelection {
+  if (requiredAh <= 100) {
+    return { product: vanxcelProducts.find(p => p.sku === 'VXBAT100S')!, quantity: 1 };
+  } else if (requiredAh <= 200) {
+    return { product: vanxcelProducts.find(p => p.sku === 'VXBAT200')!, quantity: 1 };
+  } else if (requiredAh <= 300) {
+    return { product: vanxcelProducts.find(p => p.sku === 'VXBAT300')!, quantity: 1 };
+  } else {
+    return { product: vanxcelProducts.find(p => p.sku === 'VXBAT200')!, quantity: Math.ceil(requiredAh / 200) };
+  }
+}
+
+export interface SolarSelection {
+  product: VanXcelProduct;
+  quantity: number;
+  cappedWp: number;
+  warning: string | null;
+}
+
+export function selectSolarProduct(requiredWp: number): SolarSelection {
+  const cappedWp = Math.min(requiredWp, 500);
+  const warning = requiredWp > 500
+    ? `De VanXcel Converter ondersteunt maximaal 500Wp. We adviseren ${requiredWp}Wp op basis van je verbruik, maar je kunt maximaal 500Wp aansluiten. Het tekort wordt aangevuld via alternator laden en walstroom.`
+    : null;
+
+  const panel200 = vanxcelProducts.find(p => p.sku === 'VXSOL200')!;
+  const panelWp = 200;
+  const quantity = Math.ceil(cappedWp / panelWp);
+
+  return { product: panel200, quantity, cappedWp: quantity * panelWp, warning };
+}
+
+export function selectANLFuse(converterSku: string): VanXcelProduct {
+  const converter = vanxcelProducts.find(p => p.sku === converterSku);
+  const fuseRequired = Number(converter?.specs.fuseRequired ?? 200);
+  if (fuseRequired >= 250) {
+    return vanxcelProducts.find(p => p.sku === 'VXANL250')!;
+  }
+  return vanxcelProducts.find(p => p.sku === 'VXANL200')!;
 }

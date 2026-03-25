@@ -3,12 +3,15 @@ import type { Tables } from "@/integrations/supabase/types";
 import {
   calculateBattery,
   calculateSolar,
-  calculateInverter,
-  calculateDcDc,
+  get230vStats,
   getDaysAutark,
   getDailySolarYield,
-  get230vStats,
+  selectConverter,
+  selectBatteryProduct,
+  selectSolarProduct,
+  selectANLFuse,
 } from "./configurator-calculations";
+import { vanxcelProducts, getProduct, type VanXcelProduct } from "./vanxcel-products";
 
 export interface PackageItem {
   category: string;
@@ -18,180 +21,215 @@ export interface PackageItem {
   unitPrice: number;
   reason: string;
   icon: string;
+  sku: string;
+  inStock: boolean;
+  comingSoon: boolean;
+  shopUrl: string | null;
+  configuratorUse: string;
+  isPerMeter?: boolean;
 }
 
 export interface PackageResult {
   items: PackageItem[];
   batteryAh: number;
   solarWp: number;
-  inverterW: number;
+  converterW: number;
   dcDcA: number;
   totalPrice: number;
+  totalInStock: number;
+  totalComingSoon: number;
+  totalOutOfStock: number;
   daysAutark: number;
+  converterProduct: VanXcelProduct;
+  batteryProduct: VanXcelProduct;
+  converterWarning: string | null;
+  solarWarning: string | null;
+  savingsHighlight: string;
+}
+
+function addItem(
+  items: PackageItem[],
+  product: VanXcelProduct,
+  quantity: number,
+  icon: string,
+  reasonOverride?: string,
+  isPerMeter?: boolean
+) {
+  items.push({
+    category: product.category,
+    name: product.name,
+    specs: Object.entries(product.specs)
+      .filter(([k]) => !['type', 'priceUnit'].includes(k))
+      .map(([k, v]) => `${k}: ${v}`)
+      .slice(0, 3)
+      .join(', '),
+    quantity,
+    unitPrice: product.price,
+    reason: reasonOverride ?? product.configuratorUse,
+    icon,
+    sku: product.sku,
+    inStock: product.inStock,
+    comingSoon: product.comingSoon,
+    shopUrl: product.shopUrl,
+    configuratorUse: product.configuratorUse,
+    isPerMeter,
+  });
 }
 
 export function generatePackage(
   state: ConfiguratorState,
-  appliances: Tables<"appliances">[]
+  appliances: Tables<"appliances">[],
+  cableRoutes?: Tables<"vehicle_cable_routes">[] | null
 ): PackageResult {
   const batteryAh = calculateBattery(state.totalDailyWh, state.usageType ?? "regular");
   const maxSolarM2 = state.bodyType?.solar_max_area_m2
     ? Number(state.bodyType.solar_max_area_m2)
     : 4;
-  const solarWp = calculateSolar(state.totalDailyWh, state.climate ?? "benelux", maxSolarM2);
-  const inverterW = calculateInverter(state.selectedAppliances, appliances);
-  const dcDcA = calculateDcDc(state.motorisation, batteryAh);
-  const daysAutark = getDaysAutark(state.usageType ?? "regular");
+  const solarWpRaw = calculateSolar(state.totalDailyWh, state.climate ?? "benelux", maxSolarM2);
   const stats230v = get230vStats(state.selectedAppliances, appliances);
-  const solarYield = getDailySolarYield(solarWp, state.climate ?? "benelux");
+  const daysAutark = getDaysAutark(state.usageType ?? "regular");
+
+  // Converter selection (replaces inverter + DC-DC + MPPT)
+  const converterSel = selectConverter(stats230v.peakW, stats230v.count > 0);
+  const converterW = Number(converterSel.product.specs.continuousW);
+
+  // Battery selection
+  const batterySel = selectBatteryProduct(batteryAh);
+
+  // Solar selection (capped at 500Wp by converter)
+  const solarSel = selectSolarProduct(solarWpRaw);
+  const solarWp = solarSel.cappedWp;
+
+  // ANL fuse matched to converter
+  const anlFuse = selectANLFuse(converterSel.product.sku);
 
   const items: PackageItem[] = [];
 
-  // Battery
-  const batteryQty = batteryAh > 200 ? Math.ceil(batteryAh / 200) : 1;
-  const batteryUnitAh = batteryAh > 200 ? 200 : batteryAh;
-  const batteryPrice = batteryUnitAh <= 100 ? 349 : 599;
-  items.push({
-    category: "battery",
-    name: `LiFePO4 ${batteryUnitAh}Ah`,
-    specs: "12.8V, ingebouwde BMS, bluetooth monitoring",
-    quantity: batteryQty,
-    unitPrice: batteryPrice,
-    reason: `${batteryAh}Ah voor ${state.totalDailyWh}Wh dagelijks verbruik`,
-    icon: "battery",
-  });
+  // 1. Converter (always)
+  addItem(items, converterSel.product, 1, 'zap',
+    `Hart van je systeem: omvormer ${converterW}W + DC-DC 25A + MPPT tot 500Wp + walstroomlader + UPS — alles in één apparaat.`);
 
-  // Solar panels
+  // 2. Battery
+  addItem(items, batterySel.product, batterySel.quantity, 'battery',
+    `${batteryAh}Ah voor ${state.totalDailyWh}Wh dagelijks verbruik × ${daysAutark} dagen autonomie.`);
+
+  // 3. Solar panels (if needed)
   if (solarWp > 0) {
-    const panelWp = 200;
-    const panelCount = Math.ceil(solarWp / panelWp);
-    items.push({
-      category: "solar",
-      name: `${panelWp}W Mono`,
-      specs: "Monocrystalline, aluminium frame, MC4 connectors",
-      quantity: panelCount,
-      unitPrice: 149,
-      reason: `${panelCount}× ${panelWp}W = ${panelCount * panelWp}Wp — ${solarYield} Wh/dag`,
-      icon: "sun",
-    });
+    addItem(items, solarSel.product, solarSel.quantity, 'sun',
+      `${solarSel.quantity}× ${Number(solarSel.product.specs.wattage)}W = ${solarWp}Wp — sluit direct aan op VanXcel Converter via MC4.`);
 
-    // MPPT controller
-    const mpptAmps = Math.ceil((solarWp / 12) * 1.2);
-    const mpptSize = [10, 20, 30, 40, 50].find((s) => s >= mpptAmps) || 50;
-    const mpptPrice = mpptSize <= 20 ? 89 : mpptSize <= 30 ? 129 : 179;
-    items.push({
-      category: "solar",
-      name: `MPPT ${mpptSize}A`,
-      specs: "MPPT technologie, bluetooth, programmeerbaar",
-      quantity: 1,
-      unitPrice: mpptPrice,
-      reason: `Regelt de ${solarWp}Wp zonnepanelen`,
-      icon: "gauge",
-    });
+    // Roof cable gland
+    addItem(items, getProduct('VXDAKDV')!, 1, 'cable',
+      'Waterdichte dakdoorvoer voor de solarkabels.');
+
+    // Solar mounting kit
+    addItem(items, getProduct('VXSOLMOUNT')!, 1, 'cable',
+      'Montagebeugels voor het bevestigen van je panelen op het dak.');
+
+    // Solar cables (6mm²) — estimate route length
+    const solarRoute = cableRoutes?.find(r => r.route_id === 'roof_to_interior');
+    const solarMeters = Math.ceil(Number(solarRoute?.distance_meters ?? 4) + 1);
+    addItem(items, getProduct('VXCAB6SR')!, solarMeters, 'cable',
+      `${solarMeters}m solarkabel rood voor paneel → converter.`, true);
+    addItem(items, getProduct('VXCAB6SZ')!, solarMeters, 'cable',
+      `${solarMeters}m solarkabel zwart.`, true);
   }
 
-  // Inverter
-  if (inverterW > 0) {
-    const invPrice =
-      inverterW <= 600 ? 149 : inverterW <= 1000 ? 249 : inverterW <= 2000 ? 399 : 599;
-    items.push({
-      category: "inverter",
-      name: `${inverterW}W Pure Sine Wave`,
-      specs: "12V → 230V, pure sinus, USB poorten",
-      quantity: 1,
-      unitPrice: invPrice,
-      reason: `Voor ${stats230v.count} apparaten op 230V (piek ${stats230v.peakW}W)`,
-      icon: "zap",
-    });
+  // 4. ANL Fuse (always)
+  addItem(items, anlFuse, 1, 'shield',
+    `Hoofdzekering ${anlFuse.specs.rating}A — passend bij je VanXcel ${converterW}W Converter. Plaatsen binnen 18cm van batterij+.`);
+
+  // 5. Battery disconnect switch (always)
+  addItem(items, getProduct('VXSWITCH200')!, 1, 'power',
+    'Noodschakelaar — schakelt het volledige systeem uit. Plaatsen direct NA de hoofdzekering.');
+
+  // 6. Negative busbar (always)
+  addItem(items, getProduct('VXBUSBAR')!, 1, 'minus',
+    'Centraal punt voor alle negatieve kabels. Verbind met 25mm²+ kabel naar chassis-aarding.');
+
+  // 7. Fuse box (12-slot for regular/fulltime, 6-slot for weekend/stealth)
+  const useBigFuseBox = state.usageType === 'regular' || state.usageType === 'fulltime';
+  addItem(items, getProduct(useBigFuseBox ? 'VXFH12' : 'VXFH6')!, 1, 'shield',
+    useBigFuseBox ? 'Zekeringkast 12-weg voor al je circuits.' : 'Compacte zekeringkast voor eenvoudige setups.');
+
+  // 8. Blade fuse pack (always)
+  addItem(items, getProduct('VXFUSEPACK')!, 1, 'shield',
+    'Assortiment blade fuses voor je zekeringkast.');
+
+  // 9. Alternator cable (starter → converter DC-DC input)
+  const altRoute = cableRoutes?.find(r => r.route_id === 'starter_to_leisure');
+  const altMeters = Math.ceil(Number(altRoute?.distance_meters ?? 3) + 1);
+  // Note: 16mm² battery cables are included with the converter
+  // But we need cables for the alternator run
+  const altCableRed = getProduct('VXCAB16R');
+  const altCableBlk = getProduct('VXCAB16Z');
+  if (altCableRed && altCableBlk) {
+    addItem(items, altCableRed, altMeters, 'cable',
+      `${altMeters}m kabel voor starterbatterij → converter (Anderson connector).`, true);
+    addItem(items, altCableBlk, altMeters, 'cable',
+      `${altMeters}m negatieve kabel voor alternator circuit.`, true);
   }
 
-  // DC-DC charger
-  const dcDcPrice = dcDcA <= 30 ? 199 : dcDcA <= 50 ? 299 : 399;
-  const isSmartAlt = state.motorisation?.has_smart_alternator;
-  items.push({
-    category: "dc_dc",
-    name: `DC-DC ${dcDcA}A`,
-    specs: "12V→12V, smart alternator compatible, MPPT input",
-    quantity: 1,
-    unitPrice: dcDcPrice,
-    reason: isSmartAlt
-      ? "VERPLICHT — smart alternator gedetecteerd"
-      : "Aanbevolen voor optimale lading via alternator",
-    icon: "plug",
-  });
+  // 10. Heatshrink (always)
+  addItem(items, getProduct('VXKRIMP')!, 1, 'cable');
 
-  // Wiring kit
-  items.push({
-    category: "cable",
-    name: "Bekabelingspakket",
-    specs: "Hoofdkabels, zekeringen, kabelschoenen, krimpkous",
-    quantity: 1,
-    unitPrice: 149,
-    reason: "Alle kabels voor de hoofdcircuits",
-    icon: "cable",
-  });
+  // 11. Cable ties (always)
+  addItem(items, getProduct('VXBINDERS')!, 1, 'cable');
 
-  // Fuse box
-  items.push({
-    category: "fuse",
-    name: "Zekeringkast 12-weg",
-    specs: "ATC/ATO zekeringen, negatieve busbar, LED indicatie",
-    quantity: 1,
-    unitPrice: 49,
-    reason: "Verdeelt en beveiligt al je 12V circuits",
-    icon: "shield",
-  });
+  // 12. Ring terminals (always)
+  addItem(items, getProduct('VXRINGPACK')!, 1, 'cable');
 
-  // Battery monitor
+  // 13. Switch panel (if > 3 appliances)
+  if (state.selectedAppliances.length > 3) {
+    addItem(items, getProduct('VXPANEL5')!, 1, 'gauge');
+  }
+
+  // 14. 230V outlets (converter always has AC OUT)
+  addItem(items, getProduct('VXPLUG230')!, 1, 'plug');
+
+  // 15. USB outlets (if USB appliances or always useful)
+  const hasUSBAppliances = state.selectedAppliances.some(sa => {
+    const a = appliances.find(ap => ap.id === sa.id);
+    return a && !a.requires_inverter && (a.name.toLowerCase().includes('usb') || a.name.toLowerCase().includes('phone') || a.name.toLowerCase().includes('telefoon'));
+  });
+  if (hasUSBAppliances || state.selectedAppliances.length > 2) {
+    addItem(items, getProduct('VXUSB2')!, 1, 'plug');
+  }
+
+  // 16. Battery monitor shunt (if >= 100Ah)
   if (batteryAh >= 100) {
-    items.push({
-      category: "accessory",
-      name: "Battery Monitor (SmartShunt)",
-      specs: "500A shunt, bluetooth, SOC percentage",
-      quantity: 1,
-      unitPrice: 79,
-      reason: "Houdt je batterijstatus bij — cruciaal voor LiFePO4",
-      icon: "activity",
-    });
+    addItem(items, getProduct('VXSHUNT')!, 1, 'activity');
   }
 
-  // ANL fuse + holder — sizing based on main cable thickness
-  const mainCableSize = inverterW > 2000 ? 50 : inverterW > 1000 ? 35 : 25;
-  const anlFuseA = mainCableSize >= 50 ? 300 : mainCableSize >= 35 ? 200 : 150;
-  const anlFusePrice = anlFuseA >= 300 ? 18 : 15;
-  items.push({
-    category: "fuse",
-    name: `ANL Fuse ${anlFuseA}A + Holder`,
-    specs: `${anlFuseA}A ANL zekering met inline houder`,
-    quantity: 1,
-    unitPrice: anlFusePrice,
-    reason: "VERPLICHT — beschermt tegen kortsluiting. Plaatsen binnen 18cm van de batterij positieve klem.",
-    icon: "shield",
-  });
+  // 17. CEE-16A shore power inlet (if regular or fulltime)
+  if (state.usageType === 'regular' || state.usageType === 'fulltime') {
+    addItem(items, getProduct('VXCEE16')!, 1, 'plug',
+      'Walstroom aansluiting — sluit aan op AC IN van je VanXcel Converter voor laden op campings.');
+  }
 
-  // Battery disconnect switch
-  items.push({
-    category: "safety",
-    name: "Battery Disconnect Switch",
-    specs: "300A rated, sleutelschakelaar",
-    quantity: 1,
-    unitPrice: 25,
-    reason: "Noodschakelaar — schakelt het volledige systeem uit. Plaatsen direct NA de hoofdzekering.",
-    icon: "power",
-  });
-
-  // Negative busbar
-  items.push({
-    category: "cable",
-    name: "Negatieve Busbar (6-weg)",
-    specs: "M8 aansluitingen, 250A rated",
-    quantity: 1,
-    unitPrice: 15,
-    reason: "Centraal punt voor alle negatieve kabels. Verbind met 25mm²+ kabel naar chassis-aarding.",
-    icon: "minus",
-  });
-
+  // Calculate totals
   const totalPrice = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+  const totalInStock = items.filter(i => i.inStock).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+  const totalComingSoon = items.filter(i => i.comingSoon).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+  const totalOutOfStock = items.filter(i => !i.inStock && !i.comingSoon).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
-  return { items, batteryAh, solarWp, inverterW, dcDcA, totalPrice, daysAutark };
+  const savingsHighlight = `De VanXcel 5-in-1 Converter vervangt een losse omvormer (€399), DC-DC lader (€299), MPPT regelaar (€129) en walstroomlader (€149) — een besparing van meer dan €500!`;
+
+  return {
+    items,
+    batteryAh,
+    solarWp,
+    converterW,
+    dcDcA: 25, // fixed, built into converter
+    totalPrice,
+    totalInStock,
+    totalComingSoon,
+    totalOutOfStock,
+    daysAutark,
+    converterProduct: converterSel.product,
+    batteryProduct: batterySel.product,
+    converterWarning: converterSel.warning,
+    solarWarning: solarSel.warning,
+    savingsHighlight,
+  };
 }
