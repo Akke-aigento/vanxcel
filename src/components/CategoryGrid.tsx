@@ -26,7 +26,7 @@ const CategoryGrid = () => {
     if (collectionsData) {
       const raw = extractArray(collectionsData);
       if (raw.length > 0) {
-        return normalizeCollections(raw).filter(c => !c.parent_id);
+        return normalizeCollections(raw).filter(c => !c.parent_id && c.slug !== 'bestsellers');
       }
     }
     return [];
