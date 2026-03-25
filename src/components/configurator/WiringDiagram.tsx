@@ -448,11 +448,11 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
 
   /* ── Legend data ── */
   const legendItems = [
-    { color: C.pos, label: "12V+ (positief)" },
-    { color: C.neg, label: "12V– (negatief)" },
-    ...(hasSolar ? [{ color: C.solar, label: "Solar (MC4)" }] : []),
-    ...(hasAC ? [{ color: C.ac, label: "230V AC" }] : []),
-    { color: C.green, label: "Aarding" },
+    { color: C.pos, label: t("configurator.legend12vPos") },
+    { color: C.neg, label: t("configurator.legend12vNeg") },
+    ...(hasSolar ? [{ color: C.solar, label: t("configurator.legendSolar") }] : []),
+    ...(hasAC ? [{ color: C.ac, label: t("configurator.legend230v") }] : []),
+    { color: C.green, label: t("configurator.legendGround") },
   ];
 
   return (
