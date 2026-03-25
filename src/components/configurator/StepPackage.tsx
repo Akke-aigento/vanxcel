@@ -42,6 +42,8 @@ const iconMap: Record<string, React.ReactNode> = {
   shield: <Shield className="w-5 h-5" />,
   activity: <Activity className="w-5 h-5" />,
   gauge: <Gauge className="w-5 h-5" />,
+  power: <Power className="w-5 h-5" />,
+  minus: <Minus className="w-5 h-5" />,
 };
 
 const categoryColors: Record<string, string> = {

@@ -247,6 +247,14 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
           },
         ]
       : []),
+    {
+      circuitId: "battery_to_chassis",
+      from: t("configurator.cableBattery"),
+      to: t("configurator.cableChassisGround"),
+      distance: 0.3,
+      amps: calc.inverterW > 0 ? Math.ceil(calc.inverterW / 12 * 1.25) : 100,
+      type: t("configurator.cableNeg"),
+    },
   ];
 
   const tips = [
