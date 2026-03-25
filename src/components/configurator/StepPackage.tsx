@@ -98,7 +98,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
   }, [appliances, state, cableRoutes, priceMap]);
 
   if (!pkg) {
-    return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t("configurator.loading")}</div>;
   }
 
   const handleNotifySubmit = async (sku: string, productName: string) => {
