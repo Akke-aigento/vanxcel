@@ -177,7 +177,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         id: "shore", label: "AC IN", x: shoreX, y: shoreY, w: 30, h: 20,
         fill: C.ac, stroke: C.ac, phase: 4,
         visible: hasAC,
-        tooltip: "Walstroom inlaat (230V)",
+        tooltip: t("configurator.shoreInlet"),
       },
       {
         id: "ground", label: "⏚", x: groundX, y: groundY, w: 20, h: 16,
