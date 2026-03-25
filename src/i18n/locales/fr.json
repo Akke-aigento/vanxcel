@@ -198,14 +198,18 @@
     "tip3": "Placez un fusible aussi près que possible de la batterie."
   },
   "contact": {
-    "title": "Contact",
-    "subtitle": "Vous avez une question ? Envoyez-nous un message et nous vous répondrons dès que possible.",
+    "title": "Contactez-nous",
+    "subtitle": "Vous avez une question sur votre commande, l'installation ou nos produits ? Nous sommes là pour vous aider.",
     "name": "Nom",
     "namePlaceholder": "Votre nom",
     "email": "E-mail",
     "emailPlaceholder": "vous@email.com",
     "subject": "Sujet",
     "subjectPlaceholder": "Quel est le sujet de votre message ?",
+    "orderNumber": "Numéro de commande",
+    "orderNumberPlaceholder": "VX-12345",
+    "orderNumberHint": "Vous avez une question sur une commande ? Ajoutez votre numéro pour un traitement plus rapide.",
+    "optional": "facultatif",
     "message": "Message",
     "messagePlaceholder": "Tapez votre message ici...",
     "send": "Envoyer le message",
@@ -215,7 +219,12 @@
     "fillAll": "Veuillez remplir tous les champs",
     "invalidEmail": "Adresse e-mail invalide",
     "error": "Une erreur est survenue",
-    "errorDesc": "Veuillez réessayer plus tard."
+    "errorDesc": "Veuillez réessayer plus tard.",
+    "whatsapp": "Support WhatsApp",
+    "whatsappDesc": "Réponse rapide — chattez directement avec nous",
+    "emailDesc": "Nous répondons sous 24 heures",
+    "responseTime": "Temps de réponse rapide",
+    "responseTimeDesc": "Réponse moyenne en 2 heures les jours ouvrables"
   },
   "footer": {
     "brandDesc": "Fueling Your Journey. Solutions d'énergie off-grid pour campervans, fabriqué en Belgique.",
