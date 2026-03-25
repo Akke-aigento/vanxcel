@@ -160,10 +160,13 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
     const batteryWhCapacity = batteryAh * 12.8 * 0.8;
     const dailyPercent = (state.totalDailyWh / batteryWhCapacity) * 100;
 
-    // Estimated total price (converter + battery + solar)
-    const estimatedPrice = converterSel.product.price
-      + (batterySel.product.price * batterySel.quantity)
-      + (solarWp > 0 ? solarSel.product.price * solarSel.quantity : 0);
+    // Estimated total price (converter + battery + solar) using live prices
+    const converterPrice = getDisplayPrice(converterSel.product, priceMap);
+    const batteryPrice = getDisplayPrice(batterySel.product, priceMap);
+    const solarPrice = getDisplayPrice(solarSel.product, priceMap);
+    const estimatedPrice = converterPrice
+      + (batteryPrice * batterySel.quantity)
+      + (solarWp > 0 ? solarPrice * solarSel.quantity : 0);
 
     return {
       batteryAh,
@@ -184,8 +187,11 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
       dailyPercent,
       batteryWhCapacity,
       estimatedPrice,
+      converterPrice,
+      batteryPrice,
+      solarPrice,
     };
-  }, [appliances, state]);
+  }, [appliances, state, priceMap]);
 
   if (!results) {
     return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
