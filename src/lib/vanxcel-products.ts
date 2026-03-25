@@ -171,3 +171,28 @@ export function getProduct(sku: string): VanXcelProduct | undefined {
 export function getProductsByCategory(category: VanXcelProduct['category']): VanXcelProduct[] {
   return vanxcelProducts.filter(p => p.category === category);
 }
+
+/**
+ * Returns the live price for a product, or undefined if not available.
+ * Coming-soon products will not have a live price.
+ */
+export function getLivePrice(
+  sku: string,
+  priceMap: Map<string, number>
+): number | undefined {
+  return priceMap.get(sku);
+}
+
+/**
+ * Returns the display price for a product:
+ * - Live price if available from SellQo
+ * - 0 for coming-soon products (to hide price in UI)
+ * - Hardcoded fallback otherwise
+ */
+export function getDisplayPrice(
+  product: VanXcelProduct,
+  priceMap: Map<string, number>
+): number {
+  if (product.comingSoon) return 0;
+  return priceMap.get(product.sku) ?? product.price;
+}

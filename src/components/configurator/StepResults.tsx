@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useVanXcelPrices } from "@/hooks/use-vanxcel-prices";
+import { getDisplayPrice } from "@/lib/vanxcel-products";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -124,6 +126,7 @@ const ResultCard = ({
 
 const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
   const { t } = useTranslation();
+  const { priceMap } = useVanXcelPrices();
 
   const { data: appliances } = useQuery({
     queryKey: ["appliances"],
@@ -157,10 +160,13 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
     const batteryWhCapacity = batteryAh * 12.8 * 0.8;
     const dailyPercent = (state.totalDailyWh / batteryWhCapacity) * 100;
 
-    // Estimated total price (converter + battery + solar)
-    const estimatedPrice = converterSel.product.price
-      + (batterySel.product.price * batterySel.quantity)
-      + (solarWp > 0 ? solarSel.product.price * solarSel.quantity : 0);
+    // Estimated total price (converter + battery + solar) using live prices
+    const converterPrice = getDisplayPrice(converterSel.product, priceMap);
+    const batteryPrice = getDisplayPrice(batterySel.product, priceMap);
+    const solarPrice = getDisplayPrice(solarSel.product, priceMap);
+    const estimatedPrice = converterPrice
+      + (batteryPrice * batterySel.quantity)
+      + (solarWp > 0 ? solarPrice * solarSel.quantity : 0);
 
     return {
       batteryAh,
@@ -181,8 +187,11 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
       dailyPercent,
       batteryWhCapacity,
       estimatedPrice,
+      converterPrice,
+      batteryPrice,
+      solarPrice,
     };
-  }, [appliances, state]);
+  }, [appliances, state, priceMap]);
 
   if (!results) {
     return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
@@ -230,7 +239,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           ]}
           description={results.converterProduct.configuratorUse}
           accentClass="border-[#008593]/30"
-          price={results.converterProduct.price}
+          price={results.converterPrice || undefined}
           warning={results.converterWarning ?? undefined}
           delay={0}
         />
@@ -245,7 +254,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           description={`${results.daysAutark} ${t("configurator.daysAutarkDesc")} · ${Math.round(results.batteryWhCapacity)} Wh ${t("configurator.usableCapacity")}`}
           accentClass="border-green-500/30"
           progress={results.dailyPercent}
-          price={results.batteryProduct.price * results.batteryQty}
+          price={results.batteryPrice ? results.batteryPrice * results.batteryQty : undefined}
           delay={100}
         />
 
@@ -288,10 +297,14 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
         <span className="flex items-center gap-1 font-semibold">
           <Zap className="w-4 h-4 text-[#008593]" /> VanXcel {results.converterW}W 5-in-1
         </span>
-        <span className="text-muted-foreground">|</span>
-        <span className="flex items-center gap-1 font-semibold">
-          💰 ~€{results.estimatedPrice}
-        </span>
+        {results.estimatedPrice > 0 && (
+          <>
+            <span className="text-muted-foreground">|</span>
+            <span className="flex items-center gap-1 font-semibold">
+              💰 ~€{results.estimatedPrice}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Adjust link */}

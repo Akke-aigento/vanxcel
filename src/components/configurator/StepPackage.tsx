@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useVanXcelPrices } from "@/hooks/use-vanxcel-prices";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -89,11 +90,12 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
   });
 
   const { data: cableRoutes } = useCableRoutes(state.vehicleId);
+  const { priceMap } = useVanXcelPrices();
 
   const pkg = useMemo(() => {
     if (!appliances) return null;
-    return generatePackage(state, appliances, cableRoutes);
-  }, [appliances, state, cableRoutes]);
+    return generatePackage(state, appliances, cableRoutes, priceMap);
+  }, [appliances, state, cableRoutes, priceMap]);
 
   if (!pkg) {
     return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
@@ -163,7 +165,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("configurator.comingSoonLabel")}</p>
-              <p className="text-lg font-bold text-blue-500">€{Math.round(pkg.totalComingSoon + pkg.totalOutOfStock)}</p>
+              <p className="text-lg font-bold text-blue-500">—</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("configurator.totalSystem")}</p>
@@ -217,11 +219,17 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
                           <p className="text-xs text-primary italic">{item.reason}</p>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
-                          <p className="font-bold">€{(item.unitPrice * item.quantity).toFixed(2)}</p>
-                          {item.quantity > 1 && (
-                            <p className="text-xs text-muted-foreground">
-                              {item.isPerMeter ? `${item.quantity}m × €${item.unitPrice}` : `${item.quantity}× €${item.unitPrice}`}
-                            </p>
+                          {item.comingSoon ? (
+                            <p className="text-sm text-muted-foreground italic">—</p>
+                          ) : (
+                            <>
+                              <p className="font-bold">€{(item.unitPrice * item.quantity).toFixed(2)}</p>
+                              {item.quantity > 1 && (
+                                <p className="text-xs text-muted-foreground">
+                                  {item.isPerMeter ? `${item.quantity}m × €${item.unitPrice}` : `${item.quantity}× €${item.unitPrice}`}
+                                </p>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
