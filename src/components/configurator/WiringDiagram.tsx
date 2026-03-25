@@ -182,7 +182,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       {
         id: "ground", label: "⏚", x: groundX, y: groundY, w: 20, h: 16,
         fill: C.darkGrey, stroke: C.green, phase: 4,
-        tooltip: "Chassis aardpunt",
+        tooltip: t("configurator.chassisGround"),
       },
     ].filter((c) => c.visible !== false);
   }, [state, calc, topBatteryLocation, batteryRear, hasSolar, hasAC, bus, t, ox, oy]);
