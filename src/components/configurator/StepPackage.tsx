@@ -22,6 +22,7 @@ import {
   FileDown,
   Plus,
   Minus,
+  Power,
 } from "lucide-react";
 import type { ConfiguratorState } from "./ConfiguratorWizard";
 import { generatePackage, type PackageItem } from "@/lib/configurator-package";
