@@ -89,7 +89,8 @@ function addItem(
 export function generatePackage(
   state: ConfiguratorState,
   appliances: Tables<"appliances">[],
-  cableRoutes?: Tables<"vehicle_cable_routes">[] | null
+  cableRoutes?: Tables<"vehicle_cable_routes">[] | null,
+  priceOverrides?: Map<string, number>
 ): PackageResult {
   const batteryAh = calculateBattery(state.totalDailyWh, state.usageType ?? "regular");
   const maxSolarM2 = state.bodyType?.solar_max_area_m2
