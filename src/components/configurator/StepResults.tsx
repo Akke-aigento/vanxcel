@@ -239,7 +239,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           ]}
           description={results.converterProduct.configuratorUse}
           accentClass="border-[#008593]/30"
-          price={results.converterProduct.price}
+          price={results.converterPrice || undefined}
           warning={results.converterWarning ?? undefined}
           delay={0}
         />
