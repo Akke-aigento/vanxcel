@@ -318,11 +318,11 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       />
       {/* Cabin label */}
       <text x={ox + bus.cabinW / 2} y={oy + 16} textAnchor="middle" fontSize={10} fill="hsl(0 0% 50%)">
-        Cabine
+        {t("configurator.cabin")}
       </text>
       {/* Cargo label */}
       <text x={ox + bus.cabinW + (bus.w - bus.cabinW) / 2} y={oy + 16} textAnchor="middle" fontSize={10} fill="hsl(0 0% 50%)">
-        Laadruimte
+        {t("configurator.cargoArea")}
       </text>
 
       {/* Wheels */}
