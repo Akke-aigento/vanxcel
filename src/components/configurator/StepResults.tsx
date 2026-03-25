@@ -297,10 +297,14 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
         <span className="flex items-center gap-1 font-semibold">
           <Zap className="w-4 h-4 text-[#008593]" /> VanXcel {results.converterW}W 5-in-1
         </span>
-        <span className="text-muted-foreground">|</span>
-        <span className="flex items-center gap-1 font-semibold">
-          💰 ~€{results.estimatedPrice}
-        </span>
+        {results.estimatedPrice > 0 && (
+          <>
+            <span className="text-muted-foreground">|</span>
+            <span className="flex items-center gap-1 font-semibold">
+              💰 ~€{results.estimatedPrice}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Adjust link */}
