@@ -506,7 +506,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         {/* Fullscreen dialog */}
         <Dialog open={fullscreen} onOpenChange={setFullscreen}>
           <DialogContent className="max-w-[95vw] max-h-[95vh] p-4">
-            <DialogTitle className="sr-only">Bedradingsschema</DialogTitle>
+            <DialogTitle className="sr-only">{t("configurator.wiringDiagram")}</DialogTitle>
             <div className="overflow-auto">
               {renderSVG(svgW, svgH)}
             </div>
