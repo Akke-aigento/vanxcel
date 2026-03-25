@@ -1,33 +1,42 @@
 
-## Sticky header fix (definitief)
 
-### Waarschijnlijke root-cause
-De header staat `position: fixed`, maar alle pagina’s zitten binnen `AnimatedOutlet` met een CSS `transform` op `.page-enter/.page-exit` (`translateY(...)`).  
-Een getransformeerde parent breekt fixed-position gedrag (header kan “meescrollen” of vreemd positioneren).
+## Voertuigen Seeden in Configurator Database
 
-### Plan van aanpak
+### Overzicht
+8 nieuwe voertuigen toevoegen (Sprinter, Transit Custom, Trafic, Jumper, Boxer, Vivaro, Vito, Crafter) met hun body types, motorisaties, waarschuwingen en populaire configs. Ducato en T6 bestaan al.
 
-1. **Route-transitie aanpassen zodat fixed header niet meer breekt**
-   - In `src/index.css`:
-     - `.page-transition`: transition alleen op `opacity` (geen `transform`).
-     - `.page-enter`: `opacity: 1` (zonder transform).
-     - `.page-exit`: `opacity: 0` (zonder transform).
-   - Resultaat: page-fade blijft, maar navbar blijft echt viewport-fixed.
+### Aanpak
 
-2. **Header-offsets uniform maken op pagina’s met te weinig top spacing**
-   - `src/pages/Build.tsx` en `src/pages/Configurator.tsx` gebruiken nu `pt-16` terwijl navbar `h-20` is.
-   - Verhogen naar minimaal `pt-20` (of `pt-24` voor extra lucht) zodat content niet onder de header schuift.
+**Stap 1: Insert 8 vehicles** — elk met hun eigen brand/model/generation data en popularity_rank 3-10.
 
-3. **Controle op regressies in navigatie/transities**
-   - Bevestigen dat dropdowns/mobile menu van `Navbar` ongewijzigd blijven.
-   - Verifiëren dat fade-transitie nog netjes werkt tussen routes.
+**Stap 2: Insert body types** per voertuig:
+- Sprinter: 4 body types (L2H2, L3H2, L3H3, L4H3)
+- Transit Custom: 3 (L1H1, L2H1, L2H2)
+- Trafic: 2 (L1H1, L2H1)
+- Jumper: 5 (kopieer Ducato afmetingen, aangepaste notes)
+- Boxer: 5 (kopieer Ducato/Jumper)
+- Vivaro: 2 (kopieer Trafic)
+- Vito: 2 (L2H1, L3H1)
+- Crafter: 4 (kopieer Sprinter)
 
-### Bestanden
-- `src/index.css` (page transition classes)
-- `src/pages/Build.tsx` (top padding)
-- `src/pages/Configurator.tsx` (top padding)
+**Stap 3: Insert motorisaties** per voertuig:
+- Sprinter: 3 (OM654 varianten)
+- Transit Custom: 3 (EcoBlue + TDCi)
+- Trafic: 2 (1.6 dCi + 2.0 Blue dCi)
+- Jumper: 2 (PSA BlueHDi)
+- Boxer: 2 (kopieer Jumper)
+- Vivaro: 1 (2.0 Turbo D)
+- Vito: 1 (OM654 136pk)
+- Crafter: 1 (2.0 TDI)
 
-### Acceptatiecriteria
-- Header blijft zichtbaar bij scroll op alle pagina’s (desktop + mobiel).
-- Geen “meescrollende” of verschuivende navbar meer tijdens routewissels.
-- Geen overlap van page content onder de navbar op Build/Configurator.
+**Stap 4: Insert waarschuwingen** per voertuig (2-3 per voertuig)
+
+**Stap 5: Insert populaire configs** per voertuig (1-2 per voertuig, platformgenoten kopiëren van hun basis)
+
+### Technische details
+
+Alle inserts via de Supabase insert tool. De `affected_years` arrays worden als Postgres arrays geformateerd. Voertuig IDs worden eerst geinsert en dan gebruikt als foreign keys voor de subtabellen. Totaal ~75 rijen over 5 tabellen.
+
+### Geen codewijzigingen nodig
+De configurator UI leest dynamisch uit de database — nieuwe voertuigen verschijnen automatisch.
+
