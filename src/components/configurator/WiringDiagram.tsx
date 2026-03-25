@@ -486,7 +486,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
               size="icon"
               className="h-8 w-8 bg-background/80 backdrop-blur"
               onClick={handleDownload}
-              aria-label="Download als afbeelding"
+              aria-label={t("configurator.downloadImage")}
             >
               <Download className="h-4 w-4" />
             </Button>
