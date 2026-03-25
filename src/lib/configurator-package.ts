@@ -53,8 +53,18 @@ function addItem(
   quantity: number,
   icon: string,
   reasonOverride?: string,
-  isPerMeter?: boolean
+  isPerMeter?: boolean,
+  priceOverrides?: Map<string, number>
 ) {
+  // Coming-soon products get price 0 (hidden in UI)
+  // Otherwise use live price from SellQo, or fallback to hardcoded
+  let unitPrice = product.price;
+  if (product.comingSoon) {
+    unitPrice = 0;
+  } else if (priceOverrides?.has(product.sku)) {
+    unitPrice = priceOverrides.get(product.sku)!;
+  }
+
   items.push({
     category: product.category,
     name: product.name,
@@ -64,7 +74,7 @@ function addItem(
       .slice(0, 3)
       .join(', '),
     quantity,
-    unitPrice: product.price,
+    unitPrice,
     reason: reasonOverride ?? product.configuratorUse,
     icon,
     sku: product.sku,
