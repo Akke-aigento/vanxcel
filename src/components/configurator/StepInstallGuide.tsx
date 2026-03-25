@@ -58,6 +58,8 @@ import {
 } from "@/lib/configurator-calculations";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import WiringDiagram from "./WiringDiagram";
+import PhaseIllustration from "./PhaseIllustration";
 
 interface Props {
   state: ConfiguratorState;
