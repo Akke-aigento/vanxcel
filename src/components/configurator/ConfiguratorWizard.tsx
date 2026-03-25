@@ -71,20 +71,50 @@ const ConfiguratorWizard = () => {
   }, []);
 
   const selectBrand = useCallback((brand: string) => {
+    if (brand === "__other__") {
+      setState((s) => ({
+        ...s,
+        brand: "__other__",
+        isOtherVehicle: true,
+        vehicleId: null,
+        vehicle: null,
+        bodyTypeId: null,
+        bodyType: null,
+        buildYear: null,
+        motorisationId: null,
+        motorisation: null,
+        usageType: null,
+        climate: null,
+        persons: null,
+        subStep: 1,
+      }));
+    } else {
+      setState((s) => ({
+        ...s,
+        brand,
+        isOtherVehicle: false,
+        vehicleId: null,
+        vehicle: null,
+        bodyTypeId: null,
+        bodyType: null,
+        buildYear: null,
+        motorisationId: null,
+        motorisation: null,
+        usageType: null,
+        climate: null,
+        persons: null,
+        subStep: 1,
+      }));
+    }
+  }, []);
+
+  const completeOtherVehicle = useCallback((data: { smartAlternator: "yes" | "no" | "unknown"; voltage: "12v" | "24v"; size: "small" | "medium" | "large" | "xlarge" }) => {
     setState((s) => ({
       ...s,
-      brand,
-      vehicleId: null,
-      vehicle: null,
-      bodyTypeId: null,
-      bodyType: null,
-      buildYear: null,
-      motorisationId: null,
-      motorisation: null,
-      usageType: null,
-      climate: null,
-      persons: null,
-      subStep: 1,
+      otherSmartAlternator: data.smartAlternator,
+      otherVoltage: data.voltage,
+      otherSize: data.size,
+      subStep: 6,
     }));
   }, []);
 
