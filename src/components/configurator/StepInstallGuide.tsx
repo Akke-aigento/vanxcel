@@ -638,13 +638,13 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 3: CABLE ROUTING ── */}
-        <AccordionItem value="phase-3" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-3" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-3"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={3} difficulty="hard" time="3-6h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={3} />
             <p className="text-sm text-muted-foreground mb-4">{t("configurator.phase3Intro")}</p>
-
             {/* Route 1: Starter → DC-DC */}
             <div className="space-y-4">
               <h4 className="font-semibold text-sm flex items-center gap-2">
