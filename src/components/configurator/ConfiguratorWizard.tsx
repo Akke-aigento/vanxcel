@@ -137,12 +137,27 @@ const ConfiguratorWizard = () => {
     setState((s) => ({ ...s, selectedAppliances: appliances, totalDailyWh: totalWh, subStep: 10 }));
   }, []);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (state.subStep >= 10) {
+        // Big steps: scroll to page top so title + summary bar are visible
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (contentRef.current) {
+        // Input steps: scroll to just above the content area
+        const top = contentRef.current.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      }
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [state.subStep]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 pb-24">
       <VehicleSummaryBar state={state} onStepClick={goTo} />
 
-      <div className="mt-8">
+      <div className="mt-8" ref={contentRef}>
         {state.subStep === 0 && (
           <div className="animate-fade-in-up">
             <StepBrandSelect onSelect={selectBrand} selected={state.brand} />
