@@ -477,7 +477,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
               size="icon"
               className="h-8 w-8 bg-background/80 backdrop-blur"
               onClick={() => setFullscreen(true)}
-              aria-label="Volledig scherm"
+              aria-label={t("configurator.fullscreen")}
             >
               <Maximize2 className="h-4 w-4" />
             </Button>
