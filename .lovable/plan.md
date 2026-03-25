@@ -1,29 +1,31 @@
 
 
-## Vierde Golf Voertuigen Seeden
+## Vijfde Golf Voertuigen Seeden
 
 ### Overzicht
-14 nieuwe voertuigen toevoegen — totaal 42 voertuigen na deze seed.
+12 nieuwe voertuigen toevoegen — eindtotaal 54 voertuigen, 22+ merken.
 
 ### Insert operatie over 5 tabellen
 
 | Tabel | Nieuwe rijen |
 |---|---|
-| `vehicles` | 14 |
-| `vehicle_body_types` | ~16 (Berlingo 2, Kangoo 1, Caddy 2, Partner 2, Combo 2, ProAce City 2, Bongo 1, Talbot 1, LiteAce 1, UAZ 1, LDV 1, Hyundai 1, NV200 1, Transit MK2 1) |
-| `vehicle_motorisations` | ~16 (Berlingo 1, Kangoo 1, Caddy 1, Partner 1, Combo 1, ProAce City 1, Bongo 2, Talbot 1, LiteAce 1, UAZ 1, LDV 1, Hyundai 1, NV200 2 incl. EV, Transit MK2 1) |
-| `vehicle_warnings` | ~18 |
-| `vehicle_popular_configs` | ~14 |
+| `vehicles` | 12 |
+| `vehicle_body_types` | ~15 (HiAce H200 2, Caravan 1, L300 1, HiJet 1, T6.1 kopie T6, Scudo kopie Trafic, Vario 1, Sambar 1, Estafette 1, Bedford 1, Mercedes T1 1, Rodius 1) |
+| `vehicle_motorisations` | ~15 (HiAce H200 2, Caravan 1, L300 1, HiJet 1, T6.1 kopie T6, Scudo 1, Vario 1, Sambar 1, Estafette 1, Bedford 1, Mercedes T1 1, Rodius 1) |
+| `vehicle_warnings` | ~14 |
+| `vehicle_popular_configs` | ~12 |
 
-**Totaal: ~78 rijen**
+**Totaal: ~68 rijen**
 
 ### Bijzonderheden
-- Berlingo platform: 4 platformgenoten (Partner, Combo, ProAce City) kopiëren body types + motorisatie
-- e-NV200: `alternator_type: "none"`, `fuel_type: "electric"` — eerste volledig elektrisch voertuig
-- Bongo: `roof_type: "pop_top_electric"` — nieuw daktype
-- UAZ Bukhanka: in productie sinds 1965, geen elektronica
-- Talbot Express: `brand: "Talbot/Fiat"` — dubbel merk
+- T6.1: kopieert T6 body types + motorisaties (aangepaste jaargangen)
+- Scudo: kopieert Trafic body types, eigen motorisatie (2.0 BlueHDi 145pk)
+- Vario: mogelijke 24V systemen — kritieke waarschuwing
+- Estafette: `alternator_type: "dynamo"` — net als T1 en Type H
+- HiJet + Sambar: kei-voertuigen, kleinste alternators (45-50A)
+- Rodius: de "lelijkste bus ter wereld" met tongue-in-cheek waarschuwingen
 
-### Geen codewijzigingen nodig
-De configurator UI leest dynamisch uit de database.
+### Afhankelijkheden
+- T6 en Trafic moeten bestaan voor kopieer-acties (bevestigd in eerdere golven)
+- Geen codewijzigingen nodig — UI leest dynamisch uit database
 
