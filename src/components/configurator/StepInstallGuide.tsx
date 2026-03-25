@@ -201,8 +201,10 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       state.climate ?? "benelux",
       state.bodyType?.solar_max_area_m2 ? Number(state.bodyType.solar_max_area_m2) : 999
     );
-    const inverterW = calculateInverter(state.selectedAppliances, appliances);
-    const dcDcA = calculateDcDc(state.motorisation, batteryAh);
+    const stats230v = get230vStats(state.selectedAppliances, appliances);
+    const converterSel = selectConverter(stats230v.peakW, stats230v.count > 0);
+    const inverterW = Number(converterSel.product.specs.continuousW);
+    const dcDcA = 25; // Built into VanXcel 5-in-1 Converter
     return { batteryAh, solarWp, inverterW, dcDcA };
   }, [appliances, state]);
 
