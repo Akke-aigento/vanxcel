@@ -177,7 +177,8 @@ const phaseIcons = [
 const StepInstallGuide = ({ state, onBack }: Props) => {
   const { t } = useTranslation();
   const [completedPhases, setCompletedPhases] = useState<number[]>([]);
-
+  const [activePhase, setActivePhase] = useState<string | null>("phase-0");
+  const phaseRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { data: warnings } = useVehicleWarnings(
     state.vehicleId,
     state.buildYear,
