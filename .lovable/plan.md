@@ -1,112 +1,63 @@
 
 
-## Visueel Systeem voor Installatiegids
+## Configurator Vertalingen Audit & Fix
 
-Dit voegt twee grote visuele onderdelen toe aan de configurator installatiegids: een interactief SVG bedradingsschema en technische illustraties per fase.
+### Probleem
 
-### Nieuwe bestanden
+De configurator heeft twee soorten vertaalproblemen:
 
-| Bestand | Beschrijving |
+**A. Hardcoded Nederlandse tekst in componenten** (niet via `t()`)
+**B. Ontbrekende vertaalkeys in sommige taalbestanden**
+
+### A. Hardcoded tekst die naar `t()` moet
+
+| Bestand | Hardcoded tekst | Nieuwe key |
+|---|---|---|
+| `StepResults.tsx:197` | `"Laden..."` | `configurator.loading` |
+| `StepAppliances.tsx:244` | `"Laden..."` | `configurator.loading` |
+| `StepPackage.tsx:101` | `"Laden..."` | `configurator.loading` |
+| `StepPackage.tsx:312` | `{t("configurator.day")}verbruik` (concatenatie) | `configurator.dailyConsumption` |
+| `WiringDiagram.tsx:321` | `"Cabine"` | `configurator.cabin` |
+| `WiringDiagram.tsx:325` | `"Laadruimte"` | `configurator.cargoArea` |
+| `WiringDiagram.tsx:347` | `"Schuifdeur"` | `configurator.slidingDoor` |
+| `WiringDiagram.tsx:451` | `"12V+ (positief)"` etc. | `configurator.legend12vPos` etc. |
+| `WiringDiagram.tsx:463` | `"Jouw Bedradingsschema"` | `configurator.wiringTitle` |
+| `WiringDiagram.tsx:466` | `"Klik op een component..."` | `configurator.wiringSubtitle` |
+| `WiringDiagram.tsx:509` | `"Bedradingsschema"` | `configurator.wiringDiagram` |
+| `WiringDiagram.tsx:153` | `"ANL hoofdzekering"` | `configurator.anlMainFuse` |
+| `WiringDiagram.tsx:158` | `"Batterij disconnect schakelaar"` | `configurator.batterySwitch` |
+| `WiringDiagram.tsx:174` | `"Zonnepaneel ..."` | `configurator.solarPanelRoof` |
+| `WiringDiagram.tsx:180` | `"Walstroom inlaat (230V)"` | `configurator.shoreInlet` |
+| `WiringDiagram.tsx:185` | `"Chassis aardpunt"` | `configurator.chassisGround` |
+| `PhaseIllustration.tsx` | ~40 hardcoded labels | Nieuwe keys `configurator.illust*` |
+| `VehicleSummaryBar.tsx:44` | `"pk"` suffix | `configurator.hpUnit` |
+
+**PhaseIllustration.tsx** heeft ~40 hardcoded Nederlandse labels in de SVGs (o.a. "Werkbank / tafel", "Batterij", "Kabels", "Krimptang", "Boormachine", "Checklist", "Passagiersstoel", "Stoel optillen", "Montageplaat", "Schakelaar", "LOSKOPPELEN", "Dwarsdoorsnede achterkant", "Stevig bevestigen!", "Zekeringkast — vooraanzicht", "Koelkast", "Ventilator", "Negatieve Busbar", "Cabine", "Laadruimte", "Zonnepaneel (op dak)", "Scheidingswand", "Brandstofleiding", "Aansluitvolgorde", "Walstroom 230V", "LAATST aansluiten!", "Maak foto's!", "Bewaar schema", "Label zekeringen", "Bewaar in je bus", "Gefeliciteerd!", etc.)
+
+### B. Benodigde aanpak
+
+1. **~55 nieuwe vertaalkeys toevoegen** aan `nl.json` (NL brontekst)
+2. **Dezelfde keys vertalen** naar `en.json`, `fr.json`, `de.json`
+3. **PhaseIllustration refactoren**: De component accepteert `t` als prop of gebruikt `useTranslation()` intern, en vervangt alle hardcoded strings door `t()` calls
+4. **WiringDiagram**: Tooltips en labels vervangen door `t()` calls (hook al geïmporteerd)
+5. **3 "Laden..." strings** unifieren naar `t("configurator.loading")`
+6. **StepPackage**: `{t("configurator.day")}verbruik` → `t("configurator.dailyConsumption")`
+
+### Bestanden die gewijzigd worden
+
+| Bestand | Actie |
 |---|---|
-| `src/components/configurator/WiringDiagram.tsx` | Interactief SVG bovenaanzicht van de bus met componenten, kabels, legenda, tooltips, fase-highlighting |
-| `src/components/configurator/PhaseIllustration.tsx` | 7 inline SVG illustraties (Fase 0-6), conditioneel op basis van configurator state |
-
-### Wijzigingen in bestaande bestanden
-
-| Bestand | Wijziging |
-|---|---|
-| `StepInstallGuide.tsx` | WiringDiagram bovenaan toevoegen (vóór Fase 0), PhaseIllustration per fase toevoegen, Accordion `onValueChange` bijhouden voor fase-highlighting, state doorgeven aan beide componenten |
-
-### WiringDiagram.tsx — Architectuur
-
-**Bus plattegrond (bovenaanzicht SVG):**
-- Rechthoek met afgeronde hoeken, cabine links, laadruimte rechts
-- Proportie dynamisch: Ducato breder/langer, T6 compacter (op basis van `state.vehicle?.brand`)
-- Stippellijn scheidingswand, wielen als halve ellipsen, schuifdeur opening, achterdeuren
-- Label: `[Brand] [Model] [Body type]`
-
-**10 componenten als gekleurde `<rect>` blokjes:**
-1. Starterbatterij (grijs) — positie uit `state.motorisation?.starter_battery_location`
-2. VanXcel Converter (teal #008593, groot) — centraal naast leisure batterij
-3. Leisure batterij (groen) — positie uit `topBatteryLocation?.location_id` (under_seat vs rear)
-4. ANL zekering (rood vierkant)
-5. Batterij schakelaar (rode cirkel)
-6. Zekeringkast (donkerrood)
-7. Negatieve busbar (donkergrijs balk)
-8. Zonnepaneel (geel, gestippeld, op dak) — alleen als `calc.solarWp > 0`
-9. Walstroom inlet (blauw) — alleen als 230V verbruikers
-10. Aardpunt (aardingssymbool)
-
-**Kabels als gekleurde `<line>`/`<path>` elementen:**
-- Rood (#ef4444) = 12V+, lijndikte ∝ mm²
-- Donkerblauw (#3b82f6) = 12V-
-- Geel (#f59e0b) = solar MC4
-- Paars (#a855f7) = 230V AC
-- Labels met mm² per kabel
-
-**VanXcel Converter 5 aansluitingen:** dikke rood/zwart → batterij, Anderson → starter, MC4 → solar, AC in → walstroom, AC out → stopcontact
-
-**Interactiviteit:**
-- Hover: CSS highlight + tooltip (via Tooltip component) met specs
-- Click op component: `onComponentClick(phaseId)` callback die smooth scrollt naar de fase
-- Hover op kabel: tooltip "Van → Naar, Xmm²"
-
-**Legenda:** horizontale rij onder het schema met kleur-swatches
-
-**Responsief:** `viewBox` + `overflow-x-auto` wrapper, "Volledig scherm" knop die een Dialog opent op mobile
-
-**Fase-highlighting:** prop `activePhase: string | null` — componenten van die fase krijgen een pulserende glow, rest wordt 40% opacity
-
-**Download knop:** canvas export via `<canvas>` + `drawImage` van de SVG
-
-### PhaseIllustration.tsx — Per fase
-
-Eén component met een `phase` prop die de juiste SVG rendert. Alle illustraties gebruiken:
-- Dunne lijnen (1-1.5px stroke) in `currentColor` (dark mode compatible)
-- Opvulkleuren: transparant/licht met accent kleuren (groen=batterij, teal=converter, rood=zekeringen, geel=solar)
-- Max 680px breed, 300-400px hoog
-- Labels in `text-muted-foreground`, 11-12px
-
-**Fase 0 — Voorbereiding:** Bovenaanzicht werkbank met batterij, converter, kabels, gereedschap, checklist-icoon
-
-**Fase 1 — Batterij plaatsen:** Conditioneel op `topBatteryLocation?.location_id`:
-- `under_passenger_seat`: zijaanzicht stoel opgetild, batterij eronder, bouten, airbag waarschuwing
-- `garage_rear`: dwarsdoorsnede achterkant, batterij op montageplaat
-
-**Fase 2 — Zekeringkast:** Vooraanzicht 12-slot fuse box met gelabelde circuits, gekleurde zekeringen, busbar
-
-**Fase 3 — Kabels trekken:** Langsdoorsnede bus met stippellijnen voor kabelroutes, doorvoerpunten, waarschuwingsdriehoeken
-
-**Fase 4 — VanXcel aansluiten:** Converter van bovenaf met alle aansluitpunten gelabeld, volgorde-nummers ①②③④⑤⑥
-
-**Fase 5 — Testen:** Multimeter met probes op busbar, display "12.8V", vinkje/kruisje
-
-**Fase 6 — Afwerken:** Camera icoon, document icoon, gelabelde zekeringkast, gereedschapskist
-
-### Plaatsing in StepInstallGuide.tsx
-
-```text
-┌─────────────────────────────┐
-│ JOUW BEDRADINGSSCHEMA       │  ← WiringDiagram (nieuw)
-│ [Interactieve SVG plattegrond] │
-│ [Legenda] [Download knop]   │
-├─────────────────────────────┤
-│ ▼ Fase 0: Voorbereiding     │
-│   [PhaseIllustration phase=0]│  ← Illustratie bovenaan
-│   1. Stap...                │
-│   2. Stap...                │
-├─────────────────────────────┤
-│ ▼ Fase 1: Batterij plaatsen │
-│   [PhaseIllustration phase=1]│
-│   ...                       │
-└─────────────────────────────┘
-```
-
-### Accordion state tracking
-
-`StepInstallGuide` krijgt een `openPhases` state die wordt doorgegeven aan `WiringDiagram` als `activePhase` voor highlighting. Bij klik op een component in het diagram wordt de bijbehorende fase geopend en erheen gescrolled.
+| `src/i18n/locales/nl.json` | ~55 nieuwe keys in `configurator` sectie |
+| `src/i18n/locales/en.json` | Zelfde keys, Engelse vertaling |
+| `src/i18n/locales/fr.json` | Zelfde keys, Franse vertaling |
+| `src/i18n/locales/de.json` | Zelfde keys, Duitse vertaling |
+| `src/components/configurator/PhaseIllustration.tsx` | `useTranslation()` toevoegen, alle ~40 hardcoded strings → `t()` |
+| `src/components/configurator/WiringDiagram.tsx` | ~15 hardcoded strings → `t()` |
+| `src/components/configurator/StepResults.tsx` | `"Laden..."` → `t()` |
+| `src/components/configurator/StepAppliances.tsx` | `"Laden..."` → `t()` |
+| `src/components/configurator/StepPackage.tsx` | `"Laden..."` + dagverbruik → `t()` |
+| `src/components/configurator/VehicleSummaryBar.tsx` | `"pk"` → `t()` |
 
 ### Omvang
-
-Dit is een groot visueel component (~800-1000 regels voor WiringDiagram, ~400-500 voor PhaseIllustration). De SVGs zijn handmatig gecodeerd in JSX — geen externe afbeeldingen nodig.
+Dit is voornamelijk zoek-en-vervang werk in ~10 bestanden. De vertaalbestanden groeien elk met ~55 regels.
 
