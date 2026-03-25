@@ -769,13 +769,13 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 4: CONNECT EVERYTHING ── */}
-        <AccordionItem value="phase-4" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-4" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-4"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={4} difficulty="moderate" time="2-4h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={4} inverterW={calc.inverterW} />
             <DangerBlock text={t("configurator.phase4OrderWarning")} />
-
             <ol className="list-decimal list-inside space-y-4 text-sm leading-relaxed">
               {/* Step 1: Consumers to fuse box */}
               <li>
