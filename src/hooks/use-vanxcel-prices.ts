@@ -15,10 +15,15 @@ export function useVanXcelPrices() {
     const map = new Map<string, number>();
     if (!shopProducts) return map;
 
-    // Extract the array of products from the API response
-    const products: Product[] = Array.isArray(shopProducts)
-      ? shopProducts
-      : (shopProducts as any)?.data ?? (shopProducts as any)?.products ?? [];
+    // Extract the array of products from the nested API response
+    let products: Product[] = [];
+    if (Array.isArray(shopProducts)) {
+      products = shopProducts;
+    } else if (shopProducts && typeof shopProducts === "object") {
+      const obj = shopProducts as any;
+      const inner = obj?.data?.products ?? obj?.data ?? obj?.products ?? [];
+      products = Array.isArray(inner) ? inner : [];
+    }
 
     // Build a slug→price lookup from SellQo products
     const slugPriceMap = new Map<string, number>();
