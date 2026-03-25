@@ -86,6 +86,8 @@ function getMinCableSize(
       if (specs.mpptA <= 20) return 6;
       if (specs.mpptA <= 40) return 10;
       return 16;
+    case "battery_to_chassis":
+      return 25;
     default:
       return 4;
   }
