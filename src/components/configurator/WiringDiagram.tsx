@@ -150,12 +150,12 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       {
         id: "anl", label: "ANL", x: anlX, y: anlY, w: 22, h: 22,
         fill: C.pos, stroke: C.pos, phase: 1,
-        tooltip: "ANL hoofdzekering",
+        tooltip: t("configurator.anlMainFuse"),
       },
       {
         id: "switch", label: "⊘", x: switchX, y: switchY + 2, w: 18, h: 18,
         fill: C.pos, stroke: C.pos, phase: 1, shape: "circle" as const,
-        tooltip: "Batterij disconnect schakelaar",
+        tooltip: t("configurator.batterySwitch"),
       },
       {
         id: "fusebox", label: "Fuse box", x: fuseBoxX, y: fuseBoxY, w: 55, h: 25,
