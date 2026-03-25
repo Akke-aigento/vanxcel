@@ -91,8 +91,8 @@ const Contact = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40 group"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500/10">
-                  <MessageCircle className="h-5 w-5 text-green-500" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[hsl(142_70%_45%/0.1)]">
+                  <MessageCircle className="h-5 w-5 text-[hsl(142,70%,45%)]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground">{t("contact.whatsapp")}</p>
