@@ -9,7 +9,7 @@ const Configurator = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-16">
+      <div className="pt-20">
         <div className="text-center py-16">
           <h1 className="font-display text-[56px] leading-none text-foreground mb-4">
             {t("configurator.title")}
