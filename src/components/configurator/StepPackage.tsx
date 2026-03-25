@@ -309,7 +309,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
             <span className="font-semibold text-right">{pkg.solarWp} Wp</span>
             <span className="text-muted-foreground">{t("configurator.altChargeTitle")}</span>
             <span className="font-semibold text-right">25A ({t("configurator.builtIn")})</span>
-            <span className="text-muted-foreground">{t("configurator.day")}verbruik</span>
+            <span className="text-muted-foreground">{t("configurator.dailyConsumption")}</span>
             <span className="font-semibold text-right">{state.totalDailyWh} Wh</span>
             <span className="text-muted-foreground">{t("configurator.estimatedAutarky")}</span>
             <span className="font-semibold text-right">

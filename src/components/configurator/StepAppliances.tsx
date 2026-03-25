@@ -241,7 +241,7 @@ const StepAppliances = ({ usageType, onComplete, onBack }: Props) => {
   }, [appliances, appState]);
 
   if (isLoading) {
-    return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t("configurator.loading")}</div>;
   }
 
   const categoryKeys: Record<string, string> = {
