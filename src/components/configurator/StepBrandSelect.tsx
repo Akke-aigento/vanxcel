@@ -1,7 +1,7 @@
 import { useVehicleBrands } from "@/hooks/use-configurator";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Check, Truck } from "lucide-react";
+import { Check, Truck, HelpCircle } from "lucide-react";
 
 interface Props {
   onSelect: (brand: string) => void;
@@ -44,6 +44,27 @@ const StepBrandSelect = ({ onSelect, selected }: Props) => {
             </p>
           </button>
         ))}
+
+        {/* "Ander voertuig" card */}
+        <button
+          onClick={() => onSelect("__other__")}
+          className={`relative p-6 rounded-lg border-2 border-dashed transition-all duration-200 text-left hover:border-primary/60 ${
+            selected === "__other__"
+              ? "border-primary bg-primary/10"
+              : "border-border bg-card/50 hover:bg-card/80"
+          }`}
+        >
+          {selected === "__other__" && (
+            <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+              <Check className="w-4 h-4 text-primary-foreground" />
+            </div>
+          )}
+          <HelpCircle className="w-8 h-8 text-muted-foreground mb-3" />
+          <h3 className="font-display text-xl text-foreground">{t("configurator.otherVehicle")}</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("configurator.otherVehicleDesc")}
+          </p>
+        </button>
       </div>
     </div>
   );
