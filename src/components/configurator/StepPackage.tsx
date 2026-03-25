@@ -165,7 +165,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("configurator.comingSoonLabel")}</p>
-              <p className="text-lg font-bold text-blue-500">€{Math.round(pkg.totalComingSoon + pkg.totalOutOfStock)}</p>
+              <p className="text-lg font-bold text-blue-500">—</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("configurator.totalSystem")}</p>
