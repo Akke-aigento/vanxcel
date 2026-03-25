@@ -460,10 +460,10 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
       <div className="mb-8">
         {/* Title */}
         <h3 className="text-xl font-display font-bold tracking-tight mb-1 uppercase">
-          Jouw Bedradingsschema
+          {t("configurator.wiringTitle")}
         </h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Klik op een component voor installatie-instructies
+          {t("configurator.wiringSubtitle")}
         </p>
 
         {/* SVG container */}
