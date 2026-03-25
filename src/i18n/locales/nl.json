@@ -198,14 +198,18 @@
     "tip3": "Plaats een zekering zo dicht mogelijk bij de batterij — deze beschermt de kabel, niet het apparaat."
   },
   "contact": {
-    "title": "Contact",
-    "subtitle": "Heb je een vraag? Stuur ons een bericht en we nemen zo snel mogelijk contact met je op.",
+    "title": "Neem Contact Op",
+    "subtitle": "Heb je een vraag over je bestelling, installatie of producten? We helpen je graag verder.",
     "name": "Naam",
     "namePlaceholder": "Je naam",
     "email": "E-mail",
     "emailPlaceholder": "je@email.com",
     "subject": "Onderwerp",
     "subjectPlaceholder": "Waar gaat je bericht over?",
+    "orderNumber": "Ordernummer",
+    "orderNumberPlaceholder": "VX-12345",
+    "orderNumberHint": "Heb je een vraag over een bestelling? Vul je ordernummer in voor een snellere afhandeling.",
+    "optional": "optioneel",
     "message": "Bericht",
     "messagePlaceholder": "Typ je bericht hier...",
     "send": "Verstuur bericht",
@@ -215,7 +219,12 @@
     "fillAll": "Vul alle velden in",
     "invalidEmail": "Ongeldig e-mailadres",
     "error": "Er ging iets mis",
-    "errorDesc": "Probeer het later opnieuw."
+    "errorDesc": "Probeer het later opnieuw.",
+    "whatsapp": "WhatsApp Support",
+    "whatsappDesc": "Snel antwoord op je vraag — direct chatten",
+    "emailDesc": "We reageren binnen 24 uur",
+    "responseTime": "Snelle reactietijd",
+    "responseTimeDesc": "Gemiddeld antwoord binnen 2 uur op werkdagen"
   },
   "footer": {
     "brandDesc": "Fueling Your Journey. Off-grid power oplossingen voor campervans, gemaakt in België.",

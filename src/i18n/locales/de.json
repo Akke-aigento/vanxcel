@@ -198,14 +198,18 @@
     "tip3": "Platziere eine Sicherung so nah wie möglich an der Batterie."
   },
   "contact": {
-    "title": "Kontakt",
-    "subtitle": "Hast du eine Frage? Sende uns eine Nachricht und wir melden uns so schnell wie möglich.",
+    "title": "Kontaktiere uns",
+    "subtitle": "Hast du eine Frage zu deiner Bestellung, Installation oder unseren Produkten? Wir helfen dir gerne weiter.",
     "name": "Name",
     "namePlaceholder": "Dein Name",
     "email": "E-Mail",
     "emailPlaceholder": "du@email.com",
     "subject": "Betreff",
     "subjectPlaceholder": "Worum geht es?",
+    "orderNumber": "Bestellnummer",
+    "orderNumberPlaceholder": "VX-12345",
+    "orderNumberHint": "Frage zu einer Bestellung? Gib deine Bestellnummer an für schnellere Hilfe.",
+    "optional": "optional",
     "message": "Nachricht",
     "messagePlaceholder": "Schreibe deine Nachricht hier...",
     "send": "Nachricht senden",
@@ -215,7 +219,12 @@
     "fillAll": "Bitte alle Felder ausfüllen",
     "invalidEmail": "Ungültige E-Mail-Adresse",
     "error": "Etwas ist schiefgelaufen",
-    "errorDesc": "Bitte versuche es später erneut."
+    "errorDesc": "Bitte versuche es später erneut.",
+    "whatsapp": "WhatsApp Support",
+    "whatsappDesc": "Schnelle Antwort — chatte direkt mit uns",
+    "emailDesc": "Wir antworten innerhalb von 24 Stunden",
+    "responseTime": "Schnelle Reaktionszeit",
+    "responseTimeDesc": "Durchschnittliche Antwort innerhalb von 2 Stunden an Werktagen"
   },
   "footer": {
     "brandDesc": "Fueling Your Journey. Off-Grid-Energielösungen für Campervans, hergestellt in Belgien.",

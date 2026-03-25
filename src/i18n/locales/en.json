@@ -198,14 +198,18 @@
     "tip3": "Place a fuse as close to the battery as possible — it protects the cable, not the device."
   },
   "contact": {
-    "title": "Contact",
-    "subtitle": "Have a question? Send us a message and we'll get back to you as soon as possible.",
+    "title": "Get in Touch",
+    "subtitle": "Have a question about your order, installation or products? We're happy to help.",
     "name": "Name",
     "namePlaceholder": "Your name",
     "email": "Email",
     "emailPlaceholder": "you@email.com",
     "subject": "Subject",
     "subjectPlaceholder": "What is your message about?",
+    "orderNumber": "Order number",
+    "orderNumberPlaceholder": "VX-12345",
+    "orderNumberHint": "Have a question about an order? Include your order number for faster support.",
+    "optional": "optional",
     "message": "Message",
     "messagePlaceholder": "Type your message here...",
     "send": "Send message",
@@ -215,7 +219,12 @@
     "fillAll": "Please fill in all fields",
     "invalidEmail": "Invalid email address",
     "error": "Something went wrong",
-    "errorDesc": "Please try again later."
+    "errorDesc": "Please try again later.",
+    "whatsapp": "WhatsApp Support",
+    "whatsappDesc": "Quick answers — chat with us directly",
+    "emailDesc": "We respond within 24 hours",
+    "responseTime": "Fast response time",
+    "responseTimeDesc": "Average reply within 2 hours on business days"
   },
   "footer": {
     "brandDesc": "Fueling Your Journey. Off-grid power solutions for campervans, made in Belgium.",
