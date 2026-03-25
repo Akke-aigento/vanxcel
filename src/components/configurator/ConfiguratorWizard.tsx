@@ -16,6 +16,7 @@ import StepAppliances from "./StepAppliances";
 import StepResults from "./StepResults";
 import StepPackage from "./StepPackage";
 import StepInstallGuide from "./StepInstallGuide";
+import StepOtherVehicle from "./StepOtherVehicle";
 import type { SelectedAppliance } from "./StepAppliances";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -34,6 +35,10 @@ export interface ConfiguratorState {
   selectedAppliances: SelectedAppliance[];
   totalDailyWh: number;
   subStep: number;
+  isOtherVehicle: boolean;
+  otherSmartAlternator: "yes" | "no" | "unknown" | null;
+  otherVoltage: "12v" | "24v" | null;
+  otherSize: "small" | "medium" | "large" | "xlarge" | null;
 }
 
 const initialState: ConfiguratorState = {
@@ -51,6 +56,10 @@ const initialState: ConfiguratorState = {
   selectedAppliances: [],
   totalDailyWh: 0,
   subStep: 0,
+  isOtherVehicle: false,
+  otherSmartAlternator: null,
+  otherVoltage: null,
+  otherSize: null,
 };
 
 const ConfiguratorWizard = () => {
@@ -62,20 +71,50 @@ const ConfiguratorWizard = () => {
   }, []);
 
   const selectBrand = useCallback((brand: string) => {
+    if (brand === "__other__") {
+      setState((s) => ({
+        ...s,
+        brand: "__other__",
+        isOtherVehicle: true,
+        vehicleId: null,
+        vehicle: null,
+        bodyTypeId: null,
+        bodyType: null,
+        buildYear: null,
+        motorisationId: null,
+        motorisation: null,
+        usageType: null,
+        climate: null,
+        persons: null,
+        subStep: 1,
+      }));
+    } else {
+      setState((s) => ({
+        ...s,
+        brand,
+        isOtherVehicle: false,
+        vehicleId: null,
+        vehicle: null,
+        bodyTypeId: null,
+        bodyType: null,
+        buildYear: null,
+        motorisationId: null,
+        motorisation: null,
+        usageType: null,
+        climate: null,
+        persons: null,
+        subStep: 1,
+      }));
+    }
+  }, []);
+
+  const completeOtherVehicle = useCallback((data: { smartAlternator: "yes" | "no" | "unknown"; voltage: "12v" | "24v"; size: "small" | "medium" | "large" | "xlarge" }) => {
     setState((s) => ({
       ...s,
-      brand,
-      vehicleId: null,
-      vehicle: null,
-      bodyTypeId: null,
-      bodyType: null,
-      buildYear: null,
-      motorisationId: null,
-      motorisation: null,
-      usageType: null,
-      climate: null,
-      persons: null,
-      subStep: 1,
+      otherSmartAlternator: data.smartAlternator,
+      otherVoltage: data.voltage,
+      otherSize: data.size,
+      subStep: 6,
     }));
   }, []);
 
@@ -163,13 +202,21 @@ const ConfiguratorWizard = () => {
             <StepBrandSelect onSelect={selectBrand} selected={state.brand} />
           </div>
         )}
-        {state.subStep === 1 && (
+        {state.subStep === 1 && !state.isOtherVehicle && (
           <div className="animate-fade-in-up">
             <StepModelSelect
               brand={state.brand!}
               onSelect={selectVehicle}
               onBack={() => goTo(0)}
               selected={state.vehicleId}
+            />
+          </div>
+        )}
+        {state.subStep === 1 && state.isOtherVehicle && (
+          <div className="animate-fade-in-up">
+            <StepOtherVehicle
+              onComplete={completeOtherVehicle}
+              onBack={() => goTo(0)}
             />
           </div>
         )}

@@ -61,11 +61,31 @@ export const useMotorisations = (vehicleId: string | null, buildYear: number | n
         .eq("vehicle_id", vehicleId!)
         .order("sort_order", { ascending: true });
       if (error) throw error;
-      return data.filter((m) => {
+
+      const exact = data.filter((m) => {
         const start = m.production_year_start ?? 0;
         const end = m.production_year_end ?? new Date().getFullYear();
         return buildYear! >= start && buildYear! <= end;
       });
+
+      if (exact.length > 0) {
+        return { motors: exact, isFallback: false };
+      }
+
+      // Fallback: closest match by year distance
+      const sorted = [...data].sort((a, b) => {
+        const distA = Math.min(
+          Math.abs(buildYear! - (a.production_year_start ?? 0)),
+          a.production_year_end ? Math.abs(buildYear! - a.production_year_end) : Infinity
+        );
+        const distB = Math.min(
+          Math.abs(buildYear! - (b.production_year_start ?? 0)),
+          b.production_year_end ? Math.abs(buildYear! - b.production_year_end) : Infinity
+        );
+        return distA - distB;
+      });
+
+      return { motors: sorted.slice(0, 2), isFallback: true };
     },
   });
 

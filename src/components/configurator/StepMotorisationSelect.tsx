@@ -23,7 +23,9 @@ const emissionColor: Record<string, string> = {
 
 const StepMotorisationSelect = ({ vehicleId, buildYear, onSelect, onBack, selected }: Props) => {
   const { t } = useTranslation();
-  const { data: motors, isLoading } = useMotorisations(vehicleId, buildYear);
+  const { data, isLoading } = useMotorisations(vehicleId, buildYear);
+  const motors = data?.motors;
+  const isFallback = data?.isFallback ?? false;
 
   return (
     <div>
@@ -33,6 +35,18 @@ const StepMotorisationSelect = ({ vehicleId, buildYear, onSelect, onBack, select
       <h2 className="font-display text-3xl text-foreground mb-6">
         {t("configurator.selectEngine")}
       </h2>
+
+      {isFallback && motors && motors.length > 0 && (
+        <div className="mb-6 p-4 rounded-lg border-2 border-orange-500/40 bg-orange-500/10">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-orange-400 mt-0.5 shrink-0" />
+            <p className="text-sm text-orange-300">
+              {t("configurator.fallbackMessage", { year: buildYear })}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4">
         {isLoading &&
           Array.from({ length: 3 }).map((_, i) => (
