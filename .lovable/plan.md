@@ -1,22 +1,26 @@
 
 
-## Homepage Opschonen
+## Fix Sticky Header / App.css Boilerplate
 
-### 3 wijzigingen:
+### Probleem
+De `App.css` bevat nog standaard Vite boilerplate CSS die de layout beïnvloedt:
 
-**1. Bestsellers verwijderen uit CategoryGrid** (`CategoryGrid.tsx`)
-Filter de `bestsellers` collectie uit het resultaat. Voeg `.filter(c => c.slug !== 'bestsellers')` toe aan de collections memo.
+```css
+#root {
+  max-width: 1280px;   /* ← beperkt de breedte van alles */
+  margin: 0 auto;
+  padding: 2rem;        /* ← voegt ongewenste ruimte toe rondom alles */
+  text-align: center;   /* ← centreert alle tekst */
+}
+```
 
-**2. SEO-tekst onder PowerCalculator verwijderen** (`PowerCalculator.tsx`)
-Verwijder het hele `{/* SEO Content */}` blok (regels 124-149) — de drie RevealOnScroll secties met powerSeo teksten.
+De navbar zelf is `fixed` en werkt technisch, maar de `#root` container beperkt de breedte en voegt padding toe, wat visuele problemen kan veroorzaken — vooral bij bepaalde schermbreedtes waar de header smaller lijkt dan het scherm.
 
-**3. Geen andere wijzigingen**
-Carousel wordt niet geïmplementeerd (grid is beter voor conversie). De `bestsellers` slug in `categoryImages` kan ook opgeschoond worden maar is niet nodig (wordt gewoon niet meer getoond).
+### Oplossing
 
-### Bestanden
+**`src/App.css`**: Verwijder alle boilerplate CSS. Dit bestand kan volledig leeggemaakt worden — alle styling zit al in `index.css` en Tailwind.
 
 | Bestand | Wijziging |
 |---|---|
-| `src/components/CategoryGrid.tsx` | Filter `bestsellers` slug uit collections |
-| `src/components/PowerCalculator.tsx` | Verwijder SEO content blok (regels 124-149) |
+| `src/App.css` | Verwijder alle inhoud (of verwijder het bestand + de import in `main.tsx`) |
 
