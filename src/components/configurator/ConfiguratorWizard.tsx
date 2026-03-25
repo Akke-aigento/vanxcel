@@ -16,6 +16,7 @@ import StepAppliances from "./StepAppliances";
 import StepResults from "./StepResults";
 import StepPackage from "./StepPackage";
 import StepInstallGuide from "./StepInstallGuide";
+import StepOtherVehicle from "./StepOtherVehicle";
 import type { SelectedAppliance } from "./StepAppliances";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -34,6 +35,10 @@ export interface ConfiguratorState {
   selectedAppliances: SelectedAppliance[];
   totalDailyWh: number;
   subStep: number;
+  isOtherVehicle: boolean;
+  otherSmartAlternator: "yes" | "no" | "unknown" | null;
+  otherVoltage: "12v" | "24v" | null;
+  otherSize: "small" | "medium" | "large" | "xlarge" | null;
 }
 
 const initialState: ConfiguratorState = {
@@ -51,6 +56,10 @@ const initialState: ConfiguratorState = {
   selectedAppliances: [],
   totalDailyWh: 0,
   subStep: 0,
+  isOtherVehicle: false,
+  otherSmartAlternator: null,
+  otherVoltage: null,
+  otherSize: null,
 };
 
 const ConfiguratorWizard = () => {
