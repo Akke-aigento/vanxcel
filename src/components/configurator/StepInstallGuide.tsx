@@ -211,6 +211,14 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
     return { batteryAh, solarWp, inverterW, dcDcA };
   }, [appliances, state]);
 
+  const handleComponentClick = useCallback((phaseId: string) => {
+    setActivePhase(phaseId);
+    const el = phaseRefs.current[phaseId];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
   if (!calc) {
     return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
   }
