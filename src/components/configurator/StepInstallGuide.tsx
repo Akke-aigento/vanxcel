@@ -612,11 +612,12 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
         </AccordionItem>
 
         {/* ── PHASE 2: FUSE BOX & BUSBARS ── */}
-        <AccordionItem value="phase-2" className="border rounded-lg overflow-hidden">
+        <AccordionItem value="phase-2" className="border rounded-lg overflow-hidden" ref={(el) => { phaseRefs.current["phase-2"] = el; }}>
           <AccordionTrigger className="px-4 hover:no-underline">
             <PhaseHeader phase={2} difficulty="easy" time="1-2h" />
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
+            <PhaseIllustration phase={2} />
             <ol className="list-decimal list-inside space-y-3 text-sm leading-relaxed">
               <li>{t("configurator.phase2Step1")}</li>
               <li>{t("configurator.phase2Step2")}</li>
