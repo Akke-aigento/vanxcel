@@ -344,7 +344,7 @@ const WiringDiagram = ({ state, calc, topBatteryLocation, activePhase, onCompone
         stroke="hsl(185 100% 29%)" strokeWidth={3} strokeLinecap="round"
       />
       <text x={ox + bus.cabinW + 60} y={oy + bus.h + 14} textAnchor="middle" fontSize={8} fill="hsl(0 0% 50%)">
-        Schuifdeur
+        {t("configurator.slidingDoor")}
       </text>
 
       {/* Rear doors (dashed) */}
