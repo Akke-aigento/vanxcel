@@ -243,7 +243,11 @@
     "copyright": "© {{year}} {{name}}. Alle rechten voorbehouden. 🇧🇪 Made in Belgium.",
     "faq": "Veelgestelde vragen",
     "delivery": "Verzending & Levering",
-    "manuals": "Schema's & Handleidingen"
+    "manuals": "Schema's & Handleidingen",
+    "catConverters": "Omvormers",
+    "catBatteries": "Accu's",
+    "catPowerstations": "Powerstations",
+    "catAccessories": "Accessoires"
   },
   "thankYou": {
     "title": "Bedankt voor je bestelling!",
@@ -867,7 +871,10 @@
     "companyPlaceholder": "Optioneel",
     "vatNumber": "BTW-nummer",
     "newsletterOptIn": "Schrijf mij in voor de nieuwsbrief",
-    "heroSubtitle": "Alles voor jouw off-grid avontuur. Van LiFePO4 batterijen tot complete systemen."
+    "heroSubtitle": "Alles voor jouw off-grid avontuur. Van LiFePO4 batterijen tot complete systemen.",
+    "pwMin8": "8+ tekens",
+    "pwUppercase": "Hoofdletter",
+    "pwNumber": "Cijfer"
   },
   "account": {
     "title": "Mijn Account",

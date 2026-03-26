@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useProduct, useRelatedProducts } from '@/integrations/sellqo/hooks';
 import { extractSingle, extractArray } from '@/integrations/sellqo/client';
 import { normalizeProduct, normalizeProducts } from '@/integrations/sellqo/normalizer';
@@ -19,6 +20,7 @@ export default function ProductDetail() {
   const { addItem, isAddingItem } = useCartContext();
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   const { data: apiProductData, isLoading } = useProduct(slug || '');
   const { data: apiRelatedData } = useRelatedProducts(slug || '');
@@ -28,6 +30,8 @@ export default function ProductDetail() {
 
   const rawRelated = extractArray(apiRelatedData);
   const relatedProducts = rawRelated.length > 0 ? normalizeProducts(rawRelated) : [];
+
+  useDocumentTitle(product?.title);
 
   if (isLoading) {
     return (
@@ -68,7 +72,8 @@ export default function ProductDetail() {
   const hasRealVariants = product.variants && product.variants.length > 0;
   const variant = hasRealVariants ? (product.variants[selectedVariant] || product.variants[0]) : undefined;
   const variantPrice = variant?.price ?? product.price ?? 0;
-  const mainImage = product.images?.[0]?.url;
+  const images = product.images || [];
+  const mainImage = images[selectedImage]?.url || images[0]?.url;
   const plainDescription = product.description?.replace(/<[^>]*>/g, '') || '';
 
   const handleAddToCart = () => {
@@ -97,17 +102,30 @@ export default function ProductDetail() {
           </nav>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16">
-            <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
-              {mainImage ? (
-                <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
-              ) : (
-                <span className="text-8xl">📦</span>
-               )}
-             </div>
-
-             {product.product_type === 'bundle' && product.bundle_items && product.bundle_items.length > 0 && (
-               <BundleContents product={product} />
-             )}
+            <div>
+              <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
+                {mainImage ? (
+                  <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
+                ) : (
+                  <span className="text-8xl">📦</span>
+                )}
+              </div>
+              {images.length > 1 && (
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(i)}
+                      className={`w-16 h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all ${
+                        selectedImage === i ? 'border-primary' : 'border-border hover:border-muted-foreground'
+                      }`}
+                    >
+                      <img src={img.url} alt={`${product.title} ${i + 1}`} className="w-full h-full object-contain p-1" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
              <div className="flex flex-col">
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
@@ -172,18 +190,24 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              <Button
-                onClick={handleAddToCart}
-                disabled={product.stock_status === 'out_of_stock' || isAddingItem}
-                size="lg"
-                className="w-full"
-              >
-                {isAddingItem ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
-                ) : (
-                  t("product.addToCart")
-                )}
-              </Button>
+               <Button
+                 onClick={handleAddToCart}
+                 disabled={product.stock_status === 'out_of_stock' || isAddingItem}
+                 size="lg"
+                 className="w-full"
+               >
+                 {isAddingItem ? (
+                   <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
+                 ) : (
+                   t("product.addToCart")
+                 )}
+               </Button>
+
+               {product.product_type === 'bundle' && product.bundle_items && product.bundle_items.length > 0 && (
+                 <div className="mt-6">
+                   <BundleContents product={product} />
+                 </div>
+               )}
             </div>
           </div>
 

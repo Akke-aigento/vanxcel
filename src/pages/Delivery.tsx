@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Truck, Package, Leaf, Clock } from "lucide-react";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
 
 const Delivery = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("delivery.title"));
 
   const steps = [
     { icon: Package, title: t("delivery.step1Title"), desc: t("delivery.step1Desc") },

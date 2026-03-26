@@ -34,7 +34,7 @@ const CartDrawer = () => {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => open ? openCart() : closeCart()}>
       <SheetTrigger asChild>
-        <button className="relative text-muted-foreground hover:text-foreground transition-colors">
+        <button className="relative text-muted-foreground hover:text-foreground transition-colors" aria-label={t("cart.title")}>
           <ShoppingCart size={20} />
           {itemCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">

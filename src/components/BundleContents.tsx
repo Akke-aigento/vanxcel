@@ -65,7 +65,7 @@ export default function BundleContents({ product }: Props) {
               </div>
               <div className="flex-1 min-w-0">
                 <Link
-                  to={`/products/${item.product.slug}`}
+                  to={`/shop/${item.product.slug}`}
                   className="text-sm font-medium hover:text-primary transition-colors line-clamp-1"
                 >
                   {item.product.name}

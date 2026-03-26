@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useProducts, useCollections } from '@/integrations/sellqo/hooks';
 import { extractArray } from '@/integrations/sellqo/client';
 import { normalizeProducts, normalizeCollections } from '@/integrations/sellqo/normalizer';
@@ -11,6 +12,7 @@ import Footer from '@/components/Footer';
 
 export default function Shop() {
   const { t } = useTranslation();
+  useDocumentTitle(t("shop.title"));
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get('collection') || 'all';
   const [sort, setSort] = useState('newest');

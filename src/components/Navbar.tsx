@@ -1,5 +1,5 @@
 import { Menu, X, ChevronDown, ChevronRight, User } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/hooks/use-toast";
@@ -25,6 +25,7 @@ const Navbar = () => {
   const [toolsExpanded, setToolsExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, customer, logout } = useCustomerAuth();
@@ -34,6 +35,17 @@ const Navbar = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [accountOpen]);
   const { t } = useTranslation();
   const { data: collectionsData } = useCollections();
 
@@ -211,13 +223,13 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <LanguageSwitcher />
           {/* Account icon — desktop */}
-          <div className="hidden md:block relative">
+          <div className="hidden md:block relative" ref={accountRef}>
             {isAuthenticated ? (
-              <div className="relative group">
+              <div className="relative">
                 <button
                   onClick={() => setAccountOpen(!accountOpen)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
-                  title={customer?.first_name || ""}
+                  aria-label={t("account.myAccount")}
                 >
                   <User size={20} />
                 </button>
@@ -249,6 +261,7 @@ const Navbar = () => {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden text-muted-foreground hover:text-foreground"
+            aria-label={mobileOpen ? t("nav.closeMenu", "Sluit menu") : t("nav.openMenu", "Open menu")}
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
