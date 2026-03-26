@@ -871,7 +871,10 @@
     "companyPlaceholder": "Optionnel",
     "vatNumber": "Numéro de TVA",
     "newsletterOptIn": "S'inscrire à la newsletter",
-    "heroSubtitle": "Tout pour votre aventure off-grid. Des batteries LiFePO4 aux systèmes complets."
+    "heroSubtitle": "Tout pour votre aventure off-grid. Des batteries LiFePO4 aux systèmes complets.",
+    "pwMin8": "8+ caractères",
+    "pwUppercase": "Majuscule",
+    "pwNumber": "Chiffre"
   },
   "account": {
     "title": "Mon Compte",
