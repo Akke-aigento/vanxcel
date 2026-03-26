@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, AlertTriangle, AlertCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { getLocalized, getLangFromI18n } from "@/lib/configurator-i18n";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface Props {
@@ -29,7 +30,8 @@ const severityConfig = {
 };
 
 const StepWarnings = ({ vehicleId, buildYear, engineCode, motorisation, onBack }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = getLangFromI18n(i18n.language);
   const { data: warnings } = useVehicleWarnings(vehicleId, buildYear, engineCode);
 
   return (
@@ -68,14 +70,14 @@ const StepWarnings = ({ vehicleId, buildYear, engineCode, motorisation, onBack }
             <Alert key={w.id} className={config.className}>
               <Icon className="h-5 w-5" />
               <AlertTitle className="text-foreground font-display text-lg">
-                {w.title}
+                {getLocalized(w, 'title', lang)}
               </AlertTitle>
               <AlertDescription className="text-muted-foreground text-sm mt-1">
-                {w.description}
+                {getLocalized(w, 'description', lang)}
               </AlertDescription>
-              {w.solution && (
+              {(getLocalized(w, 'solution', lang)) && (
                 <p className="text-sm text-foreground/80 mt-2 font-medium">
-                  💡 {w.solution}
+                  💡 {getLocalized(w, 'solution', lang)}
                 </p>
               )}
             </Alert>

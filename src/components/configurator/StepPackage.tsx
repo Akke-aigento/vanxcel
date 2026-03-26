@@ -151,7 +151,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
       <Card className="mb-6 border-[#008593]/30 bg-[#008593]/5">
         <CardContent className="p-4 flex items-start gap-3">
           <Sparkles className="w-5 h-5 text-[#008593] shrink-0 mt-0.5" />
-          <p className="text-sm text-foreground/90">{pkg.savingsHighlight}</p>
+          <p className="text-sm text-foreground/90">{t(pkg.savingsHighlight)}</p>
         </CardContent>
       </Card>
 
@@ -216,7 +216,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-primary italic">{item.reason}</p>
+                          <p className="text-xs text-primary italic">{t(item.reason)}</p>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
                           {item.comingSoon ? (

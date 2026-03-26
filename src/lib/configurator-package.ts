@@ -118,61 +118,61 @@ export function generatePackage(
 
   // 1. Converter (always)
   addItem(items, converterSel.product, 1, 'zap',
-    `Hart van je systeem: omvormer ${converterW}W + DC-DC 25A + MPPT tot 500Wp + walstroomlader + UPS — alles in één apparaat.`,
+    'configurator.pr_converter',
     false, priceOverrides);
 
   // 2. Battery
   addItem(items, batterySel.product, batterySel.quantity, 'battery',
-    `${batteryAh}Ah voor ${state.totalDailyWh}Wh dagelijks verbruik × ${daysAutark} dagen autonomie.`,
+    'configurator.pr_battery',
     false, priceOverrides);
 
   // 3. Solar panels (if needed)
   if (solarWp > 0) {
     addItem(items, solarSel.product, solarSel.quantity, 'sun',
-      `${solarSel.quantity}× ${Number(solarSel.product.specs.wattage)}W = ${solarWp}Wp — sluit direct aan op VanXcel Converter via MC4.`,
+      'configurator.pr_solar',
       false, priceOverrides);
 
     // Roof cable gland
     addItem(items, getProduct('VXDAKDV')!, 1, 'cable',
-      'Waterdichte dakdoorvoer voor de solarkabels.', false, priceOverrides);
+      'configurator.pr_roofGland', false, priceOverrides);
 
     // Solar mounting kit
     addItem(items, getProduct('VXSOLMOUNT')!, 1, 'cable',
-      'Montagebeugels voor het bevestigen van je panelen op het dak.', false, priceOverrides);
+      'configurator.pr_solarMount', false, priceOverrides);
 
     // Solar cables (6mm²) — estimate route length
     const solarRoute = cableRoutes?.find(r => r.route_id === 'roof_to_interior');
     const solarMeters = Math.ceil(Number(solarRoute?.distance_meters ?? 4) + 1);
     addItem(items, getProduct('VXCAB6SR')!, solarMeters, 'cable',
-      `${solarMeters}m solarkabel rood voor paneel → converter.`, true, priceOverrides);
+      'configurator.pr_solarCableRed', true, priceOverrides);
     addItem(items, getProduct('VXCAB6SZ')!, solarMeters, 'cable',
-      `${solarMeters}m solarkabel zwart.`, true, priceOverrides);
+      'configurator.pr_solarCableBlk', true, priceOverrides);
   }
 
   // 4. ANL Fuse (always)
   addItem(items, anlFuse, 1, 'shield',
-    `Hoofdzekering ${anlFuse.specs.rating}A — passend bij je VanXcel ${converterW}W Converter. Plaatsen binnen 18cm van batterij+.`,
+    'configurator.pr_anlFuse',
     false, priceOverrides);
 
   // 5. Battery disconnect switch (always)
   addItem(items, getProduct('VXSWITCH200')!, 1, 'power',
-    'Noodschakelaar — schakelt het volledige systeem uit. Plaatsen direct NA de hoofdzekering.',
+    'configurator.pr_batterySwitch',
     false, priceOverrides);
 
   // 6. Negative busbar (always)
   addItem(items, getProduct('VXBUSBAR')!, 1, 'minus',
-    'Centraal punt voor alle negatieve kabels. Verbind met 25mm²+ kabel naar chassis-aarding.',
+    'configurator.pr_busbar',
     false, priceOverrides);
 
   // 7. Fuse box (12-slot for regular/fulltime, 6-slot for weekend/stealth)
   const useBigFuseBox = state.usageType === 'regular' || state.usageType === 'fulltime';
   addItem(items, getProduct(useBigFuseBox ? 'VXFH12' : 'VXFH6')!, 1, 'shield',
-    useBigFuseBox ? 'Zekeringkast 12-weg voor al je circuits.' : 'Compacte zekeringkast voor eenvoudige setups.',
+    useBigFuseBox ? 'configurator.pr_fuseBox12' : 'configurator.pr_fuseBox6',
     false, priceOverrides);
 
   // 8. Blade fuse pack (always)
   addItem(items, getProduct('VXFUSEPACK')!, 1, 'shield',
-    'Assortiment blade fuses voor je zekeringkast.', false, priceOverrides);
+    'configurator.pr_bladeFuses', false, priceOverrides);
 
   // 9. Alternator cable (starter → converter DC-DC input)
   const altRoute = cableRoutes?.find(r => r.route_id === 'starter_to_leisure');
@@ -181,9 +181,9 @@ export function generatePackage(
   const altCableBlk = getProduct('VXCAB16Z');
   if (altCableRed && altCableBlk) {
     addItem(items, altCableRed, altMeters, 'cable',
-      `${altMeters}m kabel voor starterbatterij → converter (Anderson connector).`, true, priceOverrides);
+      'configurator.pr_altCableRed', true, priceOverrides);
     addItem(items, altCableBlk, altMeters, 'cable',
-      `${altMeters}m negatieve kabel voor alternator circuit.`, true, priceOverrides);
+      'configurator.pr_altCableBlk', true, priceOverrides);
   }
 
   // 10. Heatshrink (always)
@@ -220,7 +220,7 @@ export function generatePackage(
   // 17. CEE-16A shore power inlet (if regular or fulltime)
   if (state.usageType === 'regular' || state.usageType === 'fulltime') {
     addItem(items, getProduct('VXCEE16')!, 1, 'plug',
-      'Walstroom aansluiting — sluit aan op AC IN van je VanXcel Converter voor laden op campings.',
+      'configurator.pr_shoreInlet',
       false, priceOverrides);
   }
 
@@ -230,7 +230,7 @@ export function generatePackage(
   const totalComingSoon = items.filter(i => i.comingSoon).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const totalOutOfStock = items.filter(i => !i.inStock && !i.comingSoon).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
-  const savingsHighlight = `De VanXcel 5-in-1 Converter vervangt een losse omvormer (€399), DC-DC lader (€299), MPPT regelaar (€129) en walstroomlader (€149) — een besparing van meer dan €500!`;
+  const savingsHighlight = 'configurator.savingsHighlightText';
 
   return {
     items,

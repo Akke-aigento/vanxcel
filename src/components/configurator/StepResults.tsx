@@ -174,12 +174,14 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
       converterW,
       converterProduct: converterSel.product,
       converterWarning: converterSel.warning,
+      converterWarningParams: converterSel.warningParams,
       converterExceeds: converterSel.exceeds,
       batteryProduct: batterySel.product,
       batteryQty: batterySel.quantity,
       solarProduct: solarSel.product,
       solarQty: solarSel.quantity,
       solarWarning: solarSel.warning,
+      solarWarningParams: solarSel.warningParams,
       stats230v,
       daysAutark,
       sunHours,
@@ -237,10 +239,10 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
             `🏠 ${t("configurator.converterShore")}: 230V AC IN`,
             `🔄 UPS: 25ms switchover`,
           ]}
-          description={results.converterProduct.configuratorUse}
+          description={t(results.converterProduct.configuratorUse)}
           accentClass="border-[#008593]/30"
           price={results.converterPrice || undefined}
-          warning={results.converterWarning ?? undefined}
+          warning={results.converterWarning ? t(results.converterWarning, results.converterWarningParams) : undefined}
           delay={0}
         />
 
@@ -267,7 +269,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           subtitle={`${results.solarQty}× ${Number(results.solarProduct.specs.wattage)}W ${t("configurator.panels")}`}
           description={`${t("configurator.solarYieldPrefix")} ${results.solarYield} Wh/${t("configurator.day")} ${t("configurator.inClimate")} ${climateLabels[state.climate ?? "benelux"]}. ${t("configurator.solarConverterDirect")}`}
           accentClass="border-yellow-500/30"
-          warning={results.solarWarning ?? undefined}
+          warning={results.solarWarning ? t(results.solarWarning, results.solarWarningParams) : undefined}
           delay={200}
         />
 

@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { getLocalized, getLangFromI18n } from "@/lib/configurator-i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -175,7 +176,8 @@ const phaseIcons = [
 
 /* ── Component ── */
 const StepInstallGuide = ({ state, onBack }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = getLangFromI18n(i18n.language);
   const [completedPhases, setCompletedPhases] = useState<number[]>([]);
   const [activePhase, setActivePhase] = useState<string | null>("phase-0");
   const phaseRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -220,7 +222,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
   }, []);
 
   if (!calc) {
-    return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t("configurator.loading")}</div>;
   }
 
   const vehicleName = state.vehicleId
@@ -486,11 +488,11 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
             return (
               <Alert key={w.id} className={sev.className}>
                 {sev.icon}
-                <AlertTitle>{w.title}</AlertTitle>
+                <AlertTitle>{getLocalized(w, 'title', lang)}</AlertTitle>
                 <AlertDescription>
-                  {w.description}
-                  {w.solution && (
-                    <p className="mt-1 font-medium">💡 {w.solution}</p>
+                  {getLocalized(w, 'description', lang)}
+                  {getLocalized(w, 'solution', lang) && (
+                    <p className="mt-1 font-medium">💡 {getLocalized(w, 'solution', lang)}</p>
                   )}
                 </AlertDescription>
               </Alert>
@@ -503,7 +505,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       <WiringDiagram
         state={state}
         calc={calc}
-        topBatteryLocation={topBatteryLocation ? { location_id: topBatteryLocation.location_id, label: topBatteryLocation.label } : null}
+        topBatteryLocation={topBatteryLocation ? { location_id: topBatteryLocation.location_id, label: getLocalized(topBatteryLocation, 'label', lang) } : null}
         activePhase={activePhase}
         onComponentClick={handleComponentClick}
       />
@@ -569,7 +571,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                     <MapPin className="w-5 h-5 text-primary mt-1 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold">{topBatteryLocation.label}</p>
+                        <p className="font-semibold">{getLocalized(topBatteryLocation, 'label', lang)}</p>
                         <Badge variant="default" className="text-xs">
                           {t("configurator.recommended")}
                         </Badge>
@@ -583,11 +585,11 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                       {topBatteryLocation.max_weight_kg && (
                         <p className="text-xs text-muted-foreground">Max. {topBatteryLocation.max_weight_kg} kg</p>
                       )}
-                      {topBatteryLocation.mounting_notes && (
-                        <p className="text-xs mt-2">{topBatteryLocation.mounting_notes}</p>
+                      {getLocalized(topBatteryLocation, 'mounting_notes', lang) && (
+                        <p className="text-xs mt-2">{getLocalized(topBatteryLocation, 'mounting_notes', lang)}</p>
                       )}
-                      {topBatteryLocation.selfbuild_notes && (
-                        <p className="text-xs text-primary italic mt-1">{topBatteryLocation.selfbuild_notes}</p>
+                      {getLocalized(topBatteryLocation, 'selfbuild_notes', lang) && (
+                        <p className="text-xs text-primary italic mt-1">{getLocalized(topBatteryLocation, 'selfbuild_notes', lang)}</p>
                       )}
                     </div>
                   </div>
@@ -663,7 +665,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                 <li>{t("configurator.route1Step1", { location: starterBatteryLocation })}</li>
                 <li>{t("configurator.route1Step2", { size: dcDcCableSize })}</li>
                 {starterToDcDcRoute?.description && (
-                  <li>{t("configurator.route1Step3")}: {starterToDcDcRoute.description}</li>
+                  <li>{t("configurator.route1Step3")}: {getLocalized(starterToDcDcRoute, 'description', lang)}</li>
                 )}
                 <li>{t("configurator.route1Step4", { distance: starterToDcDcDist })}</li>
                 {starterToDcDcRoute?.cable_protection && (
@@ -729,7 +731,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                     <li>{t("configurator.route5Step3")}</li>
                     <li>{t("configurator.route5Step4")}</li>
                     {solarToMpptRoute?.description && (
-                      <li>{solarToMpptRoute.description}</li>
+                      <li>{getLocalized(solarToMpptRoute, 'description', lang)}</li>
                     )}
                     <li>{t("configurator.route5Step5", { size: solarCableSize, distance: solarToMpptDist })}</li>
                   </ol>

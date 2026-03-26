@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { getLocalized, getLangFromI18n } from "@/lib/configurator-i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -137,7 +138,8 @@ const PRESELECTION: Record<string, string[]> = {
 type ApplianceState = Record<string, { enabled: boolean; hours: number }>;
 
 const StepAppliances = ({ usageType, onComplete, onBack }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = getLangFromI18n(i18n.language);
   const [appState, setAppState] = useState<ApplianceState>({});
   const [initialized, setInitialized] = useState(false);
 
@@ -308,7 +310,7 @@ const StepAppliances = ({ usageType, onComplete, onBack }: Props) => {
                           <span className="text-muted-foreground shrink-0">
                             {ICON_MAP[item.icon ?? ""] ?? <Zap className="w-4 h-4" />}
                           </span>
-                          <span className="font-medium truncate">{item.name_nl}</span>
+                          <span className="font-medium truncate">{getLocalized(item, 'name', lang)}</span>
                           {item.requires_inverter && (
                             <Badge variant="outline" className="text-xs shrink-0 border-orange-500/50 text-orange-400">
                               230V
