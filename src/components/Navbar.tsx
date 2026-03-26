@@ -25,6 +25,7 @@ const Navbar = () => {
   const [toolsExpanded, setToolsExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, customer, logout } = useCustomerAuth();
