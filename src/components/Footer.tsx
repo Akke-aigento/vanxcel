@@ -37,10 +37,10 @@ const Footer = () => {
   );
 
   const categories = [
-    { title: "Converters", slug: "converters" },
-    { title: "Accu's", slug: "accus" },
-    { title: "Powerstations", slug: "powerstations" },
-    { title: "Accessoires", slug: "accessoires" },
+    { titleKey: "footer.catConverters", slug: "converters" },
+    { titleKey: "footer.catBatteries", slug: "accus" },
+    { titleKey: "footer.catPowerstations", slug: "powerstations" },
+    { titleKey: "footer.catAccessories", slug: "accessoires" },
   ];
 
   return (
