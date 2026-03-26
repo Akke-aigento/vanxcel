@@ -74,7 +74,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     if (token) {
       setLoading(true);
-      customerApiFetch("get_profile", {}, token)
+      customerApiFetch<Customer>("get_profile", {}, token)
         .then((profile) => setCustomer(profile))
         .catch(() => { saveToken(null); setCustomer(null); })
         .finally(() => setLoading(false));
