@@ -97,6 +97,7 @@ export interface SolarSelection {
   quantity: number;
   cappedWp: number;
   warning: string | null;
+  warningParams?: Record<string, number>;
 }
 
 export function selectSolarProduct(requiredWp: number): SolarSelection {
