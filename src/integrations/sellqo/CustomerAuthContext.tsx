@@ -90,7 +90,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const register = async (data: { email: string; password: string; first_name: string; last_name: string; phone?: string; company_name?: string; vat_number?: string; newsletter_opt_in?: boolean }) => {
-    const result = await customerApiFetch("register", data);
+    const result = await customerApiFetch<{ token: string; customer: Customer }>("register", data);
     saveToken(result.token);
     setCustomer(result.customer);
   };
