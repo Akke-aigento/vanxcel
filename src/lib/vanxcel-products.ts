@@ -104,7 +104,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
     comingSoon: false,
     shopUrl: '/shop/vanxcel-150w-vast-zonnepaneel',
     specs: { wattage: 150, type: 'mono', connector: 'MC4' },
-    configuratorUse: 'Compact paneel, ideaal voor kleinere daken of als aanvulling.'
+    configuratorUse: 'configurator.pu_VXSOL150'
   },
   {
     sku: 'VXSOL200',
