@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "OBTENEZ 10% DE RÉDUCTION",
     "subtitle": "Inscrivez-vous à notre newsletter et recevez 10% de réduction sur votre première commande.",
-    "placeholder": "Votre adresse e-mail"
+    "placeholder": "Votre adresse e-mail",
+    "success": "Merci pour votre inscription !",
+    "error": "Une erreur s'est produite. Réessayez plus tard."
   },
   "cart": {
     "title": "Panier",
