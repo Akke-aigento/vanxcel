@@ -893,6 +893,11 @@
     "currentPassword": "Huidig wachtwoord",
     "changePassword": "Wachtwoord wijzigen",
     "passwordChanged": "Wachtwoord succesvol gewijzigd!",
-    "vatVerified": "Geverifieerd"
+    "vatVerified": "Geverifieerd",
+    "personalInfo": "Persoonlijke gegevens",
+    "companyInfo": "Bedrijfsgegevens",
+    "preferences": "Voorkeuren",
+    "searchAddress": "Zoek adres",
+    "searchAddressPlaceholder": "Typ je adres..."
   }
 }
