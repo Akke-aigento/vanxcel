@@ -138,7 +138,8 @@ const PRESELECTION: Record<string, string[]> = {
 type ApplianceState = Record<string, { enabled: boolean; hours: number }>;
 
 const StepAppliances = ({ usageType, onComplete, onBack }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = getLangFromI18n(i18n.language);
   const [appState, setAppState] = useState<ApplianceState>({});
   const [initialized, setInitialized] = useState(false);
 
