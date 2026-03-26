@@ -853,7 +853,11 @@
     "newPassword": "Nieuw wachtwoord",
     "passwordResetSuccess": "Je wachtwoord is gewijzigd. Je kunt nu inloggen.",
     "resetError": "Er ging iets mis. Probeer het opnieuw.",
-    "backToLogin": "Terug naar inloggen"
+    "backToLogin": "Terug naar inloggen",
+    "companyName": "Bedrijfsnaam",
+    "companyPlaceholder": "Optioneel",
+    "vatNumber": "BTW-nummer",
+    "newsletterOptIn": "Schrijf mij in voor de nieuwsbrief"
   },
   "account": {
     "title": "Mijn Account",
