@@ -91,7 +91,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
     comingSoon: false,
     shopUrl: '/shop/vanxcel-300ah-lifepo4-accu',
     specs: { capacityAh: 300, voltage: 12.8, type: 'LiFePO4', form: 'standard' },
-    configuratorUse: 'Voor uitgebreide systemen en full-time vanlife. Maximale capaciteit in één batterij.'
+    configuratorUse: 'configurator.pu_VXBAT300'
   },
 
   // === SOLAR ===
