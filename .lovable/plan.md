@@ -1,22 +1,27 @@
 
 
-## Fix: Login pagina heeft geen navigatie terug
+## Fix: Navbar toevoegen aan Login & ResetPassword pagina's
 
 ### Probleem
-De Login pagina (`src/pages/Login.tsx`) is een full-screen split-screen layout zonder Navbar. De enige manier om terug te navigeren is het kleine "VANXCEL" logo-linkje. Er is geen duidelijke terug-knop of navigatiebalk.
+De login/registratie pagina toont "checkout.backToShop" als raw key tekst en mist de standaard site-navigatie. De gebruiker wil gewoon de normale Navbar behouden.
 
 ### Oplossing
-Voeg een duidelijke terug-knop toe linksboven (of rechtsboven op mobile) met een pijl-icoon en "Terug naar shop" tekst. Dit is beter dan de volledige Navbar toe te voegen — de cinematic login-ervaring blijft intact.
+Voeg de `<Navbar />` component toe bovenaan Login en ResetPassword pagina's — net zoals alle andere pagina's. Verwijder de custom "terug naar shop" link en het losse VANXCEL logo, aangezien de Navbar dit al bevat.
 
 ### Wijzigingen
 
 **`src/pages/Login.tsx`**:
-- Voeg een `ArrowLeft` terug-link toe boven het formulier (of naast het logo) die naar `/` navigeert
-- Tekst: vertaald via i18n key `auth.backToShop`
-
-**`src/i18n/locales/{nl,en,de,fr}.json`**:
-- Nieuwe key `auth.backToShop`: "Terug naar shop" / "Back to shop" / "Zurück zum Shop" / "Retour à la boutique"
+- Import `Navbar` en render bovenaan
+- Verwijder de `ArrowLeft` + `checkout.backToShop` link
+- Verwijder het losse `VANXCEL` logo-link (Navbar heeft dit al)
+- De split-screen layout blijft, maar begint nu onder de Navbar
 
 **`src/pages/ResetPassword.tsx`**:
-- Zelfde fix toepassen (heeft waarschijnlijk ook geen navigatie)
+- Zelfde aanpak: voeg `Navbar` toe, verwijder custom terug-link en los logo
+
+### Bestanden
+| Bestand | Wijziging |
+|---|---|
+| `src/pages/Login.tsx` | Navbar toevoegen, custom nav verwijderen |
+| `src/pages/ResetPassword.tsx` | Navbar toevoegen, custom nav verwijderen |
 
