@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, Check, X } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight, Check, X } from "lucide-react";
 import loginHero from "@/assets/login-hero.jpg";
+import Navbar from "@/components/Navbar";
 
 const PasswordStrength = ({ password, t }: { password: string; t: (key: string) => string }) => {
   const checks = [
