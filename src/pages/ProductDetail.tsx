@@ -32,20 +32,6 @@ export default function ProductDetail() {
   const relatedProducts = rawRelated.length > 0 ? normalizeProducts(rawRelated) : [];
 
   useDocumentTitle(product?.title);
-  const { t } = useTranslation();
-  const { slug } = useParams<{ slug: string }>();
-  const { addItem, isAddingItem } = useCartContext();
-  const [selectedVariant, setSelectedVariant] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-
-  const { data: apiProductData, isLoading } = useProduct(slug || '');
-  const { data: apiRelatedData } = useRelatedProducts(slug || '');
-
-  const rawProduct = extractSingle(apiProductData);
-  const product: Product | null = rawProduct ? normalizeProduct(rawProduct) : null;
-
-  const rawRelated = extractArray(apiRelatedData);
-  const relatedProducts = rawRelated.length > 0 ? normalizeProducts(rawRelated) : [];
 
   if (isLoading) {
     return (

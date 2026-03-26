@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Zap, Shield, Heart, Compass, Package, Users } from "lucide-react";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
@@ -8,6 +9,8 @@ import SplitRevealText from "@/components/SplitRevealText";
 import { Button } from "@/components/ui/button";
 
 const About = () => {
+  const { t } = useTranslation();
+  useDocumentTitle(t("about.heroTitle"));
   const { t } = useTranslation();
 
   const visionCards = [

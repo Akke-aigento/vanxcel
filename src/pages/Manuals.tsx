@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { FileText, Mail, Download } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 
 const Manuals = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("manuals.title"));
 
   return (
     <>

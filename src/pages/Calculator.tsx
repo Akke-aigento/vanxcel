@@ -1,5 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PowerCalculator from "@/components/PowerCalculator";
@@ -11,6 +12,7 @@ const tabMap: Record<string, string> = { power: "power", cable: "cable", build: 
 
 const Calculator = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("toolsHub.title"));
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab") || "power";
   const activeTab = tabMap[tabParam] || "power";
