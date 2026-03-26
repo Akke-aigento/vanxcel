@@ -890,6 +890,7 @@
     "noOrders": "Je hebt nog geen bestellingen.",
     "currentPassword": "Huidig wachtwoord",
     "changePassword": "Wachtwoord wijzigen",
-    "passwordChanged": "Wachtwoord succesvol gewijzigd!"
+    "passwordChanged": "Wachtwoord succesvol gewijzigd!",
+    "vatVerified": "Geverifieerd"
   }
 }
