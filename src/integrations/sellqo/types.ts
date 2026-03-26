@@ -48,6 +48,8 @@ export interface Product {
   is_featured?: boolean;
   created_at: string;
   updated_at: string;
+  bundle_items?: BundleItem[];
+  bundle_individual_total?: number;
 }
 
 // === COLLECTIONS ===

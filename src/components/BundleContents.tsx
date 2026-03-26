@@ -97,7 +97,7 @@ export default function BundleContents({ product }: Props) {
           <span className="text-primary">€{bundlePrice.toFixed(2)}</span>
         </div>
         {saving > 0 && (
-          <div className="flex justify-between text-sm text-green-600 font-medium">
+          <div className="flex justify-between text-sm text-primary font-medium">
             <span>{t("bundle.youSave")}</span>
             <span>€{saving.toFixed(2)}</span>
           </div>
