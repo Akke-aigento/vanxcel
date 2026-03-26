@@ -862,7 +862,11 @@
     "newPassword": "Neues Passwort",
     "passwordResetSuccess": "Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.",
     "resetError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-    "backToLogin": "Zurück zur Anmeldung"
+    "backToLogin": "Zurück zur Anmeldung",
+    "companyName": "Firmenname",
+    "companyPlaceholder": "Optional",
+    "vatNumber": "USt-IdNr.",
+    "newsletterOptIn": "Newsletter abonnieren"
   },
   "account": {
     "title": "Mein Konto",
