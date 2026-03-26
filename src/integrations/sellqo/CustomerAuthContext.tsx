@@ -9,6 +9,10 @@ export interface Customer {
   first_name: string;
   last_name: string;
   phone?: string;
+  company_name?: string;
+  vat_number?: string;
+  vat_verified?: boolean;
+  newsletter_opted_in?: boolean;
   addresses?: Address[];
 }
 
