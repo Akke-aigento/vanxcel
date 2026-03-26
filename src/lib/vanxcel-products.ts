@@ -115,7 +115,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
     comingSoon: true,
     shopUrl: null,
     specs: { wattage: 200, type: 'mono', connector: 'MC4' },
-    configuratorUse: 'Het standaard paneel voor camper builds. Sluit direct aan op de VanXcel Converter via MC4.'
+    configuratorUse: 'configurator.pu_VXSOL200'
   },
 
   // === CABLES ===
