@@ -731,7 +731,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                     <li>{t("configurator.route5Step3")}</li>
                     <li>{t("configurator.route5Step4")}</li>
                     {solarToMpptRoute?.description && (
-                      <li>{solarToMpptRoute.description}</li>
+                      <li>{getLocalized(solarToMpptRoute, 'description', lang)}</li>
                     )}
                     <li>{t("configurator.route5Step5", { size: solarCableSize, distance: solarToMpptDist })}</li>
                   </ol>
