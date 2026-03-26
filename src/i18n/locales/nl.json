@@ -243,7 +243,11 @@
     "copyright": "© {{year}} {{name}}. Alle rechten voorbehouden. 🇧🇪 Made in Belgium.",
     "faq": "Veelgestelde vragen",
     "delivery": "Verzending & Levering",
-    "manuals": "Schema's & Handleidingen"
+    "manuals": "Schema's & Handleidingen",
+    "catConverters": "Omvormers",
+    "catBatteries": "Accu's",
+    "catPowerstations": "Powerstations",
+    "catAccessories": "Accessoires"
   },
   "thankYou": {
     "title": "Bedankt voor je bestelling!",
