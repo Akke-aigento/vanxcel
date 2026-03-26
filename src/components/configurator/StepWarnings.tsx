@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, AlertTriangle, AlertCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { getLocalized, getLangFromI18n } from "@/lib/configurator-i18n";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface Props {
