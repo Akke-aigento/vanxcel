@@ -9,11 +9,11 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ArrowRight, Check, X } from "lucide-react";
 import loginHero from "@/assets/login-hero.jpg";
 
-const PasswordStrength = ({ password }: { password: string }) => {
+const PasswordStrength = ({ password, t }: { password: string; t: (key: string) => string }) => {
   const checks = [
-    { label: "8+ tekens", pass: password.length >= 8 },
-    { label: "Hoofdletter", pass: /[A-Z]/.test(password) },
-    { label: "Cijfer", pass: /\d/.test(password) },
+    { label: t("auth.pwMin8"), pass: password.length >= 8 },
+    { label: t("auth.pwUppercase"), pass: /[A-Z]/.test(password) },
+    { label: t("auth.pwNumber"), pass: /\d/.test(password) },
   ];
   if (!password) return null;
   return (
