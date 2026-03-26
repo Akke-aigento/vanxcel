@@ -28,5 +28,5 @@ export async function customerApiFetch<T = unknown>(
       : `API error (${res.status})`;
     throw new Error(msg);
   }
-  return data.data;
+  return data.data as T;
 }
