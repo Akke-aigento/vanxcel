@@ -229,7 +229,7 @@ const Navbar = () => {
                 <button
                   onClick={() => setAccountOpen(!accountOpen)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
-                  title={customer?.first_name || ""}
+                  aria-label={t("account.myAccount")}
                 >
                   <User size={20} />
                 </button>
