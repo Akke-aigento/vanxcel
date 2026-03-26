@@ -1,27 +1,21 @@
 
 
-## Fix: Vertalingen tonen Engels i.p.v. Nederlands
+## Fix: Registratie faalt door bedrijfsvelden
 
-### Root cause
-De `i18next` LanguageDetector checkt `localStorage` → `navigator` (browsertaal). De meeste browsers hebben `en` als taal, dus i18next kiest Engels. De `fallbackLng: 'nl'` werkt alleen als er GEEN taal gedetecteerd wordt — maar `navigator` vindt altijd iets.
+### Probleem
+De registratie stuurt `company_name`, `vat_number` en `newsletter_opt_in` mee naar de SellQo API, maar die accepteert deze velden niet bij registratie (alleen bij profile update). Dit veroorzaakt een 500 error.
 
 ### Oplossing
-Wijzig `src/i18n/index.ts`:
 
-1. Voeg een **custom detector** toe die het hostname checkt als EERSTE prioriteit in de detectie-volgorde
-2. De detectie-volgorde wordt: `localStorage` → `hostname` → `navigator`
-3. Op `.app` domeinen (preview, lovable.app) → `nl`
-4. Op `.com` → `en`, `.de` → `de`, `.fr` → `fr`
-5. Alles anders (`.nl`, `.be`) → `nl`
+**`src/pages/Login.tsx`** — Registratieformulier vereenvoudigen:
+1. Verwijder de state variabelen: `companyName`, `vatNumber`, `newsletterOptIn`
+2. Verwijder de 3 formuliervelden (Bedrijfsnaam, BTW-nummer, Nieuwsbrief checkbox)
+3. In `handleRegister`: stuur alleen `email`, `password`, `first_name`, `last_name` — geen `company_name`, `vat_number`, `newsletter_opt_in`
 
-Dit zorgt ervoor dat:
-- Nieuwe bezoekers de juiste taal zien op basis van het domein
-- Terugkerende bezoekers die de taalswitch gebruikt hebben, hun keuze behouden (localStorage)
-- De browsertaal alleen als allerlaatste fallback dient
+Deze velden blijven beschikbaar in de Account-pagina (profiel tab) waar ze al werken via `updateProfile()`.
 
-### Bestand
-
+### Bestanden
 | Bestand | Wijziging |
 |---|---|
-| `src/i18n/index.ts` | Custom hostname detector toevoegen aan detectie-volgorde |
+| `src/pages/Login.tsx` | Verwijder 3 velden uit registratieformulier + bijbehorende state |
 
