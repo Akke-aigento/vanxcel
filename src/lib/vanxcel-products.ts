@@ -80,7 +80,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
     comingSoon: false,
     shopUrl: '/shop/vanxcel-200ah-lifepo4-accu',
     specs: { capacityAh: 200, voltage: 12.8, type: 'LiFePO4', form: 'standard' },
-    configuratorUse: 'Onze populairste batterij. Perfecte balans tussen capaciteit en prijs.'
+    configuratorUse: 'configurator.pu_VXBAT200'
   },
   {
     sku: 'VXBAT300',
