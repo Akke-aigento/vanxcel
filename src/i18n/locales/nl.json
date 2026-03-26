@@ -99,6 +99,13 @@
     "photoSoon": "Foto binnenkort",
     "almostGone": "⚡ Bijna op"
   },
+  "bundle": {
+    "header": "In deze bundel ({{count}} producten)",
+    "individualTotal": "Totaal los",
+    "bundlePrice": "Bundelprijs",
+    "youSave": "Je bespaart",
+    "addToCart": "Bundel in winkelwagen"
+  },
   "build": {
     "title": "BOUW JE SYSTEEM",
     "subtitle": "Beantwoord 4 vragen en we vinden het perfecte off-grid pakket voor jou.",
