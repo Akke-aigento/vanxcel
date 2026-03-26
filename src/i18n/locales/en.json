@@ -862,7 +862,11 @@
     "newPassword": "New password",
     "passwordResetSuccess": "Your password has been changed. You can now log in.",
     "resetError": "Something went wrong. Please try again.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "companyName": "Company name",
+    "companyPlaceholder": "Optional",
+    "vatNumber": "VAT number",
+    "newsletterOptIn": "Subscribe to our newsletter"
   },
   "account": {
     "title": "My Account",
