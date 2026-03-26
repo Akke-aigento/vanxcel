@@ -59,7 +59,9 @@ const ResetPassword = () => {
   const inputClasses = "bg-secondary/50 border-border/50 h-12 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/50 focus-visible:border-primary/40 transition-all duration-200";
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+      <div className="flex-1 flex">
       {/* Left — Hero Image (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
         <img
