@@ -63,7 +63,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const refreshProfile = useCallback(async () => {
     if (!token) return;
     try {
-      const profile = await customerApiFetch("get_profile", {}, token);
+      const profile = await customerApiFetch<Customer>("get_profile", {}, token);
       setCustomer(profile);
     } catch {
       saveToken(null);
@@ -74,7 +74,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     if (token) {
       setLoading(true);
-      customerApiFetch("get_profile", {}, token)
+      customerApiFetch<Customer>("get_profile", {}, token)
         .then((profile) => setCustomer(profile))
         .catch(() => { saveToken(null); setCustomer(null); })
         .finally(() => setLoading(false));
@@ -84,13 +84,13 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = async (email: string, password: string) => {
-    const result = await customerApiFetch("login", { email, password });
+    const result = await customerApiFetch<{ token: string; customer: Customer }>("login", { email, password });
     saveToken(result.token);
     setCustomer(result.customer);
   };
 
   const register = async (data: { email: string; password: string; first_name: string; last_name: string; phone?: string; company_name?: string; vat_number?: string; newsletter_opt_in?: boolean }) => {
-    const result = await customerApiFetch("register", data);
+    const result = await customerApiFetch<{ token: string; customer: Customer }>("register", data);
     saveToken(result.token);
     setCustomer(result.customer);
   };
@@ -102,7 +102,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const updateProfile = async (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone" | "company_name" | "vat_number">> & { newsletter_opt_in?: boolean }) => {
     if (!token) return;
-    const updated = await customerApiFetch("update_profile", data, token);
+    const updated = await customerApiFetch<Customer>("update_profile", data, token);
     setCustomer(updated);
   };
 
