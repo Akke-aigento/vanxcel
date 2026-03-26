@@ -63,7 +63,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const refreshProfile = useCallback(async () => {
     if (!token) return;
     try {
-      const profile = await customerApiFetch("get_profile", {}, token);
+      const profile = await customerApiFetch<Customer>("get_profile", {}, token);
       setCustomer(profile);
     } catch {
       saveToken(null);
