@@ -9,6 +9,10 @@ export interface Customer {
   first_name: string;
   last_name: string;
   phone?: string;
+  company_name?: string;
+  vat_number?: string;
+  vat_verified?: boolean;
+  newsletter_opted_in?: boolean;
   addresses?: Address[];
 }
 
@@ -31,9 +35,9 @@ interface CustomerAuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { email: string; password: string; first_name: string; last_name: string; phone?: string }) => Promise<void>;
+  register: (data: { email: string; password: string; first_name: string; last_name: string; phone?: string; company_name?: string; vat_number?: string; newsletter_opt_in?: boolean }) => Promise<void>;
   logout: () => void;
-  updateProfile: (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone">>) => Promise<void>;
+  updateProfile: (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone" | "company_name" | "vat_number">> & { newsletter_opt_in?: boolean }) => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -85,7 +89,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setCustomer(result.customer);
   };
 
-  const register = async (data: { email: string; password: string; first_name: string; last_name: string; phone?: string }) => {
+  const register = async (data: { email: string; password: string; first_name: string; last_name: string; phone?: string; company_name?: string; vat_number?: string; newsletter_opt_in?: boolean }) => {
     const result = await customerApiFetch("register", data);
     saveToken(result.token);
     setCustomer(result.customer);
@@ -96,7 +100,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setCustomer(null);
   };
 
-  const updateProfile = async (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone">>) => {
+  const updateProfile = async (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone" | "company_name" | "vat_number">> & { newsletter_opt_in?: boolean }) => {
     if (!token) return;
     const updated = await customerApiFetch("update_profile", data, token);
     setCustomer(updated);

@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "OBTENEZ 10% DE RÉDUCTION",
     "subtitle": "Inscrivez-vous à notre newsletter et recevez 10% de réduction sur votre première commande.",
-    "placeholder": "Votre adresse e-mail"
+    "placeholder": "Votre adresse e-mail",
+    "success": "Merci pour votre inscription !",
+    "error": "Une erreur s'est produite. Réessayez plus tard."
   },
   "cart": {
     "title": "Panier",
@@ -98,6 +100,13 @@
     "related": "Produits associés",
     "photoSoon": "Photo à venir",
     "almostGone": "⚡ Presque épuisé"
+  },
+  "bundle": {
+    "header": "Dans ce bundle ({{count}} produits)",
+    "individualTotal": "Total individuel",
+    "bundlePrice": "Prix du bundle",
+    "youSave": "Vous économisez",
+    "addToCart": "Ajouter le bundle au panier"
   },
   "build": {
     "title": "CONSTRUISEZ VOTRE SYSTÈME",
@@ -853,7 +862,11 @@
     "newPassword": "Nouveau mot de passe",
     "passwordResetSuccess": "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
     "resetError": "Une erreur s'est produite. Veuillez réessayer.",
-    "backToLogin": "Retour à la connexion"
+    "backToLogin": "Retour à la connexion",
+    "companyName": "Nom de l'entreprise",
+    "companyPlaceholder": "Optionnel",
+    "vatNumber": "Numéro de TVA",
+    "newsletterOptIn": "S'inscrire à la newsletter"
   },
   "account": {
     "title": "Mon Compte",
@@ -879,6 +892,7 @@
     "noOrders": "Vous n'avez pas encore de commandes.",
     "currentPassword": "Mot de passe actuel",
     "changePassword": "Changer le mot de passe",
-    "passwordChanged": "Mot de passe modifié avec succès !"
+    "passwordChanged": "Mot de passe modifié avec succès !",
+    "vatVerified": "Vérifié"
   }
 }

@@ -37,6 +37,10 @@ export function normalizeProduct(raw: any): Product {
     ? 'out_of_stock'
     : (raw.stock != null && raw.stock > 0 && raw.stock <= 3 ? 'low_stock' : 'in_stock');
 
+  // Bundle items
+  const bundleItems = raw.bundle_items || undefined;
+  const bundleIndividualTotal = raw.bundle_individual_total ?? undefined;
+
   return {
     id: raw.id,
     slug: raw.slug || '',
@@ -59,6 +63,8 @@ export function normalizeProduct(raw: any): Product {
     is_featured: raw.is_featured || false,
     created_at: raw.created_at || '',
     updated_at: raw.updated_at || '',
+    bundle_items: bundleItems,
+    bundle_individual_total: bundleIndividualTotal,
   };
 }
 

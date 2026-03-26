@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "10% RABATT SICHERN",
     "subtitle": "Melde dich für unseren Newsletter an und erhalte 10% Rabatt auf deine erste Bestellung.",
-    "placeholder": "Deine E-Mail-Adresse"
+    "placeholder": "Deine E-Mail-Adresse",
+    "success": "Danke für deine Anmeldung!",
+    "error": "Etwas ist schiefgelaufen. Versuche es später erneut."
   },
   "cart": {
     "title": "Warenkorb",
@@ -98,6 +100,13 @@
     "related": "Ähnliche Produkte",
     "photoSoon": "Foto folgt",
     "almostGone": "⚡ Fast weg"
+  },
+  "bundle": {
+    "header": "In diesem Bundle ({{count}} Produkte)",
+    "individualTotal": "Einzelpreis gesamt",
+    "bundlePrice": "Bundlepreis",
+    "youSave": "Du sparst",
+    "addToCart": "Bundle in den Warenkorb"
   },
   "build": {
     "title": "SYSTEM KONFIGURIEREN",
@@ -853,7 +862,11 @@
     "newPassword": "Neues Passwort",
     "passwordResetSuccess": "Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.",
     "resetError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-    "backToLogin": "Zurück zur Anmeldung"
+    "backToLogin": "Zurück zur Anmeldung",
+    "companyName": "Firmenname",
+    "companyPlaceholder": "Optional",
+    "vatNumber": "USt-IdNr.",
+    "newsletterOptIn": "Newsletter abonnieren"
   },
   "account": {
     "title": "Mein Konto",
@@ -879,6 +892,7 @@
     "noOrders": "Du hast noch keine Bestellungen.",
     "currentPassword": "Aktuelles Passwort",
     "changePassword": "Passwort ändern",
-    "passwordChanged": "Passwort erfolgreich geändert!"
+    "passwordChanged": "Passwort erfolgreich geändert!",
+    "vatVerified": "Verifiziert"
   }
 }

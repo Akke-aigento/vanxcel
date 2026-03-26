@@ -1,3 +1,11 @@
+// === BUNDLE ===
+export interface BundleItem {
+  product_id: string;
+  quantity: number;
+  is_required: boolean;
+  product: { id: string; name: string; price: number; images: string[] | null; slug: string };
+}
+
 // === PRODUCTS ===
 export interface ProductImage {
   id: string;
@@ -40,6 +48,8 @@ export interface Product {
   is_featured?: boolean;
   created_at: string;
   updated_at: string;
+  bundle_items?: BundleItem[];
+  bundle_individual_total?: number;
 }
 
 // === COLLECTIONS ===

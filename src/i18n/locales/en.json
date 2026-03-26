@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "GET 10% OFF",
     "subtitle": "Subscribe to our newsletter and get 10% off your first order.",
-    "placeholder": "Your email address"
+    "placeholder": "Your email address",
+    "success": "Thanks for subscribing!",
+    "error": "Something went wrong. Please try again later."
   },
   "cart": {
     "title": "Shopping Cart",
@@ -98,6 +100,13 @@
     "related": "Related products",
     "photoSoon": "Photo coming soon",
     "almostGone": "⚡ Almost gone"
+  },
+  "bundle": {
+    "header": "In this bundle ({{count}} products)",
+    "individualTotal": "Individual total",
+    "bundlePrice": "Bundle price",
+    "youSave": "You save",
+    "addToCart": "Add bundle to cart"
   },
   "build": {
     "title": "BUILD YOUR SYSTEM",
@@ -853,7 +862,11 @@
     "newPassword": "New password",
     "passwordResetSuccess": "Your password has been changed. You can now log in.",
     "resetError": "Something went wrong. Please try again.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "companyName": "Company name",
+    "companyPlaceholder": "Optional",
+    "vatNumber": "VAT number",
+    "newsletterOptIn": "Subscribe to our newsletter"
   },
   "account": {
     "title": "My Account",
@@ -879,6 +892,7 @@
     "noOrders": "You have no orders yet.",
     "currentPassword": "Current password",
     "changePassword": "Change password",
-    "passwordChanged": "Password changed successfully!"
+    "passwordChanged": "Password changed successfully!",
+    "vatVerified": "Verified"
   }
 }

@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "KRIJG 10% KORTING",
     "subtitle": "Schrijf je in voor onze nieuwsbrief en ontvang 10% korting op je eerste bestelling.",
-    "placeholder": "Je e-mailadres"
+    "placeholder": "Je e-mailadres",
+    "success": "Bedankt voor je aanmelding!",
+    "error": "Er ging iets mis. Probeer het later opnieuw."
   },
   "cart": {
     "title": "Winkelwagen",
@@ -98,6 +100,13 @@
     "related": "Gerelateerde producten",
     "photoSoon": "Foto binnenkort",
     "almostGone": "⚡ Bijna op"
+  },
+  "bundle": {
+    "header": "In deze bundel ({{count}} producten)",
+    "individualTotal": "Totaal los",
+    "bundlePrice": "Bundelprijs",
+    "youSave": "Je bespaart",
+    "addToCart": "Bundel in winkelwagen"
   },
   "build": {
     "title": "BOUW JE SYSTEEM",
@@ -853,7 +862,11 @@
     "newPassword": "Nieuw wachtwoord",
     "passwordResetSuccess": "Je wachtwoord is gewijzigd. Je kunt nu inloggen.",
     "resetError": "Er ging iets mis. Probeer het opnieuw.",
-    "backToLogin": "Terug naar inloggen"
+    "backToLogin": "Terug naar inloggen",
+    "companyName": "Bedrijfsnaam",
+    "companyPlaceholder": "Optioneel",
+    "vatNumber": "BTW-nummer",
+    "newsletterOptIn": "Schrijf mij in voor de nieuwsbrief"
   },
   "account": {
     "title": "Mijn Account",
@@ -879,6 +892,7 @@
     "noOrders": "Je hebt nog geen bestellingen.",
     "currentPassword": "Huidig wachtwoord",
     "changePassword": "Wachtwoord wijzigen",
-    "passwordChanged": "Wachtwoord succesvol gewijzigd!"
+    "passwordChanged": "Wachtwoord succesvol gewijzigd!",
+    "vatVerified": "Geverifieerd"
   }
 }

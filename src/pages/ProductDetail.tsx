@@ -7,6 +7,7 @@ import { normalizeProduct, normalizeProducts } from '@/integrations/sellqo/norma
 import { useCartContext } from '@/integrations/sellqo/CartContext';
 import type { Product } from '@/integrations/sellqo/types';
 import ProductCard from '@/components/ProductCard';
+import BundleContents from '@/components/BundleContents';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -101,10 +102,14 @@ export default function ProductDetail() {
                 <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
               ) : (
                 <span className="text-8xl">📦</span>
-              )}
-            </div>
+               )}
+             </div>
 
-            <div className="flex flex-col">
+             {product.product_type === 'bundle' && product.bundle_items && product.bundle_items.length > 0 && (
+               <BundleContents product={product} />
+             )}
+
+             <div className="flex flex-col">
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
 
               <div className="flex items-center gap-3 mb-4">
