@@ -181,6 +181,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
       solarProduct: solarSel.product,
       solarQty: solarSel.quantity,
       solarWarning: solarSel.warning,
+      solarWarningParams: solarSel.warningParams,
       stats230v,
       daysAutark,
       sunHours,
