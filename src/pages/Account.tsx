@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCustomerAuth } from "@/integrations/sellqo/CustomerAuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
