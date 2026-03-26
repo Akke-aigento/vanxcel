@@ -94,13 +94,6 @@ const ResetPassword = () => {
         </div>
 
         <div className="w-full max-w-md relative z-10">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-            {t("checkout.backToShop")}
-          </Link>
-          <Link to="/" className="block mb-10">
-            <span className="font-display text-3xl text-foreground">VAN<span className="text-primary">XCEL</span></span>
-          </Link>
 
           {done ? (
             <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-300">
