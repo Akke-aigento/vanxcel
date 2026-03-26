@@ -19,13 +19,16 @@ const ProfileTab = () => {
   const [firstName, setFirstName] = useState(customer?.first_name || "");
   const [lastName, setLastName] = useState(customer?.last_name || "");
   const [phone, setPhone] = useState(customer?.phone || "");
+  const [companyName, setCompanyName] = useState(customer?.company_name || "");
+  const [vatNumber, setVatNumber] = useState(customer?.vat_number || "");
+  const [newsletterOptIn, setNewsletterOptIn] = useState(customer?.newsletter_opted_in || false);
   const [saving, setSaving] = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await updateProfile({ first_name: firstName, last_name: lastName, phone });
+      await updateProfile({ first_name: firstName, last_name: lastName, phone, company_name: companyName, vat_number: vatNumber, newsletter_opt_in: newsletterOptIn });
       toast.success(t("account.profileSaved"));
     } catch (err: any) {
       toast.error(err.message);
@@ -53,6 +56,23 @@ const ProfileTab = () => {
       <div className="space-y-2">
         <Label>{t("account.phone")}</Label>
         <Input value={phone} onChange={e => setPhone(e.target.value)} />
+      </div>
+      <div className="space-y-2">
+        <Label>{t("auth.companyName")}</Label>
+        <Input value={companyName} onChange={e => setCompanyName(e.target.value)} />
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Label>{t("auth.vatNumber")}</Label>
+          {customer?.vat_verified && (
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">✓ {t("account.vatVerified")}</span>
+          )}
+        </div>
+        <Input value={vatNumber} onChange={e => setVatNumber(e.target.value)} placeholder="BE0123456789" />
+      </div>
+      <div className="flex items-center gap-2">
+        <input type="checkbox" id="newsletter-toggle" checked={newsletterOptIn} onChange={e => setNewsletterOptIn(e.target.checked)} className="rounded border-border" />
+        <Label htmlFor="newsletter-toggle" className="text-sm font-normal cursor-pointer">{t("auth.newsletterOptIn")}</Label>
       </div>
       <Button type="submit" disabled={saving}>
         {saving && <Loader2 className="animate-spin mr-2" size={16} />}
