@@ -7,17 +7,27 @@ import en from './locales/en.json';
 import fr from './locales/fr.json';
 import de from './locales/de.json';
 
-// Domain-based fallback detection
-const getDefaultLanguage = (): string => {
-  const hostname = window.location.hostname;
-  if (hostname.endsWith('.com')) return 'en';
-  if (hostname.endsWith('.de')) return 'de';
-  if (hostname.endsWith('.fr')) return 'fr';
-  return 'nl'; // .nl, .be, default
+// Custom hostname-based language detector
+const hostnameDetector = {
+  name: 'hostname',
+  lookup(): string {
+    const hostname = window.location.hostname;
+    if (hostname.endsWith('.com')) return 'en';
+    if (hostname.endsWith('.de')) return 'de';
+    if (hostname.endsWith('.fr')) return 'fr';
+    // .app (Lovable preview), .nl, .be, everything else → Dutch
+    return 'nl';
+  },
+  cacheUserLanguage(): void {
+    // no-op — hostname detection shouldn't cache
+  },
 };
 
+const languageDetector = new LanguageDetector();
+languageDetector.addDetector(hostnameDetector);
+
 i18n
-  .use(LanguageDetector)
+  .use(languageDetector)
   .use(initReactI18next)
   .init({
     resources: {
@@ -26,9 +36,9 @@ i18n
       fr: { translation: fr },
       de: { translation: de },
     },
-    fallbackLng: getDefaultLanguage(),
+    fallbackLng: 'nl',
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage', 'hostname', 'navigator'],
       lookupLocalStorage: 'vanxcel_lang',
       caches: ['localStorage'],
     },
