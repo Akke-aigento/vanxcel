@@ -84,7 +84,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = async (email: string, password: string) => {
-    const result = await customerApiFetch("login", { email, password });
+    const result = await customerApiFetch<{ token: string; customer: Customer }>("login", { email, password });
     saveToken(result.token);
     setCustomer(result.customer);
   };
