@@ -243,7 +243,11 @@
     "copyright": "© {{year}} {{name}}. Tous droits réservés. 🇧🇪 Made in Belgium.",
     "faq": "FAQ",
     "delivery": "Expédition & Livraison",
-    "manuals": "Schémas & Manuels"
+    "manuals": "Schémas & Manuels",
+    "catConverters": "Convertisseurs",
+    "catBatteries": "Batteries",
+    "catPowerstations": "Stations d'énergie",
+    "catAccessories": "Accessoires"
   },
   "thankYou": {
     "title": "Merci pour votre commande !",
