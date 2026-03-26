@@ -488,11 +488,11 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
             return (
               <Alert key={w.id} className={sev.className}>
                 {sev.icon}
-                <AlertTitle>{w.title}</AlertTitle>
+                <AlertTitle>{getLocalized(w, 'title', lang)}</AlertTitle>
                 <AlertDescription>
-                  {w.description}
-                  {w.solution && (
-                    <p className="mt-1 font-medium">💡 {w.solution}</p>
+                  {getLocalized(w, 'description', lang)}
+                  {getLocalized(w, 'solution', lang) && (
+                    <p className="mt-1 font-medium">💡 {getLocalized(w, 'solution', lang)}</p>
                   )}
                 </AlertDescription>
               </Alert>
