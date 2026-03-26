@@ -30,7 +30,8 @@ const severityConfig = {
 };
 
 const StepWarnings = ({ vehicleId, buildYear, engineCode, motorisation, onBack }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = getLangFromI18n(i18n.language);
   const { data: warnings } = useVehicleWarnings(vehicleId, buildYear, engineCode);
 
   return (
