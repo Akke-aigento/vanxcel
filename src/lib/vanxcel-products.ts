@@ -7,6 +7,7 @@ export interface VanXcelProduct {
   comingSoon: boolean;
   shopUrl: string | null;
   specs: Record<string, string | number | boolean>;
+  /** i18n key for the configurator use description, e.g. "configurator.pu_VX1000CV" */
   configuratorUse: string;
 }
 

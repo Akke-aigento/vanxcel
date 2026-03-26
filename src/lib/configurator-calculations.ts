@@ -55,6 +55,7 @@ export function get230vStats(
 export interface ConverterSelection {
   product: VanXcelProduct;
   warning: string | null;
+  warningParams?: Record<string, number>;
   exceeds: boolean;
 }
 
@@ -65,10 +66,10 @@ export function selectConverter(maxPeak230V: number, has230Vappliances: boolean)
   } else if (maxPeak230V <= 1500) {
     return { product: vanxcelProducts.find(p => p.sku === 'VX1500CV')!, warning: null, exceeds: false };
   } else {
-    // > 1500W: recommend 1500W with warning about 3000W coming soon
     return {
       product: vanxcelProducts.find(p => p.sku === 'VX1500CV')!,
-      warning: `Je hebt ${maxPeak230V}W piek nodig. De VanXcel 1500W Converter kan dit aan als niet alle apparaten tegelijk draaien. De 3000W versie komt binnenkort!`,
+      warning: 'configurator.converterWarningText',
+      warningParams: { peakW: maxPeak230V },
       exceeds: true,
     };
   }
@@ -96,19 +97,19 @@ export interface SolarSelection {
   quantity: number;
   cappedWp: number;
   warning: string | null;
+  warningParams?: Record<string, number>;
 }
 
 export function selectSolarProduct(requiredWp: number): SolarSelection {
   const cappedWp = Math.min(requiredWp, 500);
-  const warning = requiredWp > 500
-    ? `De VanXcel Converter ondersteunt maximaal 500Wp. We adviseren ${requiredWp}Wp op basis van je verbruik, maar je kunt maximaal 500Wp aansluiten. Het tekort wordt aangevuld via alternator laden en walstroom.`
-    : null;
+  const warning = requiredWp > 500 ? 'configurator.solarWarningText' : null;
+  const warningParams = requiredWp > 500 ? { requiredWp } : undefined;
 
   const panel200 = vanxcelProducts.find(p => p.sku === 'VXSOL200')!;
   const panelWp = 200;
   const quantity = Math.ceil(cappedWp / panelWp);
 
-  return { product: panel200, quantity, cappedWp: quantity * panelWp, warning };
+  return { product: panel200, quantity, cappedWp: quantity * panelWp, warning, warningParams };
 }
 
 export function selectANLFuse(converterSku: string): VanXcelProduct {

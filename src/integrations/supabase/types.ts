@@ -23,6 +23,9 @@ export type Database = {
           id: string
           is_essential: boolean | null
           name: string
+          name_de: string | null
+          name_en: string | null
+          name_fr: string | null
           name_nl: string
           notes: string | null
           popularity: number | null
@@ -40,6 +43,9 @@ export type Database = {
           id?: string
           is_essential?: boolean | null
           name: string
+          name_de?: string | null
+          name_en?: string | null
+          name_fr?: string | null
           name_nl: string
           notes?: string | null
           popularity?: number | null
@@ -57,6 +63,9 @@ export type Database = {
           id?: string
           is_essential?: boolean | null
           name?: string
+          name_de?: string | null
+          name_en?: string | null
+          name_fr?: string | null
           name_nl?: string
           notes?: string | null
           popularity?: number | null
@@ -192,14 +201,23 @@ export type Database = {
           id: string
           is_for_selfbuild: boolean | null
           label: string
+          label_de: string | null
+          label_en: string | null
+          label_fr: string | null
           location_id: string
           max_height_mm: number | null
           max_length_mm: number | null
           max_weight_kg: number | null
           max_width_mm: number | null
           mounting_notes: string | null
+          mounting_notes_de: string | null
+          mounting_notes_en: string | null
+          mounting_notes_fr: string | null
           popularity: number | null
           selfbuild_notes: string | null
+          selfbuild_notes_de: string | null
+          selfbuild_notes_en: string | null
+          selfbuild_notes_fr: string | null
           sort_order: number | null
           temperature_exposure: string | null
           vehicle_id: string
@@ -210,14 +228,23 @@ export type Database = {
           id?: string
           is_for_selfbuild?: boolean | null
           label: string
+          label_de?: string | null
+          label_en?: string | null
+          label_fr?: string | null
           location_id: string
           max_height_mm?: number | null
           max_length_mm?: number | null
           max_weight_kg?: number | null
           max_width_mm?: number | null
           mounting_notes?: string | null
+          mounting_notes_de?: string | null
+          mounting_notes_en?: string | null
+          mounting_notes_fr?: string | null
           popularity?: number | null
           selfbuild_notes?: string | null
+          selfbuild_notes_de?: string | null
+          selfbuild_notes_en?: string | null
+          selfbuild_notes_fr?: string | null
           sort_order?: number | null
           temperature_exposure?: string | null
           vehicle_id: string
@@ -228,14 +255,23 @@ export type Database = {
           id?: string
           is_for_selfbuild?: boolean | null
           label?: string
+          label_de?: string | null
+          label_en?: string | null
+          label_fr?: string | null
           location_id?: string
           max_height_mm?: number | null
           max_length_mm?: number | null
           max_weight_kg?: number | null
           max_width_mm?: number | null
           mounting_notes?: string | null
+          mounting_notes_de?: string | null
+          mounting_notes_en?: string | null
+          mounting_notes_fr?: string | null
           popularity?: number | null
           selfbuild_notes?: string | null
+          selfbuild_notes_de?: string | null
+          selfbuild_notes_en?: string | null
+          selfbuild_notes_fr?: string | null
           sort_order?: number | null
           temperature_exposure?: string | null
           vehicle_id?: string
@@ -345,11 +381,17 @@ export type Database = {
           cable_size_for_50a: number | null
           cable_size_for_80a: number | null
           description: string | null
+          description_de: string | null
+          description_en: string | null
+          description_fr: string | null
           difficulty: string | null
           distance_meters: number | null
           hazards: string[] | null
           id: string
           label: string
+          label_de: string | null
+          label_en: string | null
+          label_fr: string | null
           route_id: string
           sort_order: number | null
           tools_required: string[] | null
@@ -363,11 +405,17 @@ export type Database = {
           cable_size_for_50a?: number | null
           cable_size_for_80a?: number | null
           description?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          description_fr?: string | null
           difficulty?: string | null
           distance_meters?: number | null
           hazards?: string[] | null
           id?: string
           label: string
+          label_de?: string | null
+          label_en?: string | null
+          label_fr?: string | null
           route_id: string
           sort_order?: number | null
           tools_required?: string[] | null
@@ -381,11 +429,17 @@ export type Database = {
           cable_size_for_50a?: number | null
           cable_size_for_80a?: number | null
           description?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          description_fr?: string | null
           difficulty?: string | null
           distance_meters?: number | null
           hazards?: string[] | null
           id?: string
           label?: string
+          label_de?: string | null
+          label_en?: string | null
+          label_fr?: string | null
           route_id?: string
           sort_order?: number | null
           tools_required?: string[] | null
@@ -639,12 +693,21 @@ export type Database = {
           affected_years: number[] | null
           category: string
           description: string
+          description_de: string | null
+          description_en: string | null
+          description_fr: string | null
           id: string
           severity: string
           solution: string | null
+          solution_de: string | null
+          solution_en: string | null
+          solution_fr: string | null
           sort_order: number | null
           source: string | null
           title: string
+          title_de: string | null
+          title_en: string | null
+          title_fr: string | null
           vehicle_id: string
         }
         Insert: {
@@ -652,12 +715,21 @@ export type Database = {
           affected_years?: number[] | null
           category: string
           description: string
+          description_de?: string | null
+          description_en?: string | null
+          description_fr?: string | null
           id?: string
           severity: string
           solution?: string | null
+          solution_de?: string | null
+          solution_en?: string | null
+          solution_fr?: string | null
           sort_order?: number | null
           source?: string | null
           title: string
+          title_de?: string | null
+          title_en?: string | null
+          title_fr?: string | null
           vehicle_id: string
         }
         Update: {
@@ -665,12 +737,21 @@ export type Database = {
           affected_years?: number[] | null
           category?: string
           description?: string
+          description_de?: string | null
+          description_en?: string | null
+          description_fr?: string | null
           id?: string
           severity?: string
           solution?: string | null
+          solution_de?: string | null
+          solution_en?: string | null
+          solution_fr?: string | null
           sort_order?: number | null
           source?: string | null
           title?: string
+          title_de?: string | null
+          title_en?: string | null
+          title_fr?: string | null
           vehicle_id?: string
         }
         Relationships: [
