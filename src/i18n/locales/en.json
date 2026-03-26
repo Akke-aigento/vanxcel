@@ -101,6 +101,13 @@
     "photoSoon": "Photo coming soon",
     "almostGone": "⚡ Almost gone"
   },
+  "bundle": {
+    "header": "In this bundle ({{count}} products)",
+    "individualTotal": "Individual total",
+    "bundlePrice": "Bundle price",
+    "youSave": "You save",
+    "addToCart": "Add bundle to cart"
+  },
   "build": {
     "title": "BUILD YOUR SYSTEM",
     "subtitle": "Answer 4 questions and we'll find the perfect off-grid package for you.",
