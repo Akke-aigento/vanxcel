@@ -1,75 +1,91 @@
 
 
-## Login/Registratie & Account Pagina's Redesign + Adres Autocomplete
+## Audit: VanXcel — Functioneel & Frontend Analyse
 
-### Overzicht
-Vier onderdelen: (1) visueel redesign Login pagina, (2) visueel redesign Account pagina, (3) TomTom adres-autocomplete bij adressen, (4) land-dropdown i.p.v. tekstveld.
-
-### BTW/VIES Validatie — Status
-De VIES validatie werkt al. Wanneer een klant via de Account-pagina zijn profiel opslaat met een BTW-nummer, stuurt de Sellqo backend dit automatisch door naar de `validate-vat` edge function. Bij success wordt `vat_verified` op `true` gezet en de UI toont al de "✓ Geverifieerd" badge. Hier hoeft niets te veranderen.
+### Wat er GOED is
+- Homepage hero + trust bar + featured products: visueel sterk
+- Login pagina: split-screen redesign ziet er premium uit
+- Dark theme is consistent doorgevoerd
+- Product cards met 3D tilt, hover-zoom, discount badges: professioneel
+- Cart drawer, checkout flow, bundle weergave: functioneel compleet
+- i18n in 4 talen aanwezig
+- SEO basics: meta tags, OG tags, FAQ JSON-LD
 
 ---
 
-### 1. Login/Registratie Pagina — Visueel Redesign
+### BEVINDINGEN — gerangschikt op impact
 
-**`src/pages/Login.tsx`** — Van saaie centered card naar cinematic split-screen:
+#### 1. Console Warnings: forwardRef ontbreekt
+`RevealOnScroll` en page components worden als refs doorgegeven maar zijn geen `forwardRef` components. Dit geeft React warnings in de console bij elke pagina. Oplossing: `RevealOnScroll` omzetten naar `forwardRef`.
 
-- **Links (60%)**: Donkere hero-achtige sectie met een grote lifestyle-afbeelding (campervan), gradient overlay, VanXcel logo, en een inspirerende tagline ("Power Your Journey")
-- **Rechts (40%)**: Het formulier op een glassmorphism card met subtiele border-glow in brand teal
-- **Mobile**: Afbeelding als achtergrond met semi-transparante card overlay
-- **Details**: Animated tab-switch, floating labels, teal focus-glow op inputs, password strength indicator bij registratie
+#### 2. PasswordStrength labels zijn hardcoded Nederlands
+`Login.tsx` regel 14-16: "8+ tekens", "Hoofdletter", "Cijfer" — niet vertaald via i18n. Moet `t("auth.pwMin8")` etc. gebruiken.
 
-### 2. Account Pagina — Visueel Redesign
+#### 3. ResetPassword pagina is kaal
+Terwijl Login een premium split-screen heeft, is ResetPassword een simpele centered form zonder visuele aantrekkingskracht. Zou dezelfde split-screen treatment moeten krijgen.
 
-**`src/pages/Account.tsx`** — Van boring tabbed layout naar een premium dashboard:
+#### 4. ProductDetail: BundleContents positie is fout
+In `ProductDetail.tsx` (regel 108-110) staat `<BundleContents>` BUITEN de grid-kolommen, waardoor het als een derde rij onder de afbeelding verschijnt. Het hoort IN de rechterkolom bij de productinfo.
 
-- **Header**: Grote welkomstbanner met gradient achtergrond, avatar initialen-cirkel, klantnaam prominent
-- **Sidebar navigatie** (desktop) i.p.v. horizontale tabs — met iconnen en actieve state highlight
-- **Mobile**: Bottom-navigation of collapsible menu
-- **Cards**: Elke sectie in een glassmorphism card met subtiele animaties
-- **Profiel tab**: Nettere layout met secties (Persoonlijk / Bedrijf / Voorkeuren) gescheiden door dividers
-- **Bestellingen tab**: Uitklapbare order-cards met productregels, tracking status timeline
-- **Adressen tab**: Visuele address-kaarten met een kaart-icon en land-vlag
+#### 5. BundleContents: verkeerde link-URL
+`BundleContents.tsx` regel 68: linkt naar `/products/${slug}` maar de route is `/shop/${slug}`.
 
-### 3. Adres Autocomplete via TomTom
+#### 6. Footer: hardcoded categorieën
+`Footer.tsx` heeft hardcoded categorienamen ("Converters", "Accu's", etc.) in het Nederlands — niet vertaald en niet dynamisch.
 
-**Nieuw: `supabase/functions/address-autocomplete/index.ts`**
-- Eigen edge function die de TomTom Search API aanroept (zelfde logica als Sellqo's `validate-address`)
-- Heeft een `TOMTOM_API_KEY` secret nodig → moet eerst worden toegevoegd
-- Twee modes: `query` (autocomplete) en `street+city+postal` (validatie)
+#### 7. Navbar: account dropdown sluit niet bij klik buiten
+De desktop account dropdown (`accountOpen` state) heeft geen click-outside handler. Je moet op het icoon klikken om te sluiten.
 
-**Nieuw: `src/hooks/use-address-autocomplete.ts`**
-- Hook met debounced zoekveld (300ms)
-- Roept de edge function aan en retourneert suggesties
-- Bij selectie vult het formulier automatisch in (straat, huisnummer, postcode, stad, land)
+#### 8. Geen pagina-specifieke `<title>` of meta tags
+Elke pagina toont dezelfde `<title>` ("VanXcel — Power Your Journey"). Geen dynamic document title per route (Shop, FAQ, Contact, etc.) — slecht voor SEO.
 
-**`src/pages/Account.tsx` — AddressesTab**
-- Vervang het huidige adresformulier door een zoekveld bovenaan
-- Gebruiker typt adres → dropdown met TomTom suggesties
-- Bij klik op suggestie: alle velden worden ingevuld
-- Handmatige invoer blijft mogelijk als fallback
+#### 9. FAQ: useEffect zonder dependency array
+`FAQ.tsx` regel 63-69: de JSON-LD script wordt bij ELKE render opnieuw aangemaakt (geen `[]` dependency). Dit lekt DOM nodes.
 
-### 4. Land-dropdown
+#### 10. Contact formulier: `sellqoFetch("/contact")` — foutgevoelig
+`Contact.tsx` gebruikt `sellqoFetch` direct voor het contactformulier. Als de endpoint niet bestaat of verandert, is er geen fallback. Geen succes-boodschap vertaling check.
 
-**`src/components/ui/CountrySelect.tsx`** — Nieuw component
-- Dropdown met Europese landen (BE, NL, DE, FR, AT, LU, etc.)
-- Landnaam + vlag-emoji
-- Vervangt het tekstveld in het adresformulier
+#### 11. Newsletter: `customerApiFetch` ipv `sellqoFetch`
+Newsletter component gebruikt `customerApiFetch("newsletter_subscribe")` — dit gaat via de customer-proxy. Controleer of deze action überhaupt bestaat in de SellQo customer API of dat dit een product-API action zou moeten zijn.
 
-### Vereiste Secret
-- `TOMTOM_API_KEY` — moet worden toegevoegd voordat de address autocomplete werkt
+#### 12. Toegankelijkheid (a11y) — minimaal
+- Navbar hamburger button: geen `aria-label`
+- Cart button: geen `aria-label`
+- Password toggle button: geen `aria-label`
+- Account icon button: geen `aria-label`
+- Mobile tab buttons: geen `role="tablist"` / `role="tab"`
 
-### Vertalingen
-- ~20 nieuwe keys in alle 4 taalbestanden voor de nieuwe UI-elementen
+#### 13. Shop pagina: geen paginatie
+Alle producten worden in één keer geladen. Bij groeiend assortiment wordt dit traag. Geen "load more" of pagination.
 
-### Bestanden
+#### 14. ProductDetail: geen image gallery
+Slechts 1 productfoto getoond (`images[0]`). Als een product meerdere afbeeldingen heeft, worden die genegeerd.
 
-| Bestand | Wijziging |
-|---|---|
-| `src/pages/Login.tsx` | Volledig redesign: split-screen layout |
-| `src/pages/Account.tsx` | Volledig redesign: dashboard-stijl met sidebar |
-| `supabase/functions/address-autocomplete/index.ts` | Nieuw: TomTom proxy |
-| `src/hooks/use-address-autocomplete.ts` | Nieuw: debounced autocomplete hook |
-| `src/components/ui/CountrySelect.tsx` | Nieuw: land-dropdown |
-| `src/i18n/locales/{nl,en,de,fr}.json` | Nieuwe vertalingskeys |
+#### 15. Delivery/FAQ/Manuals pagina's: geen visuele differentiatie
+Deze drie pagina's hebben exact dezelfde layout-structuur (centered max-w-3xl met RevealOnScroll cards). Ze voelen als templates, niet als unieke pagina's.
+
+---
+
+### VOORGESTELD PLAN
+
+| Prioriteit | Fix | Bestanden |
+|---|---|---|
+| **P0 — Bugs** | |
+| 1 | BundleContents link `/products/` → `/shop/` | `BundleContents.tsx` |
+| 2 | BundleContents positie in ProductDetail grid | `ProductDetail.tsx` |
+| 3 | FAQ useEffect dependency array fix | `FAQ.tsx` |
+| 4 | RevealOnScroll forwardRef (console warnings) | `RevealOnScroll.tsx` |
+| **P1 — UX/Polish** | |
+| 5 | PasswordStrength i18n | `Login.tsx` + locale files |
+| 6 | ResetPassword visueel redesign (split-screen) | `ResetPassword.tsx` |
+| 7 | Navbar click-outside handler voor account dropdown | `Navbar.tsx` |
+| 8 | Footer categorieën dynamisch + vertaald | `Footer.tsx` |
+| **P2 — SEO** | |
+| 9 | Dynamic document titles per pagina | Alle page components (react-helmet-async of useEffect) |
+| **P3 — Functionaliteit** | |
+| 10 | ProductDetail image gallery (thumbnails + lightbox) | `ProductDetail.tsx` |
+| 11 | A11y: aria-labels op interactieve elementen | `Navbar.tsx`, `CartDrawer.tsx`, `Login.tsx` |
+| 12 | Shop paginatie of "load more" | `Shop.tsx` + hooks |
+
+Totaal: ~12 bestanden, geen database wijzigingen nodig.
 
