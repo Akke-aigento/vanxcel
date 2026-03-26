@@ -65,7 +65,7 @@ const Footer = () => {
                     to={`/shop?collection=${cat.slug}`}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {cat.title}
+                    {t(cat.titleKey)}
                   </Link>
                 </li>
               ))}
