@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, ArrowRight, Mail, KeyRound, CheckCircle } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, Mail, KeyRound, CheckCircle } from "lucide-react";
 import loginHero from "@/assets/login-hero.jpg";
 
 const ResetPassword = () => {
@@ -91,6 +91,10 @@ const ResetPassword = () => {
         </div>
 
         <div className="w-full max-w-md relative z-10">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            {t("checkout.backToShop")}
+          </Link>
           <Link to="/" className="block mb-10">
             <span className="font-display text-3xl text-foreground">VAN<span className="text-primary">XCEL</span></span>
           </Link>
