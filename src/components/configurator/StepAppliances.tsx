@@ -310,7 +310,7 @@ const StepAppliances = ({ usageType, onComplete, onBack }: Props) => {
                           <span className="text-muted-foreground shrink-0">
                             {ICON_MAP[item.icon ?? ""] ?? <Zap className="w-4 h-4" />}
                           </span>
-                          <span className="font-medium truncate">{item.name_nl}</span>
+                          <span className="font-medium truncate">{getLocalized(item, 'name', lang)}</span>
                           {item.requires_inverter && (
                             <Badge variant="outline" className="text-xs shrink-0 border-orange-500/50 text-orange-400">
                               230V

@@ -267,7 +267,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
           subtitle={`${results.solarQty}× ${Number(results.solarProduct.specs.wattage)}W ${t("configurator.panels")}`}
           description={`${t("configurator.solarYieldPrefix")} ${results.solarYield} Wh/${t("configurator.day")} ${t("configurator.inClimate")} ${climateLabels[state.climate ?? "benelux"]}. ${t("configurator.solarConverterDirect")}`}
           accentClass="border-yellow-500/30"
-          warning={results.solarWarning ?? undefined}
+          warning={results.solarWarning ? t(results.solarWarning, results.solarWarningParams) : undefined}
           delay={200}
         />
 

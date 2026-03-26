@@ -216,7 +216,7 @@ const StepPackage = ({ state, onBack, onNext }: Props) => {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-primary italic">{item.reason}</p>
+                          <p className="text-xs text-primary italic">{t(item.reason)}</p>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
                           {item.comingSoon ? (
