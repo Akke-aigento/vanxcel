@@ -102,15 +102,14 @@ export interface SolarSelection {
 
 export function selectSolarProduct(requiredWp: number): SolarSelection {
   const cappedWp = Math.min(requiredWp, 500);
-  const warning = requiredWp > 500
-    ? `De VanXcel Converter ondersteunt maximaal 500Wp. We adviseren ${requiredWp}Wp op basis van je verbruik, maar je kunt maximaal 500Wp aansluiten. Het tekort wordt aangevuld via alternator laden en walstroom.`
-    : null;
+  const warning = requiredWp > 500 ? 'configurator.solarWarningText' : null;
+  const warningParams = requiredWp > 500 ? { requiredWp } : undefined;
 
   const panel200 = vanxcelProducts.find(p => p.sku === 'VXSOL200')!;
   const panelWp = 200;
   const quantity = Math.ceil(cappedWp / panelWp);
 
-  return { product: panel200, quantity, cappedWp: quantity * panelWp, warning };
+  return { product: panel200, quantity, cappedWp: quantity * panelWp, warning, warningParams };
 }
 
 export function selectANLFuse(converterSku: string): VanXcelProduct {
