@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 const About = () => {
   const { t } = useTranslation();
   useDocumentTitle(t("about.heroTitle"));
-  const { t } = useTranslation();
 
   const visionCards = [
     { icon: Package, titleKey: "about.visionComplete", descKey: "about.visionCompleteDesc" },
