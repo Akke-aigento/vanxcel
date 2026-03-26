@@ -176,7 +176,8 @@ const phaseIcons = [
 
 /* ── Component ── */
 const StepInstallGuide = ({ state, onBack }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = getLangFromI18n(i18n.language);
   const [completedPhases, setCompletedPhases] = useState<number[]>([]);
   const [activePhase, setActivePhase] = useState<string | null>("phase-0");
   const phaseRefs = useRef<Record<string, HTMLDivElement | null>>({});
