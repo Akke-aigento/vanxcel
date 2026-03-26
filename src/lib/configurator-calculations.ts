@@ -55,6 +55,7 @@ export function get230vStats(
 export interface ConverterSelection {
   product: VanXcelProduct;
   warning: string | null;
+  warningParams?: Record<string, number>;
   exceeds: boolean;
 }
 
