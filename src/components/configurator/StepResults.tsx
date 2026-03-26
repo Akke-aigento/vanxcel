@@ -237,7 +237,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
             `🏠 ${t("configurator.converterShore")}: 230V AC IN`,
             `🔄 UPS: 25ms switchover`,
           ]}
-          description={results.converterProduct.configuratorUse}
+          description={t(results.converterProduct.configuratorUse)}
           accentClass="border-[#008593]/30"
           price={results.converterPrice || undefined}
           warning={results.converterWarning ?? undefined}
