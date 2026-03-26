@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, ArrowRight, ArrowLeft, Mail, KeyRound, CheckCircle } from "lucide-react";
+import { Loader2, ArrowRight, Mail, KeyRound, CheckCircle } from "lucide-react";
 import loginHero from "@/assets/login-hero.jpg";
+import Navbar from "@/components/Navbar";
 
 const ResetPassword = () => {
   const { t } = useTranslation();
@@ -58,7 +59,9 @@ const ResetPassword = () => {
   const inputClasses = "bg-secondary/50 border-border/50 h-12 text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/50 focus-visible:border-primary/40 transition-all duration-200";
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+      <div className="flex-1 flex">
       {/* Left — Hero Image (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
         <img
@@ -91,13 +94,6 @@ const ResetPassword = () => {
         </div>
 
         <div className="w-full max-w-md relative z-10">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-            {t("checkout.backToShop")}
-          </Link>
-          <Link to="/" className="block mb-10">
-            <span className="font-display text-3xl text-foreground">VAN<span className="text-primary">XCEL</span></span>
-          </Link>
 
           {done ? (
             <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-300">
@@ -152,6 +148,7 @@ const ResetPassword = () => {
             </form>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
