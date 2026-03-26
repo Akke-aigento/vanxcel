@@ -32,9 +32,6 @@ const Login = () => {
   const [regConfirm, setRegConfirm] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [vatNumber, setVatNumber] = useState("");
-  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
 
   const from = (location.state as { from?: string })?.from || "/account";
 
@@ -69,7 +66,7 @@ const Login = () => {
     }
     setLoading(true);
     try {
-      await register({ email: regEmail, password: regPassword, first_name: firstName, last_name: lastName, company_name: companyName || undefined, vat_number: vatNumber || undefined, newsletter_opt_in: newsletterOptIn });
+      await register({ email: regEmail, password: regPassword, first_name: firstName, last_name: lastName });
       toast.success(t("auth.registerSuccess"));
     } catch (err: any) {
       toast.error(err.message || t("auth.registerError"));
@@ -137,18 +134,6 @@ const Login = () => {
                 <div className="space-y-2">
                   <Label htmlFor="reg-confirm">{t("auth.confirmPassword")}</Label>
                   <Input id="reg-confirm" type="password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reg-company">{t("auth.companyName")}</Label>
-                  <Input id="reg-company" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder={t("auth.companyPlaceholder")} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reg-vat">{t("auth.vatNumber")}</Label>
-                  <Input id="reg-vat" value={vatNumber} onChange={e => setVatNumber(e.target.value)} placeholder="BE0123456789" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" id="reg-newsletter" checked={newsletterOptIn} onChange={e => setNewsletterOptIn(e.target.checked)} className="rounded border-border" />
-                  <Label htmlFor="reg-newsletter" className="text-sm font-normal cursor-pointer">{t("auth.newsletterOptIn")}</Label>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
