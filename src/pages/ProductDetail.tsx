@@ -102,13 +102,30 @@ export default function ProductDetail() {
           </nav>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16">
-            <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
-              {mainImage ? (
-                <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
-              ) : (
-                <span className="text-8xl">📦</span>
-               )}
-             </div>
+            <div>
+              <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
+                {mainImage ? (
+                  <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
+                ) : (
+                  <span className="text-8xl">📦</span>
+                )}
+              </div>
+              {images.length > 1 && (
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(i)}
+                      className={`w-16 h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all ${
+                        selectedImage === i ? 'border-primary' : 'border-border hover:border-muted-foreground'
+                      }`}
+                    >
+                      <img src={img.url} alt={`${product.title} ${i + 1}`} className="w-full h-full object-contain p-1" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
              <div className="flex flex-col">
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
