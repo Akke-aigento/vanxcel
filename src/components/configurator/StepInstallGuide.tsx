@@ -665,7 +665,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                 <li>{t("configurator.route1Step1", { location: starterBatteryLocation })}</li>
                 <li>{t("configurator.route1Step2", { size: dcDcCableSize })}</li>
                 {starterToDcDcRoute?.description && (
-                  <li>{t("configurator.route1Step3")}: {starterToDcDcRoute.description}</li>
+                  <li>{t("configurator.route1Step3")}: {getLocalized(starterToDcDcRoute, 'description', lang)}</li>
                 )}
                 <li>{t("configurator.route1Step4", { distance: starterToDcDcDist })}</li>
                 {starterToDcDcRoute?.cable_protection && (
