@@ -223,9 +223,9 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <LanguageSwitcher />
           {/* Account icon — desktop */}
-          <div className="hidden md:block relative">
+          <div className="hidden md:block relative" ref={accountRef}>
             {isAuthenticated ? (
-              <div className="relative group">
+              <div className="relative">
                 <button
                   onClick={() => setAccountOpen(!accountOpen)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
