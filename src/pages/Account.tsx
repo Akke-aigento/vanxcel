@@ -23,6 +23,7 @@ type TabId = typeof tabs[number]["id"];
 
 const Account = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("account.title"));
   const navigate = useNavigate();
   const { isAuthenticated, loading, customer, logout } = useCustomerAuth();
   const [activeTab, setActiveTab] = useState<TabId>("profile");

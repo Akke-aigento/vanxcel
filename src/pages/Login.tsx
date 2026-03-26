@@ -30,6 +30,7 @@ const PasswordStrength = ({ password, t }: { password: string; t: (key: string) 
 
 const Login = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("auth.login"));
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, login, register } = useCustomerAuth();
