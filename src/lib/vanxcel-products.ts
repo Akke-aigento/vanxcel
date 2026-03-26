@@ -69,7 +69,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
     comingSoon: true,
     shopUrl: null,
     specs: { capacityAh: 100, voltage: 12.8, type: 'LiFePO4', form: 'slim-line' },
-    configuratorUse: 'Compacte batterij voor onder de stoel. Past in de meeste VW T6 en Ducato stoelconsoles.'
+    configuratorUse: 'configurator.pu_VXBAT100S'
   },
   {
     sku: 'VXBAT200',
