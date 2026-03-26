@@ -866,7 +866,8 @@
     "companyName": "Firmenname",
     "companyPlaceholder": "Optional",
     "vatNumber": "USt-IdNr.",
-    "newsletterOptIn": "Newsletter abonnieren"
+    "newsletterOptIn": "Newsletter abonnieren",
+    "heroSubtitle": "Alles für dein Off-Grid-Abenteuer. Von LiFePO4-Batterien bis zu kompletten Systemen."
   },
   "account": {
     "title": "Mein Konto",
@@ -893,6 +894,11 @@
     "currentPassword": "Aktuelles Passwort",
     "changePassword": "Passwort ändern",
     "passwordChanged": "Passwort erfolgreich geändert!",
-    "vatVerified": "Verifiziert"
+    "vatVerified": "Verifiziert",
+    "personalInfo": "Persönliche Daten",
+    "companyInfo": "Unternehmensdaten",
+    "preferences": "Einstellungen",
+    "searchAddress": "Adresse suchen",
+    "searchAddressPlaceholder": "Adresse eingeben..."
   }
 }

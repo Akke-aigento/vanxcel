@@ -866,7 +866,8 @@
     "companyName": "Bedrijfsnaam",
     "companyPlaceholder": "Optioneel",
     "vatNumber": "BTW-nummer",
-    "newsletterOptIn": "Schrijf mij in voor de nieuwsbrief"
+    "newsletterOptIn": "Schrijf mij in voor de nieuwsbrief",
+    "heroSubtitle": "Alles voor jouw off-grid avontuur. Van LiFePO4 batterijen tot complete systemen."
   },
   "account": {
     "title": "Mijn Account",
