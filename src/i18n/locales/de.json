@@ -101,6 +101,13 @@
     "photoSoon": "Foto folgt",
     "almostGone": "⚡ Fast weg"
   },
+  "bundle": {
+    "header": "In diesem Bundle ({{count}} Produkte)",
+    "individualTotal": "Einzelpreis gesamt",
+    "bundlePrice": "Bundlepreis",
+    "youSave": "Du sparst",
+    "addToCart": "Bundle in den Warenkorb"
+  },
   "build": {
     "title": "SYSTEM KONFIGURIEREN",
     "subtitle": "Beantworte 4 Fragen und wir finden das perfekte Off-Grid-Paket für dich.",
