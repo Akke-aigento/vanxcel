@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { getLocalized, getLangFromI18n } from "@/lib/configurator-i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
