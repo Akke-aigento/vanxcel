@@ -45,7 +45,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
       includedCables: '2x 16mm² met M8 kabelschoenen', weight: 5.4,
       dimensions: '40 x 11.5 x 22.5 cm',
     },
-    configuratorUse: 'Voor systemen tot 1500W continu. De populairste keuze voor actieve campers en full-timers.'
+    configuratorUse: 'configurator.pu_VX1500CV'
   },
   {
     sku: 'VX3000CV',
