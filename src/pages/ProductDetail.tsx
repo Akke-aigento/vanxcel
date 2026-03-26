@@ -72,7 +72,8 @@ export default function ProductDetail() {
   const hasRealVariants = product.variants && product.variants.length > 0;
   const variant = hasRealVariants ? (product.variants[selectedVariant] || product.variants[0]) : undefined;
   const variantPrice = variant?.price ?? product.price ?? 0;
-  const mainImage = product.images?.[0]?.url;
+  const images = product.images || [];
+  const mainImage = images[selectedImage]?.url || images[0]?.url;
   const plainDescription = product.description?.replace(/<[^>]*>/g, '') || '';
 
   const handleAddToCart = () => {
