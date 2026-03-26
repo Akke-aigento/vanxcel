@@ -65,10 +65,10 @@ export function selectConverter(maxPeak230V: number, has230Vappliances: boolean)
   } else if (maxPeak230V <= 1500) {
     return { product: vanxcelProducts.find(p => p.sku === 'VX1500CV')!, warning: null, exceeds: false };
   } else {
-    // > 1500W: recommend 1500W with warning about 3000W coming soon
     return {
       product: vanxcelProducts.find(p => p.sku === 'VX1500CV')!,
-      warning: `Je hebt ${maxPeak230V}W piek nodig. De VanXcel 1500W Converter kan dit aan als niet alle apparaten tegelijk draaien. De 3000W versie komt binnenkort!`,
+      warning: 'configurator.converterWarningText',
+      warningParams: { peakW: maxPeak230V },
       exceeds: true,
     };
   }
