@@ -37,7 +37,7 @@ interface CustomerAuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (data: { email: string; password: string; first_name: string; last_name: string; phone?: string; company_name?: string; vat_number?: string; newsletter_opt_in?: boolean }) => Promise<void>;
   logout: () => void;
-  updateProfile: (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone">>) => Promise<void>;
+  updateProfile: (data: Partial<Pick<Customer, "first_name" | "last_name" | "phone" | "company_name" | "vat_number">> & { newsletter_opt_in?: boolean }) => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
