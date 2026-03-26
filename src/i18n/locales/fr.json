@@ -862,7 +862,11 @@
     "newPassword": "Nouveau mot de passe",
     "passwordResetSuccess": "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
     "resetError": "Une erreur s'est produite. Veuillez réessayer.",
-    "backToLogin": "Retour à la connexion"
+    "backToLogin": "Retour à la connexion",
+    "companyName": "Nom de l'entreprise",
+    "companyPlaceholder": "Optionnel",
+    "vatNumber": "Numéro de TVA",
+    "newsletterOptIn": "S'inscrire à la newsletter"
   },
   "account": {
     "title": "Mon Compte",
