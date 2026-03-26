@@ -174,6 +174,7 @@ const StepResults = ({ state, onBack, onAdjustAppliances, onNext }: Props) => {
       converterW,
       converterProduct: converterSel.product,
       converterWarning: converterSel.warning,
+      converterWarningParams: converterSel.warningParams,
       converterExceeds: converterSel.exceeds,
       batteryProduct: batterySel.product,
       batteryQty: batterySel.quantity,
