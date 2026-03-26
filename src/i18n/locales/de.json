@@ -892,6 +892,7 @@
     "noOrders": "Du hast noch keine Bestellungen.",
     "currentPassword": "Aktuelles Passwort",
     "changePassword": "Passwort ändern",
-    "passwordChanged": "Passwort erfolgreich geändert!"
+    "passwordChanged": "Passwort erfolgreich geändert!",
+    "vatVerified": "Verifiziert"
   }
 }

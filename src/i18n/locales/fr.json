@@ -892,6 +892,7 @@
     "noOrders": "Vous n'avez pas encore de commandes.",
     "currentPassword": "Mot de passe actuel",
     "changePassword": "Changer le mot de passe",
-    "passwordChanged": "Mot de passe modifié avec succès !"
+    "passwordChanged": "Mot de passe modifié avec succès !",
+    "vatVerified": "Vérifié"
   }
 }
