@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useProduct, useRelatedProducts } from '@/integrations/sellqo/hooks';
 import { extractSingle, extractArray } from '@/integrations/sellqo/client';
 import { normalizeProduct, normalizeProducts } from '@/integrations/sellqo/normalizer';
@@ -14,6 +15,23 @@ import { Button } from '@/components/ui/button';
 import { Minus, Plus, Loader2 } from 'lucide-react';
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
+  const { slug } = useParams<{ slug: string }>();
+  const { addItem, isAddingItem } = useCartContext();
+  const [selectedVariant, setSelectedVariant] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
+
+  const { data: apiProductData, isLoading } = useProduct(slug || '');
+  const { data: apiRelatedData } = useRelatedProducts(slug || '');
+
+  const rawProduct = extractSingle(apiProductData);
+  const product: Product | null = rawProduct ? normalizeProduct(rawProduct) : null;
+
+  const rawRelated = extractArray(apiRelatedData);
+  const relatedProducts = rawRelated.length > 0 ? normalizeProducts(rawRelated) : [];
+
+  useDocumentTitle(product?.title);
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const { addItem, isAddingItem } = useCartContext();

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
@@ -12,6 +13,7 @@ import {
 
 const FAQ = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("faq.title"));
 
   const categories = [
     {
