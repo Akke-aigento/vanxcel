@@ -138,7 +138,18 @@ const Login = () => {
                   <Label htmlFor="reg-confirm">{t("auth.confirmPassword")}</Label>
                   <Input id="reg-confirm" type="password" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <div className="space-y-2">
+                  <Label htmlFor="reg-company">{t("auth.companyName")}</Label>
+                  <Input id="reg-company" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder={t("auth.companyPlaceholder")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="reg-vat">{t("auth.vatNumber")}</Label>
+                  <Input id="reg-vat" value={vatNumber} onChange={e => setVatNumber(e.target.value)} placeholder="BE0123456789" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="reg-newsletter" checked={newsletterOptIn} onChange={e => setNewsletterOptIn(e.target.checked)} className="rounded border-border" />
+                  <Label htmlFor="reg-newsletter" className="text-sm font-normal cursor-pointer">{t("auth.newsletterOptIn")}</Label>
+                </div>
                   {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
                   {t("auth.register")}
                 </Button>
