@@ -1,7 +1,7 @@
 const PROXY_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/sellqo-customer-proxy`;
 const CUSTOMER_TENANT_ID = '54f6b480-280b-42e1-b843-d5beb2831acd';
 
-export async function customerApiFetch(
+export async function customerApiFetch<T = unknown>(
   action: string,
   params: Record<string, unknown> = {},
   token?: string | null
