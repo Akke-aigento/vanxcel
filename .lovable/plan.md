@@ -1,21 +1,45 @@
 
+## Fixplan: registratie blijft falen op publieke website
 
-## Fix: Registratie faalt door bedrijfsvelden
+### Diagnose (na check in huidige project + Sellqo project)
+- `register` via `sellqo-customer-proxy` met `tenant_id: "vanxcel"` geeft `500` met `"[object Object]"`.
+- Dezelfde call met tenant UUID `54f6b480-280b-42e1-b843-d5beb2831acd` werkt wél (customer + token terug).
+- In Sellqo storefront-auth wordt ook met `tenant.id` (UUID) gewerkt, niet met slug.
+- Conclusie: customer-auth flow moet UUID gebruiken; slug `"vanxcel"` breekt vooral op register/write pad.
 
-### Probleem
-De registratie stuurt `company_name`, `vat_number` en `newsletter_opt_in` mee naar de SellQo API, maar die accepteert deze velden niet bij registratie (alleen bij profile update). Dit veroorzaakt een 500 error.
+## Implementatie
+1. **Tenant-ID’s scheiden per API-flow**
+   - In de SellQo integratie één centrale config gebruiken:
+     - `STOREFRONT_TENANT_SLUG = "vanxcel"` (voor `sellqo-proxy`, products/settings)
+     - `CUSTOMER_TENANT_ID = "54f6b480-280b-42e1-b843-d5beb2831acd"` (voor `sellqo-customer-proxy`, auth/account)
+   - Bestanden:
+     - `src/integrations/sellqo/customerClient.ts`
+     - (optioneel centraliseren in nieuw constants-bestand, daarna importeren in `client.ts` + `customerClient.ts`)
 
-### Oplossing
+2. **Customer API body corrigeren**
+   - In `customerApiFetch` body wijzigen van:
+     - `tenant_id: 'vanxcel'`
+     - naar `tenant_id: CUSTOMER_TENANT_ID`
 
-**`src/pages/Login.tsx`** — Registratieformulier vereenvoudigen:
-1. Verwijder de state variabelen: `companyName`, `vatNumber`, `newsletterOptIn`
-2. Verwijder de 3 formuliervelden (Bedrijfsnaam, BTW-nummer, Nieuwsbrief checkbox)
-3. In `handleRegister`: stuur alleen `email`, `password`, `first_name`, `last_name` — geen `company_name`, `vat_number`, `newsletter_opt_in`
+3. **Error handling verbeteren (geen `[object Object]` meer)**
+   - `customerApiFetch` robuuster maken:
+     - response veilig parsen (JSON/text fallback)
+     - bij fout: bruikbare boodschap opbouwen uit `error`, `message`, `details`, statuscode
+   - Zo ziet de gebruiker echte fouttekst i.p.v. `[object Object]`.
 
-Deze velden blijven beschikbaar in de Account-pagina (profiel tab) waar ze al werken via `updateProfile()`.
+4. **Backward-safe fallback in proxy (aanbevolen)**
+   - In `supabase/functions/sellqo-customer-proxy/index.ts` JSON body parsen.
+   - Als `tenant_id === "vanxcel"`, server-side remappen naar UUID vóór forward naar upstream.
+   - Zo blijven ook oudere clients of gecachete builds werken.
 
-### Bestanden
-| Bestand | Wijziging |
-|---|---|
-| `src/pages/Login.tsx` | Verwijder 3 velden uit registratieformulier + bijbehorende state |
+## Validatie (end-to-end)
+1. Nieuwe registratie op `/login` (publieke site) met nieuw e-mailadres.
+2. Direct daarna inloggen met hetzelfde account.
+3. Wachtwoord reset request testen.
+4. In accountprofiel opslaan testen (voornaam/achternaam + bedrijfsvelden in account-tab).
+5. Console/netwerk check: geen 500 meer op `sellqo-customer-proxy`.
 
+## Impact
+- Geen database migraties nodig.
+- Alleen integratie/auth client + (aanbevolen) proxy-hardening.
+- Dit lost de huidige blocker op zonder wijzigingen aan checkout/product API flows.
