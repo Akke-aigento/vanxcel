@@ -44,7 +44,7 @@ export default function BundleContents({ product }: Props) {
           </span>
         </div>
         {savingPct > 0 && (
-          <Badge variant="default" className="bg-green-600 hover:bg-green-700 text-white">
+          <Badge variant="default" className="bg-primary hover:bg-primary/90">
             -{savingPct}%
           </Badge>
         )}
