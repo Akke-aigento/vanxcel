@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "GET 10% OFF",
     "subtitle": "Subscribe to our newsletter and get 10% off your first order.",
-    "placeholder": "Your email address"
+    "placeholder": "Your email address",
+    "success": "Thanks for subscribing!",
+    "error": "Something went wrong. Please try again later."
   },
   "cart": {
     "title": "Shopping Cart",
