@@ -230,7 +230,7 @@ export function generatePackage(
   const totalComingSoon = items.filter(i => i.comingSoon).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const totalOutOfStock = items.filter(i => !i.inStock && !i.comingSoon).reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
-  const savingsHighlight = `De VanXcel 5-in-1 Converter vervangt een losse omvormer (€399), DC-DC lader (€299), MPPT regelaar (€129) en walstroomlader (€149) — een besparing van meer dan €500!`;
+  const savingsHighlight = 'configurator.savingsHighlightText';
 
   return {
     items,
