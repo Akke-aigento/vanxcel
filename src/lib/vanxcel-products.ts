@@ -56,7 +56,7 @@ export const vanxcelProducts: VanXcelProduct[] = [
     comingSoon: true,
     shopUrl: null,
     specs: { continuousW: 3000, peakW: 6000, dcDcAmps: 25, solarMaxW: 500, solarMaxA: 25, fuseRequired: 400 },
-    configuratorUse: 'Voor zware systemen met inductiekookplaat of meerdere grote 230V verbruikers.'
+    configuratorUse: 'configurator.pu_VX3000CV'
   },
 
   // === BATTERIES ===
