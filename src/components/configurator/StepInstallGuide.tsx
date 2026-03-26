@@ -505,7 +505,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
       <WiringDiagram
         state={state}
         calc={calc}
-        topBatteryLocation={topBatteryLocation ? { location_id: topBatteryLocation.location_id, label: topBatteryLocation.label } : null}
+        topBatteryLocation={topBatteryLocation ? { location_id: topBatteryLocation.location_id, label: getLocalized(topBatteryLocation, 'label', lang) } : null}
         activePhase={activePhase}
         onComponentClick={handleComponentClick}
       />
