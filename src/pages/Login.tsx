@@ -32,6 +32,9 @@ const Login = () => {
   const [regConfirm, setRegConfirm] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [vatNumber, setVatNumber] = useState("");
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
 
   const from = (location.state as { from?: string })?.from || "/account";
 
