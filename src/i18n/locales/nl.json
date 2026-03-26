@@ -66,7 +66,9 @@
   "newsletter": {
     "title": "KRIJG 10% KORTING",
     "subtitle": "Schrijf je in voor onze nieuwsbrief en ontvang 10% korting op je eerste bestelling.",
-    "placeholder": "Je e-mailadres"
+    "placeholder": "Je e-mailadres",
+    "success": "Bedankt voor je aanmelding!",
+    "error": "Er ging iets mis. Probeer het later opnieuw."
   },
   "cart": {
     "title": "Winkelwagen",
