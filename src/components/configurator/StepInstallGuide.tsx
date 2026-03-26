@@ -222,7 +222,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
   }, []);
 
   if (!calc) {
-    return <div className="text-center py-12 text-muted-foreground">Laden...</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t("configurator.loading")}</div>;
   }
 
   const vehicleName = state.vehicleId
