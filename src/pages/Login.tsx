@@ -69,7 +69,7 @@ const Login = () => {
     }
     setLoading(true);
     try {
-      await register({ email: regEmail, password: regPassword, first_name: firstName, last_name: lastName });
+      await register({ email: regEmail, password: regPassword, first_name: firstName, last_name: lastName, company_name: companyName || undefined, vat_number: vatNumber || undefined, newsletter_opt_in: newsletterOptIn });
       toast.success(t("auth.registerSuccess"));
     } catch (err: any) {
       toast.error(err.message || t("auth.registerError"));
