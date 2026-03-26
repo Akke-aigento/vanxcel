@@ -101,6 +101,13 @@
     "photoSoon": "Photo à venir",
     "almostGone": "⚡ Presque épuisé"
   },
+  "bundle": {
+    "header": "Dans ce bundle ({{count}} produits)",
+    "individualTotal": "Total individuel",
+    "bundlePrice": "Prix du bundle",
+    "youSave": "Vous économisez",
+    "addToCart": "Ajouter le bundle au panier"
+  },
   "build": {
     "title": "CONSTRUISEZ VOTRE SYSTÈME",
     "subtitle": "Répondez à 4 questions et nous trouverons le kit off-grid parfait pour vous.",
