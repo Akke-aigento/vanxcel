@@ -7,6 +7,7 @@ import { normalizeProduct, normalizeProducts } from '@/integrations/sellqo/norma
 import { useCartContext } from '@/integrations/sellqo/CartContext';
 import type { Product } from '@/integrations/sellqo/types';
 import ProductCard from '@/components/ProductCard';
+import BundleContents from '@/components/BundleContents';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
