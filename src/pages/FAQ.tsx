@@ -66,7 +66,7 @@ const FAQ = () => {
     script.textContent = JSON.stringify(faqJsonLd);
     document.head.appendChild(script);
     return () => { document.head.removeChild(script); };
-  });
+  }, []);
 
   return (
     <>

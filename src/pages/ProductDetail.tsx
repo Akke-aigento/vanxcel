@@ -168,18 +168,24 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              <Button
-                onClick={handleAddToCart}
-                disabled={product.stock_status === 'out_of_stock' || isAddingItem}
-                size="lg"
-                className="w-full"
-              >
-                {isAddingItem ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
-                ) : (
-                  t("product.addToCart")
-                )}
-              </Button>
+               <Button
+                 onClick={handleAddToCart}
+                 disabled={product.stock_status === 'out_of_stock' || isAddingItem}
+                 size="lg"
+                 className="w-full"
+               >
+                 {isAddingItem ? (
+                   <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
+                 ) : (
+                   t("product.addToCart")
+                 )}
+               </Button>
+
+               {product.product_type === 'bundle' && product.bundle_items && product.bundle_items.length > 0 && (
+                 <div className="mt-6">
+                   <BundleContents product={product} />
+                 </div>
+               )}
             </div>
           </div>
 

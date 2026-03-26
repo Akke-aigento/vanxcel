@@ -240,7 +240,7 @@ const Login = () => {
                   placeholder={t("auth.min8chars")}
                   className={inputClasses}
                 />
-                <PasswordStrength password={regPassword} />
+                <PasswordStrength password={regPassword} t={t} />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t("auth.confirmPassword")}</Label>
