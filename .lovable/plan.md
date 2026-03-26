@@ -1,45 +1,75 @@
 
-## Fixplan: registratie blijft falen op publieke website
 
-### Diagnose (na check in huidige project + Sellqo project)
-- `register` via `sellqo-customer-proxy` met `tenant_id: "vanxcel"` geeft `500` met `"[object Object]"`.
-- Dezelfde call met tenant UUID `54f6b480-280b-42e1-b843-d5beb2831acd` werkt wél (customer + token terug).
-- In Sellqo storefront-auth wordt ook met `tenant.id` (UUID) gewerkt, niet met slug.
-- Conclusie: customer-auth flow moet UUID gebruiken; slug `"vanxcel"` breekt vooral op register/write pad.
+## Login/Registratie & Account Pagina's Redesign + Adres Autocomplete
 
-## Implementatie
-1. **Tenant-ID’s scheiden per API-flow**
-   - In de SellQo integratie één centrale config gebruiken:
-     - `STOREFRONT_TENANT_SLUG = "vanxcel"` (voor `sellqo-proxy`, products/settings)
-     - `CUSTOMER_TENANT_ID = "54f6b480-280b-42e1-b843-d5beb2831acd"` (voor `sellqo-customer-proxy`, auth/account)
-   - Bestanden:
-     - `src/integrations/sellqo/customerClient.ts`
-     - (optioneel centraliseren in nieuw constants-bestand, daarna importeren in `client.ts` + `customerClient.ts`)
+### Overzicht
+Vier onderdelen: (1) visueel redesign Login pagina, (2) visueel redesign Account pagina, (3) TomTom adres-autocomplete bij adressen, (4) land-dropdown i.p.v. tekstveld.
 
-2. **Customer API body corrigeren**
-   - In `customerApiFetch` body wijzigen van:
-     - `tenant_id: 'vanxcel'`
-     - naar `tenant_id: CUSTOMER_TENANT_ID`
+### BTW/VIES Validatie — Status
+De VIES validatie werkt al. Wanneer een klant via de Account-pagina zijn profiel opslaat met een BTW-nummer, stuurt de Sellqo backend dit automatisch door naar de `validate-vat` edge function. Bij success wordt `vat_verified` op `true` gezet en de UI toont al de "✓ Geverifieerd" badge. Hier hoeft niets te veranderen.
 
-3. **Error handling verbeteren (geen `[object Object]` meer)**
-   - `customerApiFetch` robuuster maken:
-     - response veilig parsen (JSON/text fallback)
-     - bij fout: bruikbare boodschap opbouwen uit `error`, `message`, `details`, statuscode
-   - Zo ziet de gebruiker echte fouttekst i.p.v. `[object Object]`.
+---
 
-4. **Backward-safe fallback in proxy (aanbevolen)**
-   - In `supabase/functions/sellqo-customer-proxy/index.ts` JSON body parsen.
-   - Als `tenant_id === "vanxcel"`, server-side remappen naar UUID vóór forward naar upstream.
-   - Zo blijven ook oudere clients of gecachete builds werken.
+### 1. Login/Registratie Pagina — Visueel Redesign
 
-## Validatie (end-to-end)
-1. Nieuwe registratie op `/login` (publieke site) met nieuw e-mailadres.
-2. Direct daarna inloggen met hetzelfde account.
-3. Wachtwoord reset request testen.
-4. In accountprofiel opslaan testen (voornaam/achternaam + bedrijfsvelden in account-tab).
-5. Console/netwerk check: geen 500 meer op `sellqo-customer-proxy`.
+**`src/pages/Login.tsx`** — Van saaie centered card naar cinematic split-screen:
 
-## Impact
-- Geen database migraties nodig.
-- Alleen integratie/auth client + (aanbevolen) proxy-hardening.
-- Dit lost de huidige blocker op zonder wijzigingen aan checkout/product API flows.
+- **Links (60%)**: Donkere hero-achtige sectie met een grote lifestyle-afbeelding (campervan), gradient overlay, VanXcel logo, en een inspirerende tagline ("Power Your Journey")
+- **Rechts (40%)**: Het formulier op een glassmorphism card met subtiele border-glow in brand teal
+- **Mobile**: Afbeelding als achtergrond met semi-transparante card overlay
+- **Details**: Animated tab-switch, floating labels, teal focus-glow op inputs, password strength indicator bij registratie
+
+### 2. Account Pagina — Visueel Redesign
+
+**`src/pages/Account.tsx`** — Van boring tabbed layout naar een premium dashboard:
+
+- **Header**: Grote welkomstbanner met gradient achtergrond, avatar initialen-cirkel, klantnaam prominent
+- **Sidebar navigatie** (desktop) i.p.v. horizontale tabs — met iconnen en actieve state highlight
+- **Mobile**: Bottom-navigation of collapsible menu
+- **Cards**: Elke sectie in een glassmorphism card met subtiele animaties
+- **Profiel tab**: Nettere layout met secties (Persoonlijk / Bedrijf / Voorkeuren) gescheiden door dividers
+- **Bestellingen tab**: Uitklapbare order-cards met productregels, tracking status timeline
+- **Adressen tab**: Visuele address-kaarten met een kaart-icon en land-vlag
+
+### 3. Adres Autocomplete via TomTom
+
+**Nieuw: `supabase/functions/address-autocomplete/index.ts`**
+- Eigen edge function die de TomTom Search API aanroept (zelfde logica als Sellqo's `validate-address`)
+- Heeft een `TOMTOM_API_KEY` secret nodig → moet eerst worden toegevoegd
+- Twee modes: `query` (autocomplete) en `street+city+postal` (validatie)
+
+**Nieuw: `src/hooks/use-address-autocomplete.ts`**
+- Hook met debounced zoekveld (300ms)
+- Roept de edge function aan en retourneert suggesties
+- Bij selectie vult het formulier automatisch in (straat, huisnummer, postcode, stad, land)
+
+**`src/pages/Account.tsx` — AddressesTab**
+- Vervang het huidige adresformulier door een zoekveld bovenaan
+- Gebruiker typt adres → dropdown met TomTom suggesties
+- Bij klik op suggestie: alle velden worden ingevuld
+- Handmatige invoer blijft mogelijk als fallback
+
+### 4. Land-dropdown
+
+**`src/components/ui/CountrySelect.tsx`** — Nieuw component
+- Dropdown met Europese landen (BE, NL, DE, FR, AT, LU, etc.)
+- Landnaam + vlag-emoji
+- Vervangt het tekstveld in het adresformulier
+
+### Vereiste Secret
+- `TOMTOM_API_KEY` — moet worden toegevoegd voordat de address autocomplete werkt
+
+### Vertalingen
+- ~20 nieuwe keys in alle 4 taalbestanden voor de nieuwe UI-elementen
+
+### Bestanden
+
+| Bestand | Wijziging |
+|---|---|
+| `src/pages/Login.tsx` | Volledig redesign: split-screen layout |
+| `src/pages/Account.tsx` | Volledig redesign: dashboard-stijl met sidebar |
+| `supabase/functions/address-autocomplete/index.ts` | Nieuw: TomTom proxy |
+| `src/hooks/use-address-autocomplete.ts` | Nieuw: debounced autocomplete hook |
+| `src/components/ui/CountrySelect.tsx` | Nieuw: land-dropdown |
+| `src/i18n/locales/{nl,en,de,fr}.json` | Nieuwe vertalingskeys |
+
