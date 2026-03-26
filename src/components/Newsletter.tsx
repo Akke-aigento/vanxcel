@@ -1,12 +1,30 @@
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import RevealOnScroll from "./RevealOnScroll";
 import MagneticButton from "./MagneticButton";
+import { customerApiFetch } from "@/integrations/sellqo/customerClient";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      await customerApiFetch("newsletter_subscribe", { email, source: "website" });
+      toast.success(t("newsletter.success"));
+      setEmail("");
+    } catch {
+      toast.error(t("newsletter.error"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="bg-secondary/50 py-20">
@@ -18,13 +36,7 @@ const Newsletter = () => {
           <p className="text-muted-foreground mb-8">
             {t("newsletter.subtitle")}
           </p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              window.open(`https://www.vanxcel.be/account/register?email=${encodeURIComponent(email)}`, '_blank');
-            }}
-            className="flex gap-2"
-          >
+          <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               type="email"
               value={email}
@@ -36,9 +48,10 @@ const Newsletter = () => {
             <MagneticButton>
               <button
                 type="submit"
+                disabled={loading}
                 className="px-6 py-3 bg-accent text-accent-foreground rounded font-semibold text-sm hover:brightness-110 transition-all flex items-center gap-2"
               >
-                <ArrowRight size={16} />
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
               </button>
             </MagneticButton>
           </form>

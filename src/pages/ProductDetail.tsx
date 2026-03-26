@@ -102,10 +102,14 @@ export default function ProductDetail() {
                 <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
               ) : (
                 <span className="text-8xl">📦</span>
-              )}
-            </div>
+               )}
+             </div>
 
-            <div className="flex flex-col">
+             {product.product_type === 'bundle' && product.bundle_items && product.bundle_items.length > 0 && (
+               <BundleContents product={product} />
+             )}
+
+             <div className="flex flex-col">
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
 
               <div className="flex items-center gap-3 mb-4">
