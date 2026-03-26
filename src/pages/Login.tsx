@@ -150,6 +150,7 @@ const Login = () => {
                   <input type="checkbox" id="reg-newsletter" checked={newsletterOptIn} onChange={e => setNewsletterOptIn(e.target.checked)} className="rounded border-border" />
                   <Label htmlFor="reg-newsletter" className="text-sm font-normal cursor-pointer">{t("auth.newsletterOptIn")}</Label>
                 </div>
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
                   {t("auth.register")}
                 </Button>
