@@ -571,7 +571,7 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                     <MapPin className="w-5 h-5 text-primary mt-1 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold">{topBatteryLocation.label}</p>
+                        <p className="font-semibold">{getLocalized(topBatteryLocation, 'label', lang)}</p>
                         <Badge variant="default" className="text-xs">
                           {t("configurator.recommended")}
                         </Badge>
