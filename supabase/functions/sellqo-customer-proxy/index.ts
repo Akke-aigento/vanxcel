@@ -29,8 +29,18 @@ serve(async (req: Request) => {
   }
 
   try {
-    const body = await req.text();
+    const bodyText = await req.text();
     const storefrontToken = req.headers.get('x-storefront-token');
+
+    // Remap slug to UUID for backward compatibility
+    let forwardBody = bodyText;
+    try {
+      const parsed = JSON.parse(bodyText);
+      if (parsed.tenant_id === 'vanxcel') {
+        parsed.tenant_id = '54f6b480-280b-42e1-b843-d5beb2831acd';
+        forwardBody = JSON.stringify(parsed);
+      }
+    } catch { /* not JSON, forward as-is */ }
 
     const upstreamHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -44,7 +54,7 @@ serve(async (req: Request) => {
     const response = await fetch(UPSTREAM_URL, {
       method: 'POST',
       headers: upstreamHeaders,
-      body,
+      body: forwardBody,
     });
 
     const responseBody = await response.text();
