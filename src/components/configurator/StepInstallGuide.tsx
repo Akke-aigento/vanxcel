@@ -585,11 +585,11 @@ const StepInstallGuide = ({ state, onBack }: Props) => {
                       {topBatteryLocation.max_weight_kg && (
                         <p className="text-xs text-muted-foreground">Max. {topBatteryLocation.max_weight_kg} kg</p>
                       )}
-                      {topBatteryLocation.mounting_notes && (
-                        <p className="text-xs mt-2">{topBatteryLocation.mounting_notes}</p>
+                      {getLocalized(topBatteryLocation, 'mounting_notes', lang) && (
+                        <p className="text-xs mt-2">{getLocalized(topBatteryLocation, 'mounting_notes', lang)}</p>
                       )}
-                      {topBatteryLocation.selfbuild_notes && (
-                        <p className="text-xs text-primary italic mt-1">{topBatteryLocation.selfbuild_notes}</p>
+                      {getLocalized(topBatteryLocation, 'selfbuild_notes', lang) && (
+                        <p className="text-xs text-primary italic mt-1">{getLocalized(topBatteryLocation, 'selfbuild_notes', lang)}</p>
                       )}
                     </div>
                   </div>
