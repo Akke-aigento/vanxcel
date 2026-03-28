@@ -102,9 +102,9 @@ function resolveAction(
     return { action: 'get_config', tenant_id: tenantId, params };
   }
 
-  // --- LEGAL ---
-  if (segments[0] === 'legal') {
-    params.type = 'legal';
+  // --- LEGAL / PAGES ---
+  if (segments[0] === 'legal' || segments[0] === 'pages') {
+    if (segments.length === 2) params.slug = segments[1];
     return { action: 'get_pages', tenant_id: tenantId, params };
   }
 
