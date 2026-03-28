@@ -49,7 +49,11 @@ export interface Product {
   stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
   stock_quantity?: number;
   sku?: string;
-  product_type?: string;
+  product_type?: 'physical' | 'digital' | 'service' | 'subscription' | 'bundle' | 'gift_card';
+  bundle_savings?: number;
+  bundle_pricing_model?: string;
+  bundle_discount_type?: string;
+  bundle_discount_value?: number;
   is_featured?: boolean;
   created_at: string;
   updated_at: string;

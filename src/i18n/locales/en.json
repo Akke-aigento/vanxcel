@@ -90,6 +90,7 @@
   "product": {
     "notFound": "Product not found",
     "backToShop": "← Back to shop",
+    "bundle": "Bundle",
     "outOfStock": "● Out of stock",
     "lowStock": "⚡ Almost sold out",
     "inStock": "● In stock",

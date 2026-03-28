@@ -53,9 +53,10 @@ export default function BundleContents({ product }: Props) {
       {/* Items */}
       <div className="divide-y divide-border">
         {items.map((item) => {
-          const img = item.product.images?.[0];
+          const img = item.product.image;
+          const outOfStock = item.product.in_stock === false;
           return (
-            <div key={item.product_id} className="flex items-center gap-3 p-3">
+            <div key={item.product_id} className={`flex items-center gap-3 p-3 ${outOfStock ? 'opacity-50' : ''}`}>
               <div className="w-16 h-16 bg-muted rounded flex-shrink-0 flex items-center justify-center overflow-hidden">
                 {img ? (
                   <img src={img} alt={item.product.name} className="w-full h-full object-contain p-1" />
@@ -77,6 +78,11 @@ export default function BundleContents({ product }: Props) {
                   {item.quantity > 1 && (
                     <Badge variant="secondary" className="text-xs px-1.5 py-0">
                       ×{item.quantity}
+                    </Badge>
+                  )}
+                  {outOfStock && (
+                    <Badge variant="destructive" className="text-xs px-1.5 py-0">
+                      {t("product.outOfStock")}
                     </Badge>
                   )}
                 </div>

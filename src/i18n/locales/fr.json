@@ -90,6 +90,7 @@
   "product": {
     "notFound": "Produit introuvable",
     "backToShop": "← Retour à la boutique",
+    "bundle": "Lot",
     "outOfStock": "● Épuisé",
     "lowStock": "⚡ Presque épuisé",
     "inStock": "● En stock",

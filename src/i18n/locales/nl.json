@@ -90,6 +90,7 @@
   "product": {
     "notFound": "Product niet gevonden",
     "backToShop": "← Terug naar shop",
+    "bundle": "Bundel",
     "outOfStock": "● Uitverkocht",
     "lowStock": "⚡ Bijna uitverkocht",
     "inStock": "● Op voorraad",
