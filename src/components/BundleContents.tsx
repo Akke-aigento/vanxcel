@@ -19,7 +19,7 @@ export default function BundleContents({ product }: Props) {
 
   const individualTotal = product.bundle_individual_total ?? items.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const bundlePrice = product.price;
-  const saving = individualTotal - bundlePrice;
+  const saving = product.bundle_savings ?? (individualTotal - bundlePrice);
   const savingPct = individualTotal > 0 ? Math.round((saving / individualTotal) * 100) : 0;
 
   const handleAddBundle = () => {
