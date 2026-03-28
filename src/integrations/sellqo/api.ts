@@ -36,8 +36,15 @@ export const collectionsAPI = {
 
 // === CART ===
 export const cartAPI = {
-  create: () =>
-    sellqoFetch<Cart>('/cart', { method: 'POST' }),
+  create: () => {
+    const sessionId = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `sess_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    return sellqoFetch<Cart>('/cart', {
+      method: 'POST',
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+  },
 
   get: (cartId: string) =>
     sellqoFetch<Cart>(`/cart/${cartId}`),
