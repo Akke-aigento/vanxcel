@@ -89,7 +89,12 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
               <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full">{t("product.outOfStock")}</span>
             </div>
           )}
-          {product.stock_status === 'low_stock' && (
+          {product.product_type === 'bundle' && (
+            <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full">
+              {t("product.bundle")}
+            </div>
+          )}
+          {product.stock_status === 'low_stock' && !product.product_type?.startsWith('bundle') && (
             <div className="absolute top-2 left-2 bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded-full">
               {t("product.almostGone")}
             </div>

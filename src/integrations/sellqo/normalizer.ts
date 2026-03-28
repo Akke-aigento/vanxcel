@@ -38,8 +38,27 @@ export function normalizeProduct(raw: any): Product {
     : (raw.stock != null && raw.stock > 0 && raw.stock <= 3 ? 'low_stock' : 'in_stock');
 
   // Bundle items
-  const bundleItems = raw.bundle_items || undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bundleItems = raw.bundle_items?.map((bi: any) => ({
+    id: bi.id,
+    product_id: bi.product_id || bi.product?.id,
+    quantity: bi.quantity ?? 1,
+    is_required: bi.is_required,
+    customer_can_adjust: bi.customer_can_adjust,
+    min_quantity: bi.min_quantity,
+    max_quantity: bi.max_quantity,
+    sort_order: bi.sort_order,
+    product: {
+      id: bi.product?.id || '',
+      name: bi.product?.name || '',
+      price: bi.product?.price ?? 0,
+      image: bi.product?.image || bi.product?.images?.[0] || null,
+      slug: bi.product?.slug || '',
+      in_stock: bi.product?.in_stock ?? true,
+    },
+  })) || undefined;
   const bundleIndividualTotal = raw.bundle_individual_total ?? undefined;
+  const bundleSavings = raw.bundle_savings ?? undefined;
 
   return {
     id: raw.id,
@@ -60,6 +79,10 @@ export function normalizeProduct(raw: any): Product {
     stock_quantity: raw.stock ?? undefined,
     sku: raw.sku || undefined,
     product_type: raw.product_type || undefined,
+    bundle_savings: bundleSavings,
+    bundle_pricing_model: raw.bundle_pricing_model || undefined,
+    bundle_discount_type: raw.bundle_discount_type || undefined,
+    bundle_discount_value: raw.bundle_discount_value ?? undefined,
     is_featured: raw.is_featured || false,
     created_at: raw.created_at || '',
     updated_at: raw.updated_at || '',
