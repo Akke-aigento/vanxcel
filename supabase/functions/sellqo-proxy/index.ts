@@ -144,7 +144,9 @@ serve(async (req: Request) => {
   try {
     const url = new URL(req.url);
     const path = url.pathname.replace(/^\/sellqo-proxy/, '') || '/';
-    const tenantId = req.headers.get('X-Tenant-ID') || 'vanxcel';
+    const tenantSlug = req.headers.get('X-Tenant-ID') || 'vanxcel';
+    // Map slug to UUID for the storefront-api
+    const tenantId = tenantSlug === 'vanxcel' ? '54f6b480-280b-42e1-b843-d5beb2831acd' : tenantSlug;
     const locale = req.headers.get('Accept-Language') || null;
 
     // Parse body for non-GET methods
