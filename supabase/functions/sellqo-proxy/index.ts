@@ -30,6 +30,10 @@ function resolveAction(
     if (segments.length === 1) {
       // GET /products?collection=X&per_page=Y&search=Q...
       for (const [k, v] of query.entries()) params[k] = v;
+      // Map VanXcel param names to SellQo storefront-api param names
+      if (params.sort) { params.sort_by = params.sort; delete params.sort; }
+      if (params.collection) { params.category_slug = params.collection; delete params.collection; }
+      if (params.category) { params.category_slug = params.category; delete params.category; }
       if (query.get('search')) return { action: 'search_products', tenant_id: tenantId, params };
       return { action: 'get_products', tenant_id: tenantId, params };
     }
