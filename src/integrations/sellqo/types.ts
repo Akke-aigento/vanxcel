@@ -1,9 +1,14 @@
 // === BUNDLE ===
 export interface BundleItem {
+  id?: string;
   product_id: string;
   quantity: number;
-  is_required: boolean;
-  product: { id: string; name: string; price: number; images: string[] | null; slug: string };
+  is_required?: boolean;
+  customer_can_adjust?: boolean;
+  min_quantity?: number;
+  max_quantity?: number | null;
+  sort_order?: number;
+  product: { id: string; name: string; price: number; image: string | null; slug: string; in_stock?: boolean };
 }
 
 // === PRODUCTS ===
