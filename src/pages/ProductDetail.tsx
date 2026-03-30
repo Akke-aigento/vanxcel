@@ -72,6 +72,14 @@ export default function ProductDetail() {
   const hasRealVariants = product.variants && product.variants.length > 0;
   const variant = hasRealVariants ? (product.variants[selectedVariant] || product.variants[0]) : undefined;
   const variantPrice = variant?.price ?? product.price ?? 0;
+
+  const isBundle = product.product_type === 'bundle';
+  const bundleStartingPrice = (isBundle && product.bundle_pricing_model === 'dynamic' && product.bundle_items)
+    ? product.bundle_items.reduce((sum, item) => {
+        const minQty = item.min_quantity ?? item.quantity;
+        return sum + (item.product?.price || 0) * minQty;
+      }, 0)
+    : null;
   const images = product.images || [];
   const mainImage = images[selectedImage]?.url || images[0]?.url;
   const plainDescription = product.description?.replace(/<[^>]*>/g, '') || '';
