@@ -139,8 +139,14 @@ export default function ProductDetail() {
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
 
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
-                {(variant?.compare_at_price || product.compare_at_price) && (
+                {bundleStartingPrice != null ? (
+                  <span className="text-2xl font-bold text-primary">
+                    {t("product.startingFrom")} €{bundleStartingPrice.toFixed(2)}
+                  </span>
+                ) : (
+                  <span className="text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
+                )}
+                {!isBundle && (variant?.compare_at_price || product.compare_at_price) && (
                   <span className="text-muted-foreground line-through">
                     €{(variant?.compare_at_price || product.compare_at_price)?.toFixed(2)}
                   </span>
