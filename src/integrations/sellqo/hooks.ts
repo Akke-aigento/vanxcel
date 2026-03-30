@@ -243,17 +243,9 @@ export function useCreateCheckout() {
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSuccess: (response: any) => {
-      const data = response?.data || response;
-      // Hosted checkout with redirect URL
-      const url = data?.checkout_url;
+      const url = response?.data?.checkout_url || response?.checkout_url;
       if (url) {
         window.location.href = url;
-        return;
-      }
-      // SellQo multi-step checkout — redirect to local checkout page
-      if (data?.cart_id && data?.status === 'started') {
-        window.location.href = `/checkout?cart_id=${data.cart_id}`;
-        return;
       }
     },
   });
