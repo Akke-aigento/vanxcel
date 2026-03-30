@@ -107,6 +107,8 @@
     "individualTotal": "Totaal los",
     "bundlePrice": "Bundelprijs",
     "youSave": "Je bespaart",
+    "saveBadge": "Bespaar €{{amount}}",
+    "perPiece": "stuk",
     "addToCart": "Bundel in winkelwagen"
   },
   "build": {
