@@ -107,6 +107,8 @@
     "individualTotal": "Total individuel",
     "bundlePrice": "Prix du bundle",
     "youSave": "Vous économisez",
+    "saveBadge": "Économisez €{{amount}}",
+    "perPiece": "pièce",
     "addToCart": "Ajouter le bundle au panier"
   },
   "build": {

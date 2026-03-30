@@ -16,17 +16,18 @@ export default function BundleContents({ product }: Props) {
   const { addItem, isAddingItem } = useCartContext();
 
   const items = product.bundle_items;
-  if (!items || items.length === 0) return null;
 
   const [quantities, setQuantities] = useState<number[]>(
-    items.map((i) => i.quantity)
+    () => items?.map((i) => i.quantity) ?? []
   );
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
 
   const individualTotal =
     product.bundle_individual_total ??
-    items.reduce((s, i) => s + i.product.price * i.quantity, 0);
+    (items ?? []).reduce((s, i) => s + i.product.price * i.quantity, 0);
+
+  if (!items || items.length === 0) return null;
 
   const dynamicTotal = useMemo(
     () =>
