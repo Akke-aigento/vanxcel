@@ -27,16 +27,16 @@ export default function BundleContents({ product }: Props) {
     product.bundle_individual_total ??
     (items ?? []).reduce((s, i) => s + i.product.price * i.quantity, 0);
 
-  if (!items || items.length === 0) return null;
-
   const dynamicTotal = useMemo(
     () =>
-      items.reduce(
+      (items ?? []).reduce(
         (sum, item, idx) => sum + (item.product?.price || 0) * (quantities[idx] ?? item.quantity),
         0
       ),
     [items, quantities]
   );
+
+  if (!items || items.length === 0) return null;
 
   const bundlePrice = isDynamic ? dynamicTotal : product.price;
   const saving = isDynamic
