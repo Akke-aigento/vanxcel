@@ -30,6 +30,11 @@ function resolveAction(
     if (segments.length === 1) {
       // GET /products?collection=X&per_page=Y&search=Q...
       for (const [k, v] of query.entries()) params[k] = v;
+      // Map 'collection' to 'category_slug' for SellQo API compatibility
+      if (params.collection) {
+        params.category_slug = params.collection;
+        delete params.collection;
+      }
       if (query.get('search')) return { action: 'search_products', tenant_id: tenantId, params };
       return { action: 'get_products', tenant_id: tenantId, params };
     }
