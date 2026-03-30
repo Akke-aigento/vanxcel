@@ -72,6 +72,14 @@ export default function ProductDetail() {
   const hasRealVariants = product.variants && product.variants.length > 0;
   const variant = hasRealVariants ? (product.variants[selectedVariant] || product.variants[0]) : undefined;
   const variantPrice = variant?.price ?? product.price ?? 0;
+
+  const isBundle = product.product_type === 'bundle';
+  const bundleStartingPrice = (isBundle && product.bundle_pricing_model === 'dynamic' && product.bundle_items)
+    ? product.bundle_items.reduce((sum, item) => {
+        const minQty = item.min_quantity ?? item.quantity;
+        return sum + (item.product?.price || 0) * minQty;
+      }, 0)
+    : null;
   const images = product.images || [];
   const mainImage = images[selectedImage]?.url || images[0]?.url;
   const plainDescription = product.description?.replace(/<[^>]*>/g, '') || '';
@@ -131,8 +139,14 @@ export default function ProductDetail() {
               <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
 
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
-                {(variant?.compare_at_price || product.compare_at_price) && (
+                {bundleStartingPrice != null ? (
+                  <span className="text-2xl font-bold text-primary">
+                    {t("product.startingFrom")} €{bundleStartingPrice.toFixed(2)}
+                  </span>
+                ) : (
+                  <span className="text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
+                )}
+                {!isBundle && (variant?.compare_at_price || product.compare_at_price) && (
                   <span className="text-muted-foreground line-through">
                     €{(variant?.compare_at_price || product.compare_at_price)?.toFixed(2)}
                   </span>
@@ -177,31 +191,35 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-sm font-semibold">{t("product.quantity")}</span>
-                <div className="flex items-center border border-border rounded-lg">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 hover:bg-muted transition-colors">
-                    <Minus size={16} />
-                  </button>
-                  <span className="w-10 text-center font-medium">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="p-2 hover:bg-muted transition-colors">
-                    <Plus size={16} />
-                  </button>
-                </div>
-              </div>
+              {!isBundle && (
+                <>
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="text-sm font-semibold">{t("product.quantity")}</span>
+                    <div className="flex items-center border border-border rounded-lg">
+                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 hover:bg-muted transition-colors">
+                        <Minus size={16} />
+                      </button>
+                      <span className="w-10 text-center font-medium">{quantity}</span>
+                      <button onClick={() => setQuantity(quantity + 1)} className="p-2 hover:bg-muted transition-colors">
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
 
-               <Button
-                 onClick={handleAddToCart}
-                 disabled={product.stock_status === 'out_of_stock' || isAddingItem}
-                 size="lg"
-                 className="w-full"
-               >
-                 {isAddingItem ? (
-                   <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
-                 ) : (
-                   t("product.addToCart")
-                 )}
-               </Button>
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={product.stock_status === 'out_of_stock' || isAddingItem}
+                    size="lg"
+                    className="w-full"
+                  >
+                    {isAddingItem ? (
+                      <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t("product.adding")}</>
+                    ) : (
+                      t("product.addToCart")
+                    )}
+                  </Button>
+                </>
+              )}
 
                {product.product_type === 'bundle' && product.bundle_items && product.bundle_items.length > 0 && (
                  <div className="mt-6">
