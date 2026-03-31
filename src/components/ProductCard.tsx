@@ -128,15 +128,15 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             {product.title}
           </h3>
           <div className="flex items-center gap-2 flex-wrap">
-            {isDynamicBundle && bundleCalc ? (
+{showBundlePricing ? (
               <>
                 <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
-                <span className="text-lg font-bold text-primary">€{bundleCalc.bundlePrice.toFixed(2)}</span>
-                {bundleCalc.discountRate > 0 && (
-                  <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
+                <span className="text-lg font-bold text-primary">€{bundlePrice.toFixed(2)}</span>
+                {bundlePrice < originalPrice && (
+                  <span className="text-sm text-muted-foreground line-through">€{originalPrice.toFixed(2)}</span>
                 )}
               </>
-            ) : isDynamicBundle ? (
+            ) : isBundle ? (
               <span className="text-sm font-medium text-primary">{t('product.viewBundle')}</span>
             ) : (
               <>
