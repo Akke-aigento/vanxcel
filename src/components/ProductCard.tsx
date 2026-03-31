@@ -18,37 +18,23 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const cardRef = useRef<HTMLAnchorElement>(null);
 
   const isBundle = product.product_type === 'bundle';
-  const isDynamicBundle = isBundle && (product.bundle_pricing_model === 'dynamic' || product.price === 0);
 
-  const bundleCalc = isDynamicBundle ? (() => {
-    let individualTotal = 0;
-    const items = product.bundle_items;
+  // Bundle pricing — direct uit beschikbare velden
+  const originalPrice = isBundle ? Number(product.bundle_individual_total ?? 0) : 0;
+  const bundleSavings = isBundle ? Number(product.bundle_savings ?? 0) : 0;
 
-    if (items && items.length > 0) {
-      individualTotal = items.reduce((sum, item) => {
-        if (item.product?.in_stock === false) return sum;
-        const qty = item.min_quantity ?? item.quantity;
-        return sum + (item.product?.price || 0) * qty;
-      }, 0);
-    } else if (product.bundle_individual_total && product.bundle_individual_total > 0) {
-      individualTotal = product.bundle_individual_total;
-    } else if (product.bundle_savings && product.bundle_savings > 0) {
-      // Fallback: for dynamic bundles with price=0, bundle_savings often equals individualTotal
-      individualTotal = product.bundle_savings;
-    }
+  let bundleDiscountRate = 0;
+  if (isBundle && product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+    bundleDiscountRate = product.bundle_discount_value / 100;
+  } else if (isBundle) {
+    const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
+    if (match) bundleDiscountRate = parseInt(match[1], 10) / 100;
+  }
 
-    let discountRate = 0;
-    if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
-      discountRate = product.bundle_discount_value / 100;
-    } else {
-      const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
-      if (match) discountRate = parseInt(match[1], 10) / 100;
-    }
-
-    if (individualTotal === 0) return null;
-
-    return { individualTotal, bundlePrice: individualTotal * (1 - discountRate), discountRate };
-  })() : null;
+  const bundlePrice = isBundle && originalPrice > 0
+    ? (bundleDiscountRate > 0 ? originalPrice * (1 - bundleDiscountRate) : Math.max(0, originalPrice - bundleSavings))
+    : 0;
+  const showBundlePricing = isBundle && bundlePrice > 0;
 
   const handleMouseEnter = () => {
     queryClient.prefetchQuery({
@@ -112,9 +98,9 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
               <span className="text-xs">{t("product.photoSoon")}</span>
             </div>
           )}
-          {bundleCalc && bundleCalc.discountRate > 0 ? (
+{bundleDiscountRate > 0 ? (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
-              -{Math.round(bundleCalc.discountRate * 100)}%
+              -{Math.round(bundleDiscountRate * 100)}%
             </div>
           ) : product.compare_at_price && product.compare_at_price > product.price ? (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
@@ -142,15 +128,15 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             {product.title}
           </h3>
           <div className="flex items-center gap-2 flex-wrap">
-            {isDynamicBundle && bundleCalc ? (
+{showBundlePricing ? (
               <>
                 <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
-                <span className="text-lg font-bold text-primary">€{bundleCalc.bundlePrice.toFixed(2)}</span>
-                {bundleCalc.discountRate > 0 && (
-                  <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
+                <span className="text-lg font-bold text-primary">€{bundlePrice.toFixed(2)}</span>
+                {bundlePrice < originalPrice && (
+                  <span className="text-sm text-muted-foreground line-through">€{originalPrice.toFixed(2)}</span>
                 )}
               </>
-            ) : isDynamicBundle ? (
+            ) : isBundle ? (
               <span className="text-sm font-medium text-primary">{t('product.viewBundle')}</span>
             ) : (
               <>
