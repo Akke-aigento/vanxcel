@@ -25,6 +25,17 @@ export default function BundleContents({ product }: Props) {
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
 
+  // Full total scales dynamically with chosen quantities (in-stock only)
+  const fullTotal = useMemo(
+    () =>
+      (items ?? []).reduce(
+        (sum, item, idx) => 
+          item.product.in_stock === false ? sum : sum + (item.product?.price || 0) * (quantities[idx] ?? item.quantity),
+        0
+      ),
+    [items, quantities]
+  );
+
   // Determine discount rate from explicit API fields
   const discountRate = useMemo(() => {
     if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
@@ -38,17 +49,6 @@ export default function BundleContents({ product }: Props) {
     }
     return 0;
   }, [product, fullTotal]);
-
-  // Full total scales dynamically with chosen quantities (in-stock only)
-  const fullTotal = useMemo(
-    () =>
-      (items ?? []).reduce(
-        (sum, item, idx) => 
-          item.product.in_stock === false ? sum : sum + (item.product?.price || 0) * (quantities[idx] ?? item.quantity),
-        0
-      ),
-    [items, quantities]
-  );
 
   if (!items || items.length === 0) return null;
 
