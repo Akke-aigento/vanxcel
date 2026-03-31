@@ -147,6 +147,8 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
                   <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
                 )}
               </>
+            ) : isDynamicBundle ? (
+              <span className="text-sm font-medium text-primary">{t('product.viewBundle')}</span>
             ) : (
               <>
                 <span className="text-lg font-bold text-primary">
