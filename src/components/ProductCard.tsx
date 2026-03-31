@@ -30,8 +30,11 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         const qty = item.min_quantity ?? item.quantity;
         return sum + (item.product?.price || 0) * qty;
       }, 0);
-    } else if (product.bundle_individual_total) {
+    } else if (product.bundle_individual_total && product.bundle_individual_total > 0) {
       individualTotal = product.bundle_individual_total;
+    } else if (product.bundle_savings && product.bundle_savings > 0) {
+      // Fallback: for dynamic bundles with price=0, bundle_savings often equals individualTotal
+      individualTotal = product.bundle_savings;
     }
 
     let discountRate = 0;
