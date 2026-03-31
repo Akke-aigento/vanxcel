@@ -1,60 +1,38 @@
 
 
-## Fix: Slechte klik-reactiviteit op de website
+## Bundelprijs tonen i.p.v. "Bekijk bundel" op shop overzicht
 
-### Root cause analyse
+### Probleem
+Dynamic bundles op de shop-overzichtspagina tonen "Bekijk bundel" omdat `bundleCalc` `null` retourneert. Vermoedelijk stuurt de list API wél `bundle_individual_total` mee (994.95 zichtbaar in console), maar er zit mogelijk een bug in de data flow.
 
-Er zijn **twee problemen** die samen zorgen voor de slechte klikervaring:
+### Aanpak
 
-#### 1. AnimatedOutlet blokkeert navigatie
-`AnimatedOutlet.tsx` gebruikt `onTransitionEnd` om pagina-wissels af te handelen. Dit event is **onbetrouwbaar**:
-- Het bubbelt op van child-elementen (elke `transition` op een kind-element kan het triggeren)
-- Als de opacity-transitie niet visueel verandert, vuur het event soms niet
-- Resultaat: na klik gaat de state naar `"exit"`, maar `handleTransitionEnd` wordt nooit aangeroepen → de nieuwe pagina verschijnt niet
+**Bestand: `src/components/ProductCard.tsx`**
 
-#### 2. 3D tilt CSS met `transform-style: preserve-3d` en `will-change: transform`
-De `card-3d-tilt` wrapper met `perspective` en `preserve-3d` creëert extra compositing layers. De `transition: transform 0.15s` op de inner card betekent dat **elke muisbeweging** een transitie triggert, wat kan botsen met de `onTransitionEnd` van AnimatedOutlet (event bubbling).
-
-### Oplossing
-
-**Bestand 1: `src/components/AnimatedOutlet.tsx`** — Vervang de onbetrouwbare `onTransitionEnd` door een `setTimeout` die matcht met de transitieduur (250ms). Dit is een bewezen patroon voor page transitions:
-
+1. **Debug toevoegen** (tijdelijk) om te bevestigen welke bundle-velden de list API meestuurt:
 ```tsx
-useEffect(() => {
-  if (transitionStage === "exit") {
-    const timer = setTimeout(() => {
-      prevKey.current = location.key;
-      setDisplayChildren(children);
-      setTransitionStage("enter");
-    }, 250); // matches CSS transition duration
-    return () => clearTimeout(timer);
-  }
-}, [transitionStage, children, location.key]);
+if (isBundle) console.log('[ProductCard bundle]', product.slug, {
+  price: product.price,
+  bundle_individual_total: product.bundle_individual_total,
+  bundle_pricing_model: product.bundle_pricing_model,
+  bundle_items: product.bundle_items?.length,
+});
 ```
 
-Verwijder de `onTransitionEnd` handler volledig.
+2. **Fallback versterken** in `bundleCalc`: als `bundle_individual_total` ontbreekt maar `bundle_savings` aanwezig is en > 0, gebruik `bundle_savings` als benadering van de individuele totaal (het is gelijk voor deze producten, want `price=0`).
 
-**Bestand 2: `src/index.css`** — Voeg `pointer-events: none` toe aan `.page-exit` zodat klikken tijdens de exit-transitie niet geblokkeerd worden, en stop event bubbling van card transitions:
+3. **Prijsweergave aanpassen** — vervang de "Bekijk bundel" fallback (regel 150-151) door:
+   - Als `isDynamicBundle` en `bundleCalc` beschikbaar: toon "Vanaf €XXX" + doorgestreept origineel (bestaande logica, werkt al)
+   - Als `isDynamicBundle` en `bundleCalc` is null: toon "Bekijk bundel" (ongewijzigd als absolute fallback)
+   
+   De kern van de fix is ervoor zorgen dat `bundleCalc` NIET null is wanneer de data er wel is.
 
-```css
-.page-exit {
-  opacity: 0;
-  pointer-events: none;
-}
+4. **Na debug-verificatie**: console.log weer verwijderen.
 
-.card-3d-tilt-inner {
-  transition: transform 0.15s ease-out, box-shadow 0.3s ease-out;
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  will-change: transform;
-}
-```
+### Verwacht resultaat
+- Bundels tonen "Vanaf €875.56" met doorgestreept "€994.95" en een `-12%` badge
+- Alleen als echt geen data beschikbaar is, valt het terug op "Bekijk bundel"
 
-**Bestand 3: `src/components/ProductCard.tsx`** — Voeg `e.stopPropagation()` toe aan de tilt `onMouseMove` handler zodat transform-transities niet bubbelen naar AnimatedOutlet:
-
-De `handleMouseMove` functie aanpassen om propagatie niet te beïnvloeden (het probleem zit in de CSS transition events, niet de mouse events).
-
-### Samenvatting
-- **Hoofdfix**: AnimatedOutlet gebruikt `setTimeout(250ms)` i.p.v. `onTransitionEnd`
-- **CSS fix**: `pointer-events: none` op `.page-exit`
-- 2 bestanden aan te passen
+### Technisch
+- 1 bestand: `src/components/ProductCard.tsx`
 
