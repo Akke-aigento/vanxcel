@@ -18,7 +18,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const cardRef = useRef<HTMLAnchorElement>(null);
 
   const isBundle = product.product_type === 'bundle';
-  const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic';
+  const isDynamicBundle = isBundle && (product.bundle_pricing_model === 'dynamic' || product.price === 0);
 
   const bundleCalc = isDynamicBundle ? (() => {
     let individualTotal = 0;
@@ -147,6 +147,8 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
                   <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
                 )}
               </>
+            ) : isDynamicBundle ? (
+              <span className="text-sm font-medium text-primary">{t('product.viewBundle')}</span>
             ) : (
               <>
                 <span className="text-lg font-bold text-primary">
