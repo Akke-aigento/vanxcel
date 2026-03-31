@@ -1,63 +1,70 @@
 
 
-## Fix: Bundelkorting blijft 100% — root cause & oplossing
+## Fix: 12% bundelkorting — API stuurt geen discount-velden
 
-### Root cause
+### Root cause (bevestigd via API call)
 
-De `discountRate` berekening op regel 40-51 heeft drie stappen:
-1. Check `bundle_discount_type === 'percentage'` → werkt als de API dit meestuurt
-2. Check `bundle_discount_type === 'fixed'` → idem
-3. **Fallback**: `bundle_savings / bundle_individual_total`
+De raw API response bevat:
+```
+bundle_discount_type: niet aanwezig
+bundle_discount_value: niet aanwezig  
+bundle_savings: 994.95
+bundle_individual_total: 994.95
+price: 0
+bundle_pricing_model: "dynamic"
+```
 
-Voor dynamic bundles stuurt de API `price = 0`, dus `bundle_savings = bundle_individual_total` (bv. €820 / €820 = **100%**). De eerste twee checks falen waarschijnlijk omdat de API `bundle_discount_type` niet meestuurt (of het wordt als lege string/"null" genormaliseerd).
+- `bundle_savings` = `bundle_individual_total` → dat is een API-bug (savings kan niet 100% zijn)
+- Er zijn geen expliciete discount-velden
+- De korting van 12% staat enkel in de productnaam: *"12% Discount Bundle"*
 
-**Bewijs**: screenshot toont Bundle price = €0.00, Save €820.00 (-100%). Dit bevestigt dat `discountRate = 1.0`.
+### Oplossing: Extract discount uit productnaam als fallback
 
-### Oplossing
+Aangezien de API geen discount-velden meestuurt, parseren we het percentage uit de producttitel als tijdelijke workaround.
 
 **Bestand: `src/components/BundleContents.tsx`**
 
-Twee aanpassingen:
+De `discountRate` berekening aanpassen met een extra fallback die een percentage-patroon uit de titel haalt:
 
-1. **Debug log toevoegen** (tijdelijk) om te zien wat de API daadwerkelijk stuurt:
-```tsx
-console.log('[Bundle debug]', {
-  bundle_discount_type: product.bundle_discount_type,
-  bundle_discount_value: product.bundle_discount_value,
-  bundle_savings: product.bundle_savings,
-  bundle_individual_total: product.bundle_individual_total,
-  price: product.price,
-});
+```text
+Prioriteit:
+1. bundle_discount_type === 'percentage' → bundle_discount_value / 100
+2. bundle_discount_type === 'fixed' → bundle_discount_value / fullTotal
+3. !isDynamic → bundle_savings / bundle_individual_total (alleen fixed bundles)
+4. NIEUW: regex match op product.title voor patroon "XX% Discount" → XX / 100
+5. Fallback: 0
 ```
 
-2. **Fallback veilig maken** — voor dynamic bundles mag de fallback NIET `savings/total` gebruiken als dat 100% oplevert:
-
+Concrete code:
 ```tsx
 const discountRate = useMemo(() => {
-  // Primary: explicit discount fields from API
   if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
     return product.bundle_discount_value / 100;
   }
   if (product.bundle_discount_type === 'fixed' && product.bundle_discount_value && fullTotal > 0) {
     return product.bundle_discount_value / fullTotal;
   }
-  // Fallback: only for FIXED pricing model (not dynamic)
-  if (!isDynamic && product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
+  if (!isDynamic && product.bundle_individual_total && product.bundle_savings 
+      && product.bundle_individual_total > 0) {
     return product.bundle_savings / product.bundle_individual_total;
+  }
+  // Fallback: parse discount percentage from product title
+  const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
+  if (match) {
+    return parseInt(match[1], 10) / 100;
   }
   return 0;
 }, [product, fullTotal, isDynamic]);
 ```
 
-Dit zorgt dat:
-- **Fixed bundles**: fallback werkt nog (savings zijn daar correct)
-- **Dynamic bundles zonder discount fields**: korting = 0% (geen fictieve 100%)
-- **Dynamic bundles mét discount fields**: percentage/fixed korting wordt correct toegepast
+### Overweging
 
-3. **Bundle price voor dynamic zonder korting**: `bundlePrice = fullTotal` (= de som van items zonder korting). Dit is logisch — als er geen korting is ingesteld, betaal je de volle prijs.
+Dit is een **workaround** totdat de SellQo API `bundle_discount_type` en `bundle_discount_value` correct meestuurt. De regex-aanpak werkt voor producten met "12% Discount" of "12% Korting" in de titel — wat nu het geval is bij alle drie de bundels.
 
-### Resultaat na fix
-- Badge toont het juiste percentage (12% als API het meestuurt, 0% als niet)
-- Bundleprijs = `fullTotal × (1 - discountRate)` i.p.v. €0.00
-- De console log helpt ons zien wat de API exact stuurt, zodat we daarna eventueel de normalizer/proxy kunnen aanpassen
+### Technische details
+
+- **1 bestand** aan te passen: `src/components/BundleContents.tsx`
+- Regex pattern: `/(\d+)%\s*(discount|korting|rabatt|remise)/i` — werkt voor NL, EN, DE, FR
+- Geen andere bestanden hoeven te wijzigen
+- De rest van de berekening (bundlePrice, saving, savingPct) blijft ongewijzigd
 
