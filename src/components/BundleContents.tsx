@@ -25,11 +25,6 @@ export default function BundleContents({ product }: Props) {
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
 
-  // Calculate discount rate from API data (e.g. 12%)
-  const discountRate = (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0)
-    ? product.bundle_savings / product.bundle_individual_total
-    : 0;
-
   // Full total scales dynamically with chosen quantities (in-stock only)
   const fullTotal = useMemo(
     () =>
@@ -41,10 +36,32 @@ export default function BundleContents({ product }: Props) {
     [items, quantities]
   );
 
+  // Determine discount rate from explicit API fields
+  const discountRate = useMemo(() => {
+    if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+      return product.bundle_discount_value / 100;
+    }
+    if (product.bundle_discount_type === 'fixed' && product.bundle_discount_value && fullTotal > 0) {
+      return product.bundle_discount_value / fullTotal;
+    }
+    if (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
+      return product.bundle_savings / product.bundle_individual_total;
+    }
+    return 0;
+  }, [product, fullTotal]);
+
   if (!items || items.length === 0) return null;
 
-  const bundlePrice = isDynamic ? fullTotal * (1 - discountRate) : product.price;
-  const saving = isDynamic ? fullTotal * discountRate : (product.bundle_savings ?? 0);
+  const bundlePrice = isDynamic
+    ? (product.bundle_discount_type === 'fixed' && product.bundle_discount_value
+        ? fullTotal - product.bundle_discount_value
+        : fullTotal * (1 - discountRate))
+    : product.price;
+  const saving = isDynamic
+    ? (product.bundle_discount_type === 'fixed' && product.bundle_discount_value
+        ? product.bundle_discount_value
+        : fullTotal * discountRate)
+    : (product.bundle_savings ?? 0);
   const savingPct = discountRate > 0 
     ? Math.round(discountRate * 100) 
     : (fullTotal > 0 ? Math.round((saving / fullTotal) * 100) : 0);
