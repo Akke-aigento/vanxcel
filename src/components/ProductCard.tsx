@@ -128,14 +128,26 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           <h3 className="text-sm font-medium text-foreground mb-2 line-clamp-2">
             {product.title}
           </h3>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-primary">
-              €{product.price.toFixed(2)}
-            </span>
-            {product.compare_at_price && product.compare_at_price > product.price && (
-              <span className="text-sm text-muted-foreground line-through">
-                €{product.compare_at_price.toFixed(2)}
-              </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isDynamicBundle && bundleCalc ? (
+              <>
+                <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
+                <span className="text-lg font-bold text-primary">€{bundleCalc.bundlePrice.toFixed(2)}</span>
+                {bundleCalc.discountRate > 0 && (
+                  <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="text-lg font-bold text-primary">
+                  €{product.price.toFixed(2)}
+                </span>
+                {product.compare_at_price && product.compare_at_price > product.price && (
+                  <span className="text-sm text-muted-foreground line-through">
+                    €{product.compare_at_price.toFixed(2)}
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>
