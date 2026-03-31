@@ -137,7 +137,7 @@ export default function BundleContents({ product }: Props) {
 
               {/* Quantity */}
               <div className="flex items-center gap-1 flex-shrink-0">
-                {canAdjust ? (
+                {canAdjust && !outOfStock ? (
                   <div className="flex items-center border border-border rounded">
                     <button
                       onClick={() => updateQty(idx, -1)}
@@ -155,6 +155,8 @@ export default function BundleContents({ product }: Props) {
                       <Plus size={14} />
                     </button>
                   </div>
+                ) : outOfStock ? (
+                  <span className="text-xs text-destructive font-medium">×0</span>
                 ) : (
                   <span className="text-sm text-muted-foreground">×{qty}</span>
                 )}
@@ -162,7 +164,7 @@ export default function BundleContents({ product }: Props) {
 
               {/* Subtotal */}
               <span className="text-sm font-medium w-16 text-right flex-shrink-0">
-                €{subtotal.toFixed(2)}
+                {outOfStock ? "—" : `€${subtotal.toFixed(2)}`}
               </span>
             </div>
           );
