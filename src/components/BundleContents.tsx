@@ -36,15 +36,6 @@ export default function BundleContents({ product }: Props) {
     [items, quantities]
   );
 
-  // Debug log to see what the API actually sends
-  console.log('[Bundle debug]', {
-    bundle_discount_type: product.bundle_discount_type,
-    bundle_discount_value: product.bundle_discount_value,
-    bundle_savings: product.bundle_savings,
-    bundle_individual_total: product.bundle_individual_total,
-    price: product.price,
-    bundle_pricing_model: product.bundle_pricing_model,
-  });
 
   // Determine discount rate from explicit API fields
   const discountRate = useMemo(() => {
