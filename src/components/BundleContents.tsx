@@ -18,19 +18,24 @@ export default function BundleContents({ product }: Props) {
   const items = product.bundle_items;
 
   const [quantities, setQuantities] = useState<number[]>(
-    () => items?.map((i) => i.min_quantity ?? i.quantity) ?? []
+    () => items?.map((i) => 
+      i.product.in_stock === false ? 0 : (i.min_quantity ?? i.quantity)
+    ) ?? []
   );
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
 
   const individualTotal =
     product.bundle_individual_total ??
-    (items ?? []).reduce((s, i) => s + i.product.price * i.quantity, 0);
+    (items ?? []).reduce((s, i) => 
+      i.product.in_stock === false ? s : s + i.product.price * i.quantity, 0
+    );
 
   const dynamicTotal = useMemo(
     () =>
       (items ?? []).reduce(
-        (sum, item, idx) => sum + (item.product?.price || 0) * (quantities[idx] ?? item.quantity),
+        (sum, item, idx) => 
+          item.product.in_stock === false ? sum : sum + (item.product?.price || 0) * (quantities[idx] ?? item.quantity),
         0
       ),
     [items, quantities]
@@ -46,9 +51,10 @@ export default function BundleContents({ product }: Props) {
     individualTotal > 0 ? Math.round((saving / individualTotal) * 100) : 0;
 
   const updateQty = (index: number, delta: number) => {
+    const item = items[index];
+    if (item.product.in_stock === false) return;
     setQuantities((prev) => {
       const next = [...prev];
-      const item = items[index];
       const min = item.min_quantity ?? 0;
       const max = item.max_quantity ?? Infinity;
       next[index] = Math.min(max, Math.max(min, next[index] + delta));
@@ -131,7 +137,7 @@ export default function BundleContents({ product }: Props) {
 
               {/* Quantity */}
               <div className="flex items-center gap-1 flex-shrink-0">
-                {canAdjust ? (
+                {canAdjust && !outOfStock ? (
                   <div className="flex items-center border border-border rounded">
                     <button
                       onClick={() => updateQty(idx, -1)}
@@ -149,6 +155,8 @@ export default function BundleContents({ product }: Props) {
                       <Plus size={14} />
                     </button>
                   </div>
+                ) : outOfStock ? (
+                  <span className="text-xs text-destructive font-medium">×0</span>
                 ) : (
                   <span className="text-sm text-muted-foreground">×{qty}</span>
                 )}
@@ -156,7 +164,7 @@ export default function BundleContents({ product }: Props) {
 
               {/* Subtotal */}
               <span className="text-sm font-medium w-16 text-right flex-shrink-0">
-                €{subtotal.toFixed(2)}
+                {outOfStock ? "—" : `€${subtotal.toFixed(2)}`}
               </span>
             </div>
           );
