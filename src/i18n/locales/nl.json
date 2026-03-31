@@ -101,7 +101,8 @@
     "adding": "Toevoegen...",
     "related": "Gerelateerde producten",
     "photoSoon": "Foto binnenkort",
-    "almostGone": "⚡ Bijna op"
+    "almostGone": "⚡ Bijna op",
+    "viewBundle": "Bekijk bundel"
   },
   "bundle": {
     "header": "In deze bundel ({{count}} producten)",
