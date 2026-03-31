@@ -36,6 +36,16 @@ export default function BundleContents({ product }: Props) {
     [items, quantities]
   );
 
+  // Debug log to see what the API actually sends
+  console.log('[Bundle debug]', {
+    bundle_discount_type: product.bundle_discount_type,
+    bundle_discount_value: product.bundle_discount_value,
+    bundle_savings: product.bundle_savings,
+    bundle_individual_total: product.bundle_individual_total,
+    price: product.price,
+    bundle_pricing_model: product.bundle_pricing_model,
+  });
+
   // Determine discount rate from explicit API fields
   const discountRate = useMemo(() => {
     if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
@@ -44,11 +54,12 @@ export default function BundleContents({ product }: Props) {
     if (product.bundle_discount_type === 'fixed' && product.bundle_discount_value && fullTotal > 0) {
       return product.bundle_discount_value / fullTotal;
     }
-    if (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
+    // Fallback: only for FIXED pricing model (not dynamic)
+    if (!isDynamic && product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
       return product.bundle_savings / product.bundle_individual_total;
     }
     return 0;
-  }, [product, fullTotal]);
+  }, [product, fullTotal, isDynamic]);
 
   if (!items || items.length === 0) return null;
 
