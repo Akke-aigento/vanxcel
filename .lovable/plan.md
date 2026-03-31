@@ -1,62 +1,36 @@
 
 
-## Fix: Dynamic bundles tonen €0.00 op ProductCard
+## Fix: Edge function 500 error op `/legal` endpoint
 
 ### Oorzaak
-`isDynamicBundle` vereist `product.bundle_items?.length > 0`, maar de **product list API** stuurt geen `bundle_items` mee — alleen de detail API doet dat. Dus valt de card terug op `product.price` = `€0.00`.
+
+De SellQo upstream API retourneert `{"success":false,"error":"[object Object]"}` voor de `get_pages` action. Dit is een **upstream API probleem** — de proxy stuurt het antwoord correct door. De foutmelding `supabase/functions/legal/index.ts` is misleidend; die functie bestaat niet, het gaat om `sellqo-proxy`.
 
 ### Oplossing
 
-**Bestand: `src/components/ProductCard.tsx`**
+De proxy moet deze fout graceful afhandelen zodat het geen 500 error meer triggert:
 
-Verbreed de detectie en voeg een fallback toe voor wanneer `bundle_items` ontbreekt:
+**Bestand: `supabase/functions/sellqo-proxy/index.ts`** — na het ontvangen van het SellQo response, check of het een error-response is en return dan een lege dataset i.p.v. de fout door te sturen:
 
-1. **Nieuwe `isDynamicBundle` check** — ook `true` als `bundle_pricing_model === 'dynamic'` zonder items:
-```tsx
-const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic';
+```typescript
+const responseBody = await response.text();
+
+// If upstream returned an error for non-critical endpoints, return empty data
+if (!response.ok) {
+  const nonCriticalActions = ['get_pages'];
+  if (nonCriticalActions.includes(storefrontBody.action)) {
+    console.warn(`[sellqo-proxy] ${storefrontBody.action} failed: ${responseBody}`);
+    return new Response(
+      JSON.stringify({ data: [] }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+}
 ```
 
-2. **`bundleCalc` aanpassen** — als `bundle_items` beschikbaar zijn, bereken zoals nu. Als niet, gebruik `bundle_individual_total` van de API:
-```tsx
-const bundleCalc = isDynamicBundle ? (() => {
-  let individualTotal = 0;
-  const items = product.bundle_items;
-  
-  if (items && items.length > 0) {
-    individualTotal = items.reduce((sum, item) => {
-      if (item.product?.in_stock === false) return sum;
-      const qty = item.min_quantity ?? item.quantity;
-      return sum + (item.product?.price || 0) * qty;
-    }, 0);
-  } else if (product.bundle_individual_total) {
-    individualTotal = product.bundle_individual_total;
-  }
-  
-  let discountRate = 0;
-  if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
-    discountRate = product.bundle_discount_value / 100;
-  } else {
-    const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
-    if (match) discountRate = parseInt(match[1], 10) / 100;
-  }
-  
-  const bundlePrice = individualTotal * (1 - discountRate);
-  
-  // Als individualTotal ook 0 is (geen data), return null
-  if (individualTotal === 0) return null;
-  
-  return { individualTotal, bundlePrice, discountRate };
-})() : null;
-```
-
-3. **Prijsweergave** — als `isDynamicBundle` maar `bundleCalc` is null (geen data), toon dan gewoon de bundel badge zonder prijs, of `product.price` als die > 0 is.
-
-### Resultaat
-- Dynamic bundles met `bundle_items` → "Vanaf €XXX" + doorgestreept (huidige logica)
-- Dynamic bundles zonder `bundle_items` maar mét `bundle_individual_total` → prijs berekend uit dat veld + titel-regex korting
-- Geen €0.00 meer zichtbaar
+Dit voorkomt dat de runtime error tracker een 500 registreert voor niet-kritische endpoints zoals `/legal`.
 
 ### Technisch
-- 1 bestand: `src/components/ProductCard.tsx`
-- Geen API/proxy wijzigingen nodig
+- 1 bestand: `supabase/functions/sellqo-proxy/index.ts` (regels 180-188)
+- De Frontend hoeft niet te wijzigen — `Footer.tsx` heeft al een `.catch(() => {})`
 
