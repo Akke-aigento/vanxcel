@@ -179,6 +179,18 @@ serve(async (req: Request) => {
 
     const responseBody = await response.text();
 
+    // If upstream returned an error for non-critical endpoints, return empty data
+    if (!response.ok) {
+      const nonCriticalActions = ['get_pages'];
+      if (nonCriticalActions.includes(storefrontBody.action)) {
+        console.warn(`[sellqo-proxy] ${storefrontBody.action} failed: ${responseBody}`);
+        return new Response(
+          JSON.stringify({ data: [] }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     return new Response(responseBody, {
       status: response.status,
       headers: {
