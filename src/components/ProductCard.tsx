@@ -99,11 +99,15 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
               <span className="text-xs">{t("product.photoSoon")}</span>
             </div>
           )}
-          {product.compare_at_price && product.compare_at_price > product.price && (
+          {bundleCalc && bundleCalc.discountRate > 0 ? (
+            <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
+              -{Math.round(bundleCalc.discountRate * 100)}%
+            </div>
+          ) : product.compare_at_price && product.compare_at_price > product.price ? (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
               -{Math.round((1 - product.price / product.compare_at_price) * 100)}%
             </div>
-          )}
+          ) : null}
           {product.stock_status === 'out_of_stock' && (
             <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
               <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full">{t("product.outOfStock")}</span>
