@@ -76,6 +76,7 @@ export default function ProductDetail() {
   const isBundle = product.product_type === 'bundle';
   const bundleStartingPrice = (isBundle && product.bundle_pricing_model === 'dynamic' && product.bundle_items)
     ? product.bundle_items.reduce((sum, item) => {
+        if (item.product?.in_stock === false) return sum;
         const minQty = item.min_quantity ?? item.quantity;
         return sum + (item.product?.price || 0) * minQty;
       }, 0)

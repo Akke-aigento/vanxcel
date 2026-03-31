@@ -18,7 +18,9 @@ export default function BundleContents({ product }: Props) {
   const items = product.bundle_items;
 
   const [quantities, setQuantities] = useState<number[]>(
-    () => items?.map((i) => i.min_quantity ?? i.quantity) ?? []
+    () => items?.map((i) => 
+      i.product.in_stock === false ? 0 : (i.min_quantity ?? i.quantity)
+    ) ?? []
   );
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
