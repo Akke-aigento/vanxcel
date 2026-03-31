@@ -52,8 +52,16 @@ export default function BundleContents({ product }: Props) {
 
   if (!items || items.length === 0) return null;
 
-  const bundlePrice = isDynamic ? fullTotal * (1 - discountRate) : product.price;
-  const saving = isDynamic ? fullTotal * discountRate : (product.bundle_savings ?? 0);
+  const bundlePrice = isDynamic
+    ? (product.bundle_discount_type === 'fixed' && product.bundle_discount_value
+        ? fullTotal - product.bundle_discount_value
+        : fullTotal * (1 - discountRate))
+    : product.price;
+  const saving = isDynamic
+    ? (product.bundle_discount_type === 'fixed' && product.bundle_discount_value
+        ? product.bundle_discount_value
+        : fullTotal * discountRate)
+    : (product.bundle_savings ?? 0);
   const savingPct = discountRate > 0 
     ? Math.round(discountRate * 100) 
     : (fullTotal > 0 ? Math.round((saving / fullTotal) * 100) : 0);
