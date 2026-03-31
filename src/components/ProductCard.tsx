@@ -17,6 +17,26 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const mainImage = product.images?.[0]?.url;
   const cardRef = useRef<HTMLAnchorElement>(null);
 
+  const isBundle = product.product_type === 'bundle';
+  const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic' && (product.bundle_items?.length ?? 0) > 0;
+
+  const bundleCalc = isDynamicBundle ? (() => {
+    const items = product.bundle_items!;
+    const individualTotal = items.reduce((sum, item) => {
+      if (item.product?.in_stock === false) return sum;
+      const qty = item.min_quantity ?? item.quantity;
+      return sum + (item.product?.price || 0) * qty;
+    }, 0);
+    let discountRate = 0;
+    if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+      discountRate = product.bundle_discount_value / 100;
+    } else {
+      const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
+      if (match) discountRate = parseInt(match[1], 10) / 100;
+    }
+    return { individualTotal, bundlePrice: individualTotal * (1 - discountRate), discountRate };
+  })() : null;
+
   const handleMouseEnter = () => {
     queryClient.prefetchQuery({
       queryKey: sellqoKeys.products.detail(product.slug),
@@ -79,11 +99,15 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
               <span className="text-xs">{t("product.photoSoon")}</span>
             </div>
           )}
-          {product.compare_at_price && product.compare_at_price > product.price && (
+          {bundleCalc && bundleCalc.discountRate > 0 ? (
+            <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
+              -{Math.round(bundleCalc.discountRate * 100)}%
+            </div>
+          ) : product.compare_at_price && product.compare_at_price > product.price ? (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
               -{Math.round((1 - product.price / product.compare_at_price) * 100)}%
             </div>
-          )}
+          ) : null}
           {product.stock_status === 'out_of_stock' && (
             <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
               <span className="text-sm font-medium bg-muted px-3 py-1 rounded-full">{t("product.outOfStock")}</span>
@@ -104,14 +128,26 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           <h3 className="text-sm font-medium text-foreground mb-2 line-clamp-2">
             {product.title}
           </h3>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-primary">
-              €{product.price.toFixed(2)}
-            </span>
-            {product.compare_at_price && product.compare_at_price > product.price && (
-              <span className="text-sm text-muted-foreground line-through">
-                €{product.compare_at_price.toFixed(2)}
-              </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isDynamicBundle && bundleCalc ? (
+              <>
+                <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
+                <span className="text-lg font-bold text-primary">€{bundleCalc.bundlePrice.toFixed(2)}</span>
+                {bundleCalc.discountRate > 0 && (
+                  <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="text-lg font-bold text-primary">
+                  €{product.price.toFixed(2)}
+                </span>
+                {product.compare_at_price && product.compare_at_price > product.price && (
+                  <span className="text-sm text-muted-foreground line-through">
+                    €{product.compare_at_price.toFixed(2)}
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>
