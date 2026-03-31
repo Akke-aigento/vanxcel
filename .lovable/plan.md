@@ -1,65 +1,49 @@
 
 
-## Fix: Bundel korting verdwijnt bij aanpassing + verkeerd percentage
-
-### Analyse
-
-Uit de screenshots:
-- **Screenshot 1**: qty=1 battery → Individual total €994.95, Bundle price €820.00, Save €174.95 (-18%). Maar korting is 12%.
-- **Screenshot 2**: qty=2 battery → Bundle price €1265.00, korting/savings **verdwijnen** volledig.
+## Fix: Bundelkorting toont 100% i.p.v. 12%
 
 ### Oorzaak
 
-De code berekent voor dynamic bundles:
-- `individualTotal` = **statisch** `product.bundle_individual_total` (€994.95, van API, inclusief out-of-stock items op default qty)
-- `dynamicTotal` = som van **huidige** quantities × prijzen (alleen in-stock)
-- `saving` = `individualTotal - dynamicTotal`
+De huidige code berekent `discountRate` als `bundle_savings / bundle_individual_total`. Voor dynamic bundles is `product.price = 0`, dus de API stuurt `bundle_savings = bundle_individual_total`, wat resulteert in `discountRate = 1.0 = 100%`.
 
-Zodra je de battery-qty verhoogt naar 2, wordt `dynamicTotal` (€1265) **hoger** dan het statische `individualTotal` (€994.95), waardoor `saving` negatief wordt en de badge verdwijnt.
-
-De 12% korting wordt nergens toegepast — de code sommeert gewoon de volle stukprijzen.
+De **werkelijke** kortingsinstellingen zitten in twee velden die al genormaliseerd worden maar niet gebruikt:
+- `product.bundle_discount_type` (bv. `"percentage"`)
+- `product.bundle_discount_value` (bv. `12`)
 
 ### Oplossing
 
-**Bestand: `src/components/BundleContents.tsx`**
+**Bestand: `src/components/BundleContents.tsx`** — regel 28-31
 
-1. **Bereken de kortingspercentage** uit de API-data:
+Gebruik `bundle_discount_type` + `bundle_discount_value` als primaire bron:
+
 ```tsx
-const discountRate = (product.bundle_individual_total && product.bundle_savings)
-  ? product.bundle_savings / product.bundle_individual_total
-  : 0;
+// Determine discount rate from explicit API fields
+const discountRate = useMemo(() => {
+  if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+    return product.bundle_discount_value / 100; // e.g. 12 → 0.12
+  }
+  if (product.bundle_discount_type === 'fixed' && product.bundle_discount_value && fullTotal > 0) {
+    return product.bundle_discount_value / fullTotal; // fixed amount as ratio
+  }
+  // Fallback: derive from API totals (only valid for fixed bundles)
+  if (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
+    return product.bundle_savings / product.bundle_individual_total;
+  }
+  return 0;
+}, [product, fullTotal]);
 ```
 
-2. **`individualTotal` wordt dynamisch** (schaalt mee met gekozen quantities):
+Voor **fixed discount type**, pas de saving berekening aan:
 ```tsx
-const individualTotal = useMemo(() =>
-  (items ?? []).reduce((sum, item, idx) =>
-    item.product.in_stock === false ? sum : sum + item.product.price * (quantities[idx] ?? item.quantity),
-    0
-  ), [items, quantities]
-);
+const saving = isDynamic
+  ? (product.bundle_discount_type === 'fixed' ? product.bundle_discount_value! : fullTotal * discountRate)
+  : (product.bundle_savings ?? 0);
 ```
 
-3. **`bundlePrice` past de korting toe**:
-```tsx
-const bundlePrice = isDynamic
-  ? dynamicTotal * (1 - discountRate)  // dynamicTotal = individualTotal, so: price = total × 0.88
-  : product.price;
-```
-
-Eigenlijk is `dynamicTotal` dezelfde som als de nieuwe dynamische `individualTotal`. We kunnen ze samenvoegen:
-```tsx
-const fullTotal = useMemo(() => /* som van qty × price, in-stock only */);
-const bundlePrice = isDynamic ? fullTotal * (1 - discountRate) : product.price;
-const saving = isDynamic ? fullTotal * discountRate : (product.bundle_savings ?? 0);
-```
-
-4. **Savings% is nu altijd 12%** (of wat de API ook instelt), ongeacht qty-wijzigingen.
-
-5. **`individualTotal` weergave in footer**: toon `fullTotal` doorgestreept, en daaronder `bundlePrice` (= fullTotal × 0.88).
+Geen andere bestanden hoeven te wijzigen — de velden zijn al beschikbaar in het `Product` type en de normalizer.
 
 ### Resultaat
-- Korting blijft altijd 12% ongeacht quantity-aanpassingen
-- Savings badge schaalt mee proportioneel
-- Geen verdwijning meer bij qty-wijziging
+- **Percentage korting** (bv. 12%): badge toont `-12%`, bundleprijs = fullTotal × 0.88
+- **Vaste korting** (bv. €50): badge toont juist percentage, bundleprijs = fullTotal - €50
+- Korting verdwijnt niet meer bij quantity-aanpassingen
 
