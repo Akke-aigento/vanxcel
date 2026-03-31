@@ -175,7 +175,7 @@ export default function BundleContents({ product }: Props) {
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("bundle.individualTotal")}</span>
           <span className="line-through text-muted-foreground">
-            €{individualTotal.toFixed(2)}
+            €{fullTotal.toFixed(2)}
           </span>
         </div>
         <div className="flex justify-between text-sm font-semibold">
