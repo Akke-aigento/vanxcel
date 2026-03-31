@@ -58,6 +58,11 @@ export default function BundleContents({ product }: Props) {
     if (!isDynamic && product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
       return product.bundle_savings / product.bundle_individual_total;
     }
+    // Workaround: parse discount percentage from product title (e.g. "12% Discount Bundle")
+    const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
+    if (match) {
+      return parseInt(match[1], 10) / 100;
+    }
     return 0;
   }, [product, fullTotal, isDynamic]);
 
