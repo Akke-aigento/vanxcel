@@ -17,6 +17,26 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const mainImage = product.images?.[0]?.url;
   const cardRef = useRef<HTMLAnchorElement>(null);
 
+  const isBundle = product.product_type === 'bundle';
+  const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic' && (product.bundle_items?.length ?? 0) > 0;
+
+  const bundleCalc = isDynamicBundle ? (() => {
+    const items = product.bundle_items!;
+    const individualTotal = items.reduce((sum, item) => {
+      if (item.product?.in_stock === false) return sum;
+      const qty = item.min_quantity ?? item.quantity;
+      return sum + (item.product?.price || 0) * qty;
+    }, 0);
+    let discountRate = 0;
+    if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+      discountRate = product.bundle_discount_value / 100;
+    } else {
+      const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
+      if (match) discountRate = parseInt(match[1], 10) / 100;
+    }
+    return { individualTotal, bundlePrice: individualTotal * (1 - discountRate), discountRate };
+  })() : null;
+
   const handleMouseEnter = () => {
     queryClient.prefetchQuery({
       queryKey: sellqoKeys.products.detail(product.slug),
