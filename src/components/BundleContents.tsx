@@ -51,9 +51,10 @@ export default function BundleContents({ product }: Props) {
     individualTotal > 0 ? Math.round((saving / individualTotal) * 100) : 0;
 
   const updateQty = (index: number, delta: number) => {
+    const item = items[index];
+    if (item.product.in_stock === false) return;
     setQuantities((prev) => {
       const next = [...prev];
-      const item = items[index];
       const min = item.min_quantity ?? 0;
       const max = item.max_quantity ?? Infinity;
       next[index] = Math.min(max, Math.max(min, next[index] + delta));
