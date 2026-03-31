@@ -1,53 +1,84 @@
 
 
-## Dynamische bundelprijs als "Vanaf" prijs
+## Fix: Bundel prijsberekening en weergave
 
-### Probleem
-Bij bundels met `bundle_pricing_model: "dynamic"` toont de productpagina `€0.00` als prijs (regel 134), omdat `product.price` niet gevuld is voor dynamic bundles. De gebruiker wil een "Vanaf €X" prijs zien, berekend op basis van de **minimale aantallen** per item.
+### Problemen (uit screenshot)
+1. **Per-item prijs lijkt doorgestreept** — de stukprijs staat er wel, maar er mist een subtotaal per item
+2. **Bundelprijs = €0.00** — omdat dynamic total berekend wordt met out-of-stock items op qty=0
+3. **Besparing = €994.95 / -100%** — klopt niet, want individualTotal telt out-of-stock items mee maar dynamicTotal niet
+4. **Aantallen niet aanpasbaar** — waarschijnlijk `customer_can_adjust` niet true in API, of out-of-stock items blokkeren het
+5. **Out-of-stock items tellen mee in individualTotal** — die moeten uitgesloten worden
 
 ### Oplossing
 
-**2 bestanden aanpassen:**
+**Bestand: `src/components/BundleContents.tsx`**
 
-| Bestand | Wijziging |
+| Fix | Detail |
 |---|---|
-| `src/pages/ProductDetail.tsx` | Voor dynamic bundles: bereken "starting from" prijs (som van `min_quantity × item.price`) en toon als "Vanaf €X" i.p.v. de standaard prijs |
-| `src/components/BundleContents.tsx` | Initialiseer quantities op `min_quantity` i.p.v. `item.quantity`, zodat de BundleContents footer-prijs overeenkomt met de "Vanaf" prijs |
-| `src/i18n/locales/*.json` | Voeg `"product.startingFrom"` key toe (NL/EN/DE/FR) |
+| Out-of-stock uitsluiten uit totalen | Items waar `in_stock === false` worden niet meegeteld in `individualTotal` én `dynamicTotal` |
+| Out-of-stock qty forceren op 0 | Bij initialisatie: als `in_stock === false`, qty = 0 ongeacht min_quantity |
+| Out-of-stock +/- blokkeren | Disable beide knoppen als item out-of-stock |
+| Per-item subtotaal verbeteren | Toon subtotaal alleen als qty > 0; toon "—" als qty = 0 |
+| Prijs per stuk niet doorgestreept | Controleer dat er geen `line-through` styling op de stukprijs zit (is er niet in code, maar verduidelijk visueel) |
 
-### Technisch detail
+### Kernlogica wijzigingen
 
-**ProductDetail.tsx** — rond regel 72-74, na `variantPrice`:
 ```tsx
-// For dynamic bundles, calculate "starting from" price using min quantities
-const bundleStartingPrice = (product.product_type === 'bundle' && product.bundle_pricing_model === 'dynamic' && product.bundle_items)
+// Initialisatie: out-of-stock items op 0
+const [quantities, setQuantities] = useState<number[]>(
+  () => items?.map((i) => 
+    i.product.in_stock === false ? 0 : (i.min_quantity ?? i.quantity)
+  ) ?? []
+);
+
+// individualTotal: alleen in-stock items meetellen
+const individualTotal = product.bundle_individual_total ??
+  (items ?? []).reduce((s, i) => 
+    i.product.in_stock === false ? s : s + i.product.price * i.quantity, 0
+  );
+
+// dynamicTotal: alleen in-stock items
+const dynamicTotal = useMemo(() =>
+  (items ?? []).reduce((sum, item, idx) => 
+    item.product.in_stock === false ? sum : sum + (item.product?.price || 0) * (quantities[idx] ?? item.quantity),
+    0
+  ), [items, quantities]
+);
+
+// updateQty: blokkeer out-of-stock
+const updateQty = (index: number, delta: number) => {
+  const item = items[index];
+  if (item.product.in_stock === false) return;
+  // ... rest unchanged
+};
+```
+
+Per item in de render:
+```tsx
+// Disable +/- for out-of-stock
+{canAdjust && !outOfStock ? (
+  <div className="flex items-center border ...">
+    <button disabled={qty <= min} ...><Minus /></button>
+    <span>{qty}</span>
+    <button disabled={max != null && qty >= max} ...><Plus /></button>
+  </div>
+) : outOfStock ? (
+  <span className="text-xs text-destructive">×0</span>
+) : (
+  <span>×{qty}</span>
+)}
+```
+
+**Bestand: `src/pages/ProductDetail.tsx`** — bundleStartingPrice berekening ook out-of-stock uitsluiten:
+```tsx
+const bundleStartingPrice = (isBundle && product.bundle_pricing_model === 'dynamic' && product.bundle_items)
   ? product.bundle_items.reduce((sum, item) => {
+      if (item.product?.in_stock === false) return sum;
       const minQty = item.min_quantity ?? item.quantity;
       return sum + (item.product?.price || 0) * minQty;
     }, 0)
   : null;
 ```
 
-Regel 134 — prijsweergave:
-```tsx
-{bundleStartingPrice != null ? (
-  <span className="text-2xl font-bold text-primary">
-    {t("product.startingFrom")} €{bundleStartingPrice.toFixed(2)}
-  </span>
-) : (
-  <span className="text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
-)}
-```
-
-En verberg de losse quantity-selector + add-to-cart button voor bundels (die zitten al in BundleContents).
-
-**BundleContents.tsx** — regel 20-21, initialiseer op min_quantity:
-```tsx
-const [quantities, setQuantities] = useState<number[]>(
-  () => items?.map((i) => i.min_quantity ?? i.quantity) ?? []
-);
-```
-
-**i18n keys:**
-- NL: `"Vanaf"` / EN: `"Starting from"` / DE: `"Ab"` / FR: `"À partir de"`
+**i18n**: geen nieuwe keys nodig.
 
