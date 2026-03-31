@@ -25,13 +25,13 @@ export default function BundleContents({ product }: Props) {
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
 
-  const individualTotal =
-    product.bundle_individual_total ??
-    (items ?? []).reduce((s, i) => 
-      i.product.in_stock === false ? s : s + i.product.price * i.quantity, 0
-    );
+  // Calculate discount rate from API data (e.g. 12%)
+  const discountRate = (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0)
+    ? product.bundle_savings / product.bundle_individual_total
+    : 0;
 
-  const dynamicTotal = useMemo(
+  // Full total scales dynamically with chosen quantities (in-stock only)
+  const fullTotal = useMemo(
     () =>
       (items ?? []).reduce(
         (sum, item, idx) => 
@@ -43,12 +43,11 @@ export default function BundleContents({ product }: Props) {
 
   if (!items || items.length === 0) return null;
 
-  const bundlePrice = isDynamic ? dynamicTotal : product.price;
-  const saving = isDynamic
-    ? individualTotal - dynamicTotal
-    : product.bundle_savings ?? individualTotal - product.price;
-  const savingPct =
-    individualTotal > 0 ? Math.round((saving / individualTotal) * 100) : 0;
+  const bundlePrice = isDynamic ? fullTotal * (1 - discountRate) : product.price;
+  const saving = isDynamic ? fullTotal * discountRate : (product.bundle_savings ?? 0);
+  const savingPct = discountRate > 0 
+    ? Math.round(discountRate * 100) 
+    : (fullTotal > 0 ? Math.round((saving / fullTotal) * 100) : 0);
 
   const updateQty = (index: number, delta: number) => {
     const item = items[index];
