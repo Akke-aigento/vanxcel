@@ -18,15 +18,22 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const cardRef = useRef<HTMLAnchorElement>(null);
 
   const isBundle = product.product_type === 'bundle';
-  const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic' && (product.bundle_items?.length ?? 0) > 0;
+  const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic';
 
   const bundleCalc = isDynamicBundle ? (() => {
-    const items = product.bundle_items!;
-    const individualTotal = items.reduce((sum, item) => {
-      if (item.product?.in_stock === false) return sum;
-      const qty = item.min_quantity ?? item.quantity;
-      return sum + (item.product?.price || 0) * qty;
-    }, 0);
+    let individualTotal = 0;
+    const items = product.bundle_items;
+
+    if (items && items.length > 0) {
+      individualTotal = items.reduce((sum, item) => {
+        if (item.product?.in_stock === false) return sum;
+        const qty = item.min_quantity ?? item.quantity;
+        return sum + (item.product?.price || 0) * qty;
+      }, 0);
+    } else if (product.bundle_individual_total) {
+      individualTotal = product.bundle_individual_total;
+    }
+
     let discountRate = 0;
     if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
       discountRate = product.bundle_discount_value / 100;
@@ -34,6 +41,9 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
       if (match) discountRate = parseInt(match[1], 10) / 100;
     }
+
+    if (individualTotal === 0) return null;
+
     return { individualTotal, bundlePrice: individualTotal * (1 - discountRate), discountRate };
   })() : null;
 
