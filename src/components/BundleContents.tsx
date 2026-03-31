@@ -25,10 +25,19 @@ export default function BundleContents({ product }: Props) {
 
   const isDynamic = product.bundle_pricing_model === "dynamic";
 
-  // Calculate discount rate from API data (e.g. 12%)
-  const discountRate = (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0)
-    ? product.bundle_savings / product.bundle_individual_total
-    : 0;
+  // Determine discount rate from explicit API fields
+  const discountRate = useMemo(() => {
+    if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+      return product.bundle_discount_value / 100;
+    }
+    if (product.bundle_discount_type === 'fixed' && product.bundle_discount_value && fullTotal > 0) {
+      return product.bundle_discount_value / fullTotal;
+    }
+    if (product.bundle_individual_total && product.bundle_savings && product.bundle_individual_total > 0) {
+      return product.bundle_savings / product.bundle_individual_total;
+    }
+    return 0;
+  }, [product, fullTotal]);
 
   // Full total scales dynamically with chosen quantities (in-stock only)
   const fullTotal = useMemo(
