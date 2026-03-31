@@ -1,37 +1,36 @@
 
 
-## Bundle prijsweergave op ProductCard (shop overzicht)
+## Fix: Dynamic bundles tonen €0.00 op ProductCard
 
-### Probleem
-Dynamic bundles hebben `product.price = 0`, waardoor de ProductCard €0.00 toont. De "vanaf"-prijs met korting moet hier ook zichtbaar zijn, net als op de productdetailpagina.
+### Oorzaak
+`isDynamicBundle` vereist `product.bundle_items?.length > 0`, maar de **product list API** stuurt geen `bundle_items` mee — alleen de detail API doet dat. Dus valt de card terug op `product.price` = `€0.00`.
 
 ### Oplossing
 
 **Bestand: `src/components/ProductCard.tsx`**
 
-1. Bereken voor bundles met `bundle_pricing_model === 'dynamic'` een startprijs op basis van `bundle_items`:
-   - `individualTotal` = som van `item.product.price × min_quantity` (alleen in-stock items)
-   - Parse kortingspercentage uit titel als fallback (zelfde regex als BundleContents)
-   - `bundleStartPrice` = `individualTotal × (1 - discountRate)`
+Verbreed de detectie en voeg een fallback toe voor wanneer `bundle_items` ontbreekt:
 
-2. Pas de prijsweergave aan:
-   - Voor dynamic bundles: toon "Vanaf €XXX" als actieve prijs + doorgestreepte `individualTotal`
-   - De discount badge rechtsboven toont het kortingspercentage
-
-**Concrete wijziging in de prijssectie (regel 107-116):**
-
+1. **Nieuwe `isDynamicBundle` check** — ook `true` als `bundle_pricing_model === 'dynamic'` zonder items:
 ```tsx
-// Bovenaan component, na bestaande variabelen:
-const isBundle = product.product_type === 'bundle';
-const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic' && product.bundle_items?.length;
+const isDynamicBundle = isBundle && product.bundle_pricing_model === 'dynamic';
+```
 
+2. **`bundleCalc` aanpassen** — als `bundle_items` beschikbaar zijn, bereken zoals nu. Als niet, gebruik `bundle_individual_total` van de API:
+```tsx
 const bundleCalc = isDynamicBundle ? (() => {
-  const items = product.bundle_items!;
-  const individualTotal = items.reduce((sum, item) => {
-    if (item.product?.in_stock === false) return sum;
-    const qty = item.min_quantity ?? item.quantity;
-    return sum + (item.product?.price || 0) * qty;
-  }, 0);
+  let individualTotal = 0;
+  const items = product.bundle_items;
+  
+  if (items && items.length > 0) {
+    individualTotal = items.reduce((sum, item) => {
+      if (item.product?.in_stock === false) return sum;
+      const qty = item.min_quantity ?? item.quantity;
+      return sum + (item.product?.price || 0) * qty;
+    }, 0);
+  } else if (product.bundle_individual_total) {
+    individualTotal = product.bundle_individual_total;
+  }
   
   let discountRate = 0;
   if (product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
@@ -41,24 +40,23 @@ const bundleCalc = isDynamicBundle ? (() => {
     if (match) discountRate = parseInt(match[1], 10) / 100;
   }
   
-  return { individualTotal, bundlePrice: individualTotal * (1 - discountRate), discountRate };
+  const bundlePrice = individualTotal * (1 - discountRate);
+  
+  // Als individualTotal ook 0 is (geen data), return null
+  if (individualTotal === 0) return null;
+  
+  return { individualTotal, bundlePrice, discountRate };
 })() : null;
-
-// In de prijsweergave:
-{isDynamicBundle && bundleCalc ? (
-  <>
-    <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
-    <span className="text-lg font-bold text-primary">€{bundleCalc.bundlePrice.toFixed(2)}</span>
-    {bundleCalc.discountRate > 0 && (
-      <span className="text-sm text-muted-foreground line-through">€{bundleCalc.individualTotal.toFixed(2)}</span>
-    )}
-  </>
-) : (
-  // bestaande prijs-rendering
-)}
 ```
 
-3. Discount badge (regel 82-86): ook tonen voor dynamic bundles met geparsed percentage uit titel.
+3. **Prijsweergave** — als `isDynamicBundle` maar `bundleCalc` is null (geen data), toon dan gewoon de bundel badge zonder prijs, of `product.price` als die > 0 is.
 
-**Geen andere bestanden** hoeven te wijzigen. De `product.startingFrom` i18n-key bestaat al.
+### Resultaat
+- Dynamic bundles met `bundle_items` → "Vanaf €XXX" + doorgestreept (huidige logica)
+- Dynamic bundles zonder `bundle_items` maar mét `bundle_individual_total` → prijs berekend uit dat veld + titel-regex korting
+- Geen €0.00 meer zichtbaar
+
+### Technisch
+- 1 bestand: `src/components/ProductCard.tsx`
+- Geen API/proxy wijzigingen nodig
 
