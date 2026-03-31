@@ -17,18 +17,20 @@ const AnimatedOutlet = ({ children }: AnimatedOutletProps) => {
     }
   }, [location.key]);
 
-  const handleTransitionEnd = () => {
+  useEffect(() => {
     if (transitionStage === "exit") {
-      prevKey.current = location.key;
-      setDisplayChildren(children);
-      setTransitionStage("enter");
+      const timer = setTimeout(() => {
+        prevKey.current = location.key;
+        setDisplayChildren(children);
+        setTransitionStage("enter");
+      }, 250);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [transitionStage, children, location.key]);
 
   return (
     <div
       className={`page-transition ${transitionStage === "exit" ? "page-exit" : "page-enter"}`}
-      onTransitionEnd={handleTransitionEnd}
     >
       {displayChildren}
     </div>
