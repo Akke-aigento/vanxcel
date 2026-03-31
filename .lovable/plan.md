@@ -1,37 +1,64 @@
 
 
-## Bundelprijs tonen i.p.v. "Bekijk bundel" op shop overzicht
+## Fix: Bundelprijzen op shop overzicht — simpele directe aanpak
 
 ### Probleem
-Dynamic bundles op de shop-overzichtspagina tonen "Bekijk bundel" omdat `bundleCalc` `null` retourneert. Vermoedelijk stuurt de list API wél `bundle_individual_total` mee (994.95 zichtbaar in console), maar er zit mogelijk een bug in de data flow.
 
-### Aanpak
+De huidige code heeft te veel condities en fallbacks die elkaar tegenwerken. Het probleem zit in de detectie (`isDynamicBundle`) en de berekening (`bundleCalc`) die afhankelijk zijn van velden die de list API mogelijk niet meestuurt.
+
+### Oplossing — radicaal vereenvoudigen
 
 **Bestand: `src/components/ProductCard.tsx`**
 
-1. **Debug toevoegen** (tijdelijk) om te bevestigen welke bundle-velden de list API meestuurt:
+Vervang de hele `isDynamicBundle` + `bundleCalc` logica (regels 21-51) door een simpele directe berekening:
+
 ```tsx
-if (isBundle) console.log('[ProductCard bundle]', product.slug, {
-  price: product.price,
-  bundle_individual_total: product.bundle_individual_total,
-  bundle_pricing_model: product.bundle_pricing_model,
-  bundle_items: product.bundle_items?.length,
-});
+const isBundle = product.product_type === 'bundle';
+
+// Bundle pricing — gebruik direct de beschikbare velden
+const originalPrice = isBundle ? Number(product.bundle_individual_total ?? 0) : 0;
+const bundleSavings = isBundle ? Number(product.bundle_savings ?? 0) : 0;
+
+// Parse korting uit titel als fallback (bv. "12% Discount")
+let bundleDiscountRate = 0;
+if (isBundle && product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
+  bundleDiscountRate = product.bundle_discount_value / 100;
+} else if (isBundle) {
+  const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
+  if (match) bundleDiscountRate = parseInt(match[1], 10) / 100;
+}
+
+// Bereken bundelprijs
+const bundlePrice = isBundle && originalPrice > 0
+  ? (bundleDiscountRate > 0 ? originalPrice * (1 - bundleDiscountRate) : Math.max(0, originalPrice - bundleSavings))
+  : 0;
+const showBundlePricing = isBundle && bundlePrice > 0;
 ```
 
-2. **Fallback versterken** in `bundleCalc`: als `bundle_individual_total` ontbreekt maar `bundle_savings` aanwezig is en > 0, gebruik `bundle_savings` als benadering van de individuele totaal (het is gelijk voor deze producten, want `price=0`).
+Prijsweergave (regels 144-166) wordt:
+```tsx
+{showBundlePricing ? (
+  <>
+    <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
+    <span className="text-lg font-bold text-primary">€{bundlePrice.toFixed(2)}</span>
+    {bundlePrice < originalPrice && (
+      <span className="text-sm text-muted-foreground line-through">€{originalPrice.toFixed(2)}</span>
+    )}
+  </>
+) : isBundle ? (
+  <span className="text-sm font-medium text-primary">{t('product.viewBundle')}</span>
+) : (
+  // bestaande niet-bundel prijs
+)}
+```
 
-3. **Prijsweergave aanpassen** — vervang de "Bekijk bundel" fallback (regel 150-151) door:
-   - Als `isDynamicBundle` en `bundleCalc` beschikbaar: toon "Vanaf €XXX" + doorgestreept origineel (bestaande logica, werkt al)
-   - Als `isDynamicBundle` en `bundleCalc` is null: toon "Bekijk bundel" (ongewijzigd als absolute fallback)
-   
-   De kern van de fix is ervoor zorgen dat `bundleCalc` NIET null is wanneer de data er wel is.
+Discount badge (regels 115-123): gebruik `bundleDiscountRate` i.p.v. `bundleCalc?.discountRate`.
 
-4. **Na debug-verificatie**: console.log weer verwijderen.
-
-### Verwacht resultaat
-- Bundels tonen "Vanaf €875.56" met doorgestreept "€994.95" en een `-12%` badge
-- Alleen als echt geen data beschikbaar is, valt het terug op "Bekijk bundel"
+### Waarom dit werkt
+- Geen afhankelijkheid meer van `bundle_pricing_model` (die de list API niet stuurt)
+- Geen afhankelijkheid meer van `bundle_items` (die de list API niet stuurt)
+- Gebruikt direct `bundle_individual_total` en `bundle_savings` — die de normalizer WEL meeneemt
+- Titel-regex als fallback voor het kortingspercentage
 
 ### Technisch
 - 1 bestand: `src/components/ProductCard.tsx`
