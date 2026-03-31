@@ -101,7 +101,8 @@
     "adding": "Adding...",
     "related": "Related products",
     "photoSoon": "Photo coming soon",
-    "almostGone": "⚡ Almost gone"
+    "almostGone": "⚡ Almost gone",
+    "viewBundle": "View bundle"
   },
   "bundle": {
     "header": "In this bundle ({{count}} products)",

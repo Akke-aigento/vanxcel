@@ -101,7 +101,8 @@
     "adding": "Hinzufügen...",
     "related": "Ähnliche Produkte",
     "photoSoon": "Foto folgt",
-    "almostGone": "⚡ Fast weg"
+    "almostGone": "⚡ Fast weg",
+    "viewBundle": "Bundle ansehen"
   },
   "bundle": {
     "header": "In diesem Bundle ({{count}} Produkte)",
