@@ -98,9 +98,9 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
               <span className="text-xs">{t("product.photoSoon")}</span>
             </div>
           )}
-          {bundleCalc && bundleCalc.discountRate > 0 ? (
+{bundleDiscountRate > 0 ? (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
-              -{Math.round(bundleCalc.discountRate * 100)}%
+              -{Math.round(bundleDiscountRate * 100)}%
             </div>
           ) : product.compare_at_price && product.compare_at_price > product.price ? (
             <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
