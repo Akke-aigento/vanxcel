@@ -41,23 +41,6 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.setProperty("--rx", `${-y * 4}deg`);
-    el.style.setProperty("--ry", `${x * 4}deg`);
-  };
-
-  const handleMouseLeave = () => {
-    const el = cardRef.current;
-    if (!el) return;
-    el.style.setProperty("--rx", "0deg");
-    el.style.setProperty("--ry", "0deg");
-  };
-
   return (
     <div className="card-3d-tilt">
       <Link
