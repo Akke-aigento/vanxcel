@@ -1,65 +1,46 @@
 
 
-## Fix: Bundelprijzen op shop overzicht — simpele directe aanpak
+## Fix: Productkaarten reageren slecht op klikken/tikken
 
-### Probleem
+### Root cause
 
-De huidige code heeft te veel condities en fallbacks die elkaar tegenwerken. Het probleem zit in de detectie (`isDynamicBundle`) en de berekening (`bundleCalc`) die afhankelijk zijn van velden die de list API mogelijk niet meestuurt.
+Twee problemen werken samen:
 
-### Oplossing — radicaal vereenvoudigen
+1. **3D tilt-effect op de `<Link>`**: De `onMouseMove` handler past continu CSS custom properties (`--rx`, `--ry`) aan op het `<Link>` element zelf. Dit triggert `transform`-transities (0.15s) die op touchscreens interfereren met tap-events — de browser interpreteert de beweging als een drag i.p.v. een klik.
+
+2. **Geneste `onMouseMove` op de image-wrapper**: Een tweede `onMouseMove` handler op de binnenste `<div>` verandert `transformOrigin` op de afbeelding. Dit extra event-handling op een child van de `<Link>` maakt het klikgedrag nog onbetrouwbaarder.
+
+3. **CSS `transition: transform 0.15s`** op `.card-3d-tilt-inner`: elke transform-wijziging genereert transitionEnd events die bubbelen en potentieel de AnimatedOutlet verwarren.
+
+### Oplossing
 
 **Bestand: `src/components/ProductCard.tsx`**
 
-Vervang de hele `isDynamicBundle` + `bundleCalc` logica (regels 21-51) door een simpele directe berekening:
+- Verwijder de `onMouseMove` en `onMouseLeave` handlers van de `<Link>` (de tilt-berekening)
+- Verwijder de `onMouseMove` en `onMouseLeave` handlers van de image-wrapper div (de zoom-origin berekening)
+- Verwijder de `ref={cardRef}` en de `cardRef` variabele
+- Verwijder de `handleMouseMove` en `handleMouseLeave` functies
+- Houd `handleMouseEnter` (prefetch) — die is nuttig en onschadelijk
+- Voeg `pointer-events-none` toe aan alle absolute-positioned badge/overlay divs zodat ze nooit klikken opvangen
 
-```tsx
-const isBundle = product.product_type === 'bundle';
+**Bestand: `src/index.css`**
 
-// Bundle pricing — gebruik direct de beschikbare velden
-const originalPrice = isBundle ? Number(product.bundle_individual_total ?? 0) : 0;
-const bundleSavings = isBundle ? Number(product.bundle_savings ?? 0) : 0;
+- Verwijder of vereenvoudig de `.card-3d-tilt` en `.card-3d-tilt-inner` CSS — geen transforms meer nodig, alleen de hover box-shadow kan blijven
 
-// Parse korting uit titel als fallback (bv. "12% Discount")
-let bundleDiscountRate = 0;
-if (isBundle && product.bundle_discount_type === 'percentage' && product.bundle_discount_value) {
-  bundleDiscountRate = product.bundle_discount_value / 100;
-} else if (isBundle) {
-  const match = product.title?.match(/(\d+)%\s*(discount|korting|rabatt|remise)/i);
-  if (match) bundleDiscountRate = parseInt(match[1], 10) / 100;
-}
+### Wat blijft werken
+- Prefetch bij hover (handleMouseEnter)
+- Hover border-kleur verandering (CSS `hover:border-primary/30`)
+- Hover box-shadow (CSS)
+- Image scale op hover (CSS `group-hover:scale-[1.15]`)
 
-// Bereken bundelprijs
-const bundlePrice = isBundle && originalPrice > 0
-  ? (bundleDiscountRate > 0 ? originalPrice * (1 - bundleDiscountRate) : Math.max(0, originalPrice - bundleSavings))
-  : 0;
-const showBundlePricing = isBundle && bundlePrice > 0;
-```
+### Wat verdwijnt
+- Het 3D kantelen van de kaart bij muisbeweging
+- Het verplaatsen van de transform-origin van de afbeelding bij muisbeweging
 
-Prijsweergave (regels 144-166) wordt:
-```tsx
-{showBundlePricing ? (
-  <>
-    <span className="text-xs text-muted-foreground">{t('product.startingFrom')}</span>
-    <span className="text-lg font-bold text-primary">€{bundlePrice.toFixed(2)}</span>
-    {bundlePrice < originalPrice && (
-      <span className="text-sm text-muted-foreground line-through">€{originalPrice.toFixed(2)}</span>
-    )}
-  </>
-) : isBundle ? (
-  <span className="text-sm font-medium text-primary">{t('product.viewBundle')}</span>
-) : (
-  // bestaande niet-bundel prijs
-)}
-```
+Dit zijn puur decoratieve effecten die de UX actief beschadigen.
 
-Discount badge (regels 115-123): gebruik `bundleDiscountRate` i.p.v. `bundleCalc?.discountRate`.
-
-### Waarom dit werkt
-- Geen afhankelijkheid meer van `bundle_pricing_model` (die de list API niet stuurt)
-- Geen afhankelijkheid meer van `bundle_items` (die de list API niet stuurt)
-- Gebruikt direct `bundle_individual_total` en `bundle_savings` — die de normalizer WEL meeneemt
-- Titel-regex als fallback voor het kortingspercentage
-
-### Technisch
-- 1 bestand: `src/components/ProductCard.tsx`
+### Resultaat
+- Eén tik = navigatie, altijd
+- Geen transform-transities die klikken blokkeren
+- Badges/overlays vangen geen pointer events meer op
 
