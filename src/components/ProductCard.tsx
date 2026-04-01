@@ -14,7 +14,6 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const mainImage = product.images?.[0]?.url;
-  const cardRef = useRef<HTMLAnchorElement>(null);
 
   const isBundle = product.product_type === 'bundle';
 
