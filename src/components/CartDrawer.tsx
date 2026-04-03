@@ -27,6 +27,7 @@ const CartDrawer = () => {
       });
     } catch (err) {
       console.error("Checkout failed:", err);
+    } finally {
       setCheckingOut(false);
     }
   };
