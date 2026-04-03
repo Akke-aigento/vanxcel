@@ -1,35 +1,49 @@
 
+## Checkout: waarschijnlijk grensprobleem tussen frontend en SellQo
 
-## Fix: Checkout knop blijft hangen op "Even geduld..."
+### Wat ik nu bevestigd heb
+- De klik zelf werkt: de checkout-call bereikt de proxy (`POST /checkout → action: checkout_start`)
+- De knop hangt niet meer vast in de UI; dat deel is al opgelost
+- De store settings tonen `guest_checkout: true` en `stripe_enabled: true`
+- De huidige frontend stuurt nog altijd return URLs op basis van `window.location.origin`
+- In preview is dat een Lovable preview-domein, terwijl de store alleen VanXcel-domeinen kent (`vanxcel.be`, `vanxcel.nl`, `vanxcel.com`)
 
-### Root cause
+### Meest waarschijnlijke root cause
+De checkout sessie faalt waarschijnlijk omdat SellQo een preview-URL als `success_url` / `cancel_url` krijgt. Daardoor komt er geen geldige `checkout_url` terug. Dus: ja, er kan iets aan SellQo-kant meespelen, maar de eerste concrete fout zit waarschijnlijk in de URLs die wij meesturen.
 
-Er zijn twee problemen:
+### Plan
+1. **Return URLs niet langer op preview-origin baseren**
+   - In `src/components/CartDrawer.tsx` een checkout base URL bepalen:
+     - `.be` → `https://vanxcel.be`
+     - `.nl` → `https://vanxcel.nl`
+     - `.com` → `https://vanxcel.com`
+     - preview/lovable-domeinen → fallback naar `https://vanxcel.be`
 
-1. **Upstream API fout**: De SellQo `checkout_start` action retourneert een error (`{"success":false,"error":"[object Object]"}`). Dit is een upstream API-probleem.
+2. **Succes-URL corrigeren**
+   - `success_url` opnieuw opbouwen als:
+     `.../bedankt?cart_id=${cartId}`
+   - `ThankYou.tsx` verwacht die `cart_id` al, dus dit moet sowieso terugkomen
 
-2. **Frontend hangt**: Zelfs als de checkout faalt, blijft de knop op "Even geduld..." hangen. De `handleCheckout` functie in `CartDrawer.tsx` heeft alleen een `catch` — geen `finally`. Als de API een 200 retourneert met `{"success":false}` (zonder checkout_url), dan:
-   - `sellqoFetch` gooit geen error (status is 200)
-   - `onSuccess` in `useCreateCheckout` zoekt naar `checkout_url`, vindt die niet, doet niets
-   - `handleCheckout` await resolved zonder error, maar `setCheckingOut(false)` zit alleen in de `catch` → knop blijft voor eeuwig laden
+3. **Checkout-fouten expliciet behandelen**
+   - In `src/integrations/sellqo/hooks.ts` / `client.ts` ook `{ success: false, error: ... }` als echte fout behandelen
+   - Dan zien we de upstream checkout-fout expliciet, niet alleen “No checkout URL returned”
 
-### Oplossing
+4. **Gerichte logging in de proxy**
+   - In `supabase/functions/sellqo-proxy/index.ts` voor `checkout_start` tijdelijk upstream status + body loggen
+   - Daarmee kunnen we exact bevestigen of SellQo de return URL afkeurt of iets anders mist
 
-**Bestand 1: `src/components/CartDrawer.tsx`** (regel 21-31)
+### Als het dan nog steeds faalt
+Dan is het inderdaad een SellQo-side issue. De concrete SellQo-check wordt dan:
+- accepteert `checkout_start` de opgegeven return domains?
+- geeft deze tenant effectief een `checkout_url` terug?
+- waarom retourneert de upstream wel een response, maar geen bruikbare checkout sessie?
 
-- Voeg `finally { setCheckingOut(false); }` toe zodat de knop altijd reset
-- Dit vangt alle scenario's: netwerk-error, upstream-error, of success-zonder-redirect
+### Bestanden
+- `src/components/CartDrawer.tsx`
+- `src/integrations/sellqo/hooks.ts` en/of `src/integrations/sellqo/client.ts`
+- `supabase/functions/sellqo-proxy/index.ts`
 
-**Bestand 2: `src/integrations/sellqo/hooks.ts`** (regel 237-251)
-
-- In `useCreateCheckout` → `onSuccess`: als er geen `checkout_url` in de response zit, gooi een error met een duidelijke melding zodat de gebruiker feedback krijgt
-- Voeg `onError` toe die een toast toont: "Afrekenen is momenteel niet beschikbaar"
-
-### Resultaat
-- Knop reset altijd na een checkout-poging
-- Gebruiker krijgt een foutmelding als checkout faalt, i.p.v. eindeloos laden
-- Zodra de upstream API correct werkt, werkt de redirect automatisch mee
-
-### Technisch
-- 2 bestanden: `CartDrawer.tsx`, `hooks.ts`
-
+### Verwacht resultaat
+- checkout werkt op live VanXcel-domeinen
+- preview breekt checkout niet meer door een foute return URL
+- als het daarna nog fout loopt, hebben we een harde, bruikbare fout voor SellQo in plaats van giswerk
