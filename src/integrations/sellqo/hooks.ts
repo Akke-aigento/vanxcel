@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { productsAPI, collectionsAPI, cartAPI, checkoutAPI, settingsAPI, legalAPI } from './api';
 import { extractArray, extractSingle } from './client';
 import { normalizeCart } from './normalizer';
@@ -236,17 +237,22 @@ export function useApplyDiscount() {
 // === CHECKOUT HOOKS ===
 export function useCreateCheckout() {
   return useMutation({
-    mutationFn: (options?: { success_url?: string; cancel_url?: string }) => {
+    mutationFn: async (options?: { success_url?: string; cancel_url?: string }) => {
       const cartId = getStoredCartId();
       if (!cartId) throw new Error('No cart found');
-      return checkoutAPI.create(cartId, options);
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onSuccess: (response: any) => {
-      const url = response?.data?.checkout_url || response?.checkout_url;
-      if (url) {
-        window.location.href = url;
+      const response = await checkoutAPI.create(cartId, options);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const url = (response as any)?.data?.checkout_url || (response as any)?.checkout_url;
+      if (!url) {
+        throw new Error('No checkout URL returned');
       }
+      return url as string;
+    },
+    onSuccess: (url: string) => {
+      window.location.href = url;
+    },
+    onError: () => {
+      toast.error('Afrekenen is momenteel niet beschikbaar. Probeer het later opnieuw.');
     },
   });
 }
