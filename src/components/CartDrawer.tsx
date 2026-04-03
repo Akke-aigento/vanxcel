@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { ShoppingCart, Plus, Minus, Trash2, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -13,32 +13,14 @@ import { useCartContext } from "@/integrations/sellqo/CartContext";
 
 const CartDrawer = () => {
   const { t } = useTranslation();
-  const { cart, isLoading, updateQuantity, removeItem, checkout, isOpen, openCart, closeCart } = useCartContext();
-  const [checkingOut, setCheckingOut] = useState(false);
+  const navigate = useNavigate();
+  const { cart, isLoading, updateQuantity, removeItem, isOpen, openCart, closeCart } = useCartContext();
 
   const itemCount = cart?.item_count ?? 0;
 
-  const getCheckoutBaseUrl = () => {
-    const hostname = window.location.hostname;
-    if (hostname.endsWith('.be')) return 'https://vanxcel.be';
-    if (hostname.endsWith('.nl')) return 'https://vanxcel.nl';
-    if (hostname.endsWith('.com')) return 'https://vanxcel.com';
-    return 'https://vanxcel.be'; // fallback for preview domains
-  };
-
-  const handleCheckout = async () => {
-    setCheckingOut(true);
-    try {
-      const baseUrl = getCheckoutBaseUrl();
-      await checkout({
-        success_url: `${baseUrl}/bedankt`,
-        cancel_url: `${baseUrl}/shop`,
-      });
-    } catch (err) {
-      console.error("Checkout failed:", err);
-    } finally {
-      setCheckingOut(false);
-    }
+  const handleCheckout = () => {
+    closeCart();
+    navigate('/checkout');
   };
 
   return (
@@ -137,16 +119,8 @@ const CartDrawer = () => {
                 className="w-full"
                 size="lg"
                 onClick={handleCheckout}
-                disabled={checkingOut}
               >
-                {checkingOut ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    {t("cart.loading")}
-                  </>
-                ) : (
-                  t("cart.checkout")
-                )}
+                {t("cart.checkout")}
               </Button>
             </div>
           </>

@@ -102,6 +102,76 @@ export interface CheckoutSession {
   cart_id: string;
 }
 
+// === CHECKOUT MULTI-STEP ===
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  type: string; // 'stripe', 'bank_transfer', 'qr', etc.
+  description?: string;
+  icon?: string;
+}
+
+export interface ShippingMethod {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  currency?: string;
+  estimated_days?: string;
+}
+
+export interface CheckoutOrderItem {
+  id: string;
+  product_id: string;
+  title: string;
+  variant_title?: string;
+  quantity: number;
+  price: number;
+  image?: string;
+}
+
+export interface CheckoutStartData {
+  order_id: string;
+  items: CheckoutOrderItem[];
+  available_payment_methods: PaymentMethod[];
+  available_shipping_methods: ShippingMethod[];
+  subtotal: number;
+  total: number;
+  currency: string;
+}
+
+export interface CheckoutCompleteData {
+  payment_type: 'redirect' | 'manual' | 'qr';
+  checkout_url?: string;
+  order_number?: string;
+  total?: number;
+  currency?: string;
+  bank_details?: {
+    iban: string;
+    account_holder: string;
+    reference: string;
+  };
+  qr_data?: {
+    image_url?: string;
+    payload?: string;
+  };
+}
+
+export interface CustomerData {
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+}
+
+export interface AddressData {
+  street: string;
+  city: string;
+  postal_code: string;
+  country: string;
+  company?: string;
+}
+
 // === PARAMS ===
 export interface ProductsParams {
   collection?: string;

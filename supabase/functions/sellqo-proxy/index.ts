@@ -28,9 +28,7 @@ function resolveAction(
   // --- PRODUCTS ---
   if (segments[0] === 'products') {
     if (segments.length === 1) {
-      // GET /products?collection=X&per_page=Y&search=Q...
       for (const [k, v] of query.entries()) params[k] = v;
-      // Map 'collection' to 'category_slug' for SellQo API compatibility
       if (params.collection) {
         params.category_slug = params.collection;
         delete params.collection;
@@ -39,12 +37,10 @@ function resolveAction(
       return { action: 'get_products', tenant_id: tenantId, params };
     }
     if (segments.length === 2) {
-      // GET /products/:slug
       params.slug = segments[1];
       return { action: 'get_product', tenant_id: tenantId, params };
     }
     if (segments.length === 3 && segments[2] === 'related') {
-      // GET /products/:slug/related?limit=4
       params.slug = segments[1];
       if (query.get('limit')) params.limit = Number(query.get('limit'));
       return { action: 'get_product', tenant_id: tenantId, params };
@@ -95,8 +91,37 @@ function resolveAction(
     }
   }
 
-  // --- CHECKOUT ---
+  // --- CHECKOUT (multi-step) ---
   if (segments[0] === 'checkout') {
+    // POST /checkout/start — start checkout from cart
+    if (segments[1] === 'start' && method === 'POST') {
+      return { action: 'checkout_start', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // POST /checkout/customer — save customer details
+    if (segments[1] === 'customer' && method === 'POST') {
+      return { action: 'checkout_customer', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // POST /checkout/address — save address
+    if (segments[1] === 'address' && method === 'POST') {
+      return { action: 'checkout_address', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // POST /checkout/shipping — select shipping method
+    if (segments[1] === 'shipping' && method === 'POST') {
+      return { action: 'checkout_shipping', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // POST /checkout/complete — finalize + get payment redirect
+    if (segments[1] === 'complete' && method === 'POST') {
+      return { action: 'checkout_complete', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // POST /checkout/discount — apply discount
+    if (segments[1] === 'discount' && method === 'POST') {
+      return { action: 'checkout_discount', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // DELETE /checkout/discount — remove discount
+    if (segments[1] === 'discount' && method === 'DELETE') {
+      return { action: 'checkout_remove_discount', tenant_id: tenantId, params: { ...params, ...body } };
+    }
+    // Fallback: old-style POST /checkout (legacy)
     if (segments.length === 1 && method === 'POST') {
       return { action: 'checkout_start', tenant_id: tenantId, params: { ...params, ...body } };
     }
@@ -150,11 +175,9 @@ serve(async (req: Request) => {
     const url = new URL(req.url);
     const path = url.pathname.replace(/^\/sellqo-proxy/, '') || '/';
     const tenantSlug = req.headers.get('X-Tenant-ID') || 'vanxcel';
-    // Map slug to UUID for the storefront-api
     const tenantId = tenantSlug === 'vanxcel' ? '54f6b480-280b-42e1-b843-d5beb2831acd' : tenantSlug;
     const locale = req.headers.get('Accept-Language') || null;
 
-    // Parse body for non-GET methods
     let body: Record<string, unknown> | null = null;
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       const raw = await req.text();
@@ -163,15 +186,9 @@ serve(async (req: Request) => {
       }
     }
 
-    // Build the storefront-api POST body
     const storefrontBody = resolveAction(req.method, path, url.searchParams, body, tenantId, locale);
 
     console.log(`[sellqo-proxy] ${req.method} ${path} → action: ${storefrontBody.action}`);
-
-    // Log checkout requests for debugging
-    if (storefrontBody.action === 'checkout_start') {
-      console.log(`[sellqo-proxy] checkout_start params: ${JSON.stringify(storefrontBody.params)}`);
-    }
 
     const response = await fetch(SELLQO_API_URL, {
       method: 'POST',
@@ -185,8 +202,8 @@ serve(async (req: Request) => {
     const responseBody = await response.text();
 
     // Log checkout responses for debugging
-    if (storefrontBody.action === 'checkout_start') {
-      console.log(`[sellqo-proxy] checkout_start response status: ${response.status}, body: ${responseBody.substring(0, 500)}`);
+    if (storefrontBody.action.startsWith('checkout_')) {
+      console.log(`[sellqo-proxy] ${storefrontBody.action} response status: ${response.status}, body: ${responseBody.substring(0, 500)}`);
     }
 
     // If upstream returned an error for non-critical endpoints, return empty data
