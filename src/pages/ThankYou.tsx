@@ -154,15 +154,20 @@ const ThankYou = () => {
 
           {/* QR payment */}
           {paymentType === 'qr' && routeState?.qrData && (
-            <div className="border border-border rounded-lg p-5 space-y-3">
-              <h2 className="font-semibold text-sm">{t("thankYou.qrTitle")}</h2>
-              <p className="text-sm text-muted-foreground">{t("thankYou.qrInstructions")}</p>
+            <div className="border border-border rounded-lg p-5 space-y-3 text-center">
+              <h2 className="font-semibold">{t("thankYou.qrTitle")}</h2>
               {routeState.qrData.image_url && (
-                <img src={routeState.qrData.image_url} alt="QR Code" className="mx-auto w-48 h-48" />
+                <img src={routeState.qrData.image_url} alt="QR Code" className="mx-auto w-64 h-64 border rounded" />
               )}
               {routeState.total != null && (
-                <p className="font-semibold">€{routeState.total.toFixed(2)}</p>
+                <p className="text-lg font-semibold">€{routeState.total.toFixed(2)}</p>
               )}
+              {routeState.orderNumber && (
+                <p className="text-muted-foreground">
+                  {t("thankYou.orderNumber")}: <span className="font-mono font-semibold text-foreground">{routeState.orderNumber}</span>
+                </p>
+              )}
+              <p className="text-sm text-muted-foreground">{t("thankYou.qrInstructions")}</p>
             </div>
           )}
 

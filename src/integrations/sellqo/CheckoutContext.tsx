@@ -15,7 +15,7 @@ import type {
 } from './types';
 
 interface CheckoutState {
-  checkoutReady: boolean; // true after successful start
+  checkoutReady: boolean;
   items: CheckoutOrderItem[];
   availablePaymentMethods: PaymentMethod[];
   availableShippingMethods: ShippingMethod[];
@@ -38,14 +38,18 @@ interface CheckoutState {
 
 interface CheckoutContextType extends CheckoutState {
   startCheckout: () => Promise<boolean>;
-  saveCustomer: (customer: CustomerData) => Promise<boolean>;
-  saveAddress: (shipping: AddressData, billingSame: boolean, billing?: AddressData) => Promise<boolean>;
-  selectShipping: (methodId: string) => Promise<boolean>;
+  saveCustomerAndAddress: (
+    customer: CustomerData,
+    shipping: AddressData,
+    billingSame: boolean,
+    billing?: AddressData,
+  ) => Promise<boolean>;
   completeCheckout: (paymentMethodId: string) => Promise<void>;
   applyDiscount: (code: string) => Promise<boolean>;
   removeDiscount: () => Promise<void>;
   goToStep: (step: number) => void;
   getSteps: () => { id: number; label: string }[];
+  computedTotal: number;
 }
 
 const initialState: CheckoutState = {
@@ -91,10 +95,9 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   const setLoading = (loading: boolean) => setState(s => ({ ...s, isLoading: loading }));
   const clearErrors = () => setState(s => ({ ...s, fieldErrors: {}, generalError: null }));
 
-  const handleApiError = (result: { success: boolean; error?: { code?: string; message?: string; fields?: Record<string, string> } }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const r = result as any;
-    const error = r?.error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleApiError = (result: any) => {
+    const error = result?.error;
     if (error?.code === 'VALIDATION_ERROR' && error?.fields) {
       setState(s => ({ ...s, fieldErrors: error.fields }));
     } else {
@@ -121,14 +124,19 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
       const data: CheckoutStartData = r?.data || extractSingle<CheckoutStartData>(response) || r;
+      // Parse items with price fallbacks to prevent NaN
+      const items = (data.items || []).map(item => ({
+        ...item,
+        price: Number(item.price) || Number((item as any).unit_price) || Number((item as any).line_total) || 0,
+      }));
       setState(s => ({
         ...s,
         checkoutReady: true,
-        items: data.items || [],
+        items,
         availablePaymentMethods: data.available_payment_methods || [],
         availableShippingMethods: data.available_shipping_methods || [],
-        subtotal: data.subtotal || 0,
-        total: data.total || 0,
+        subtotal: Number(data.subtotal) || 0,
+        total: Number(data.total) || 0,
         currency: data.currency || 'EUR',
         currentStep: 1,
       }));
@@ -142,48 +150,36 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const saveCustomer = useCallback(async (customer: CustomerData) => {
+  /** Combined step 1: save customer + address + auto-select shipping → go to step 2 (payment) */
+  const saveCustomerAndAddress = useCallback(async (
+    customer: CustomerData,
+    shipping: AddressData,
+    billingSame: boolean,
+    billing?: AddressData,
+  ) => {
     const cartId = getCartId();
     if (!cartId) return false;
     setLoading(true);
     clearErrors();
     try {
-      const response = await checkoutAPI.saveCustomer(cartId, customer);
+      // 1. Save customer
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = response as any;
-      if (r?.success === false) {
-        handleApiError(r);
+      const custResp = await checkoutAPI.saveCustomer(cartId, customer) as any;
+      if (custResp?.success === false) {
+        handleApiError(custResp);
         return false;
       }
-      setState(s => ({ ...s, customer, currentStep: 2 }));
-      return true;
-    } catch (err) {
-      console.error('Save customer failed:', err);
-      toast.error('Kon gegevens niet opslaan.');
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
-  const saveAddress = useCallback(async (shipping: AddressData, billingSame: boolean, billing?: AddressData) => {
-    const cartId = getCartId();
-    if (!cartId) return false;
-    setLoading(true);
-    clearErrors();
-    try {
-      const response = await checkoutAPI.saveAddress(cartId, shipping, billingSame, billing);
+      // 2. Save address
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = response as any;
-      if (r?.success === false) {
-        handleApiError(r);
+      const addrResp = await checkoutAPI.saveAddress(cartId, shipping, billingSame, billing) as any;
+      if (addrResp?.success === false) {
+        handleApiError(addrResp);
         return false;
       }
-      // Determine next step
-      const hasShipping = state.availableShippingMethods.length > 0;
-      let nextStep = hasShipping ? 3 : 4;
-      // Auto-select if only 1 shipping method
-      if (hasShipping && state.availableShippingMethods.length === 1) {
+
+      // 3. Auto-select shipping if only 1 method
+      if (state.availableShippingMethods.length === 1) {
         const autoMethod = state.availableShippingMethods[0];
         try {
           await checkoutAPI.selectShipping(cartId, autoMethod.id);
@@ -193,55 +189,25 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
             shippingCost: autoMethod.price || 0,
           }));
         } catch { /* proceed anyway */ }
-        nextStep = 4;
       }
+
       setState(s => ({
         ...s,
+        customer,
         shippingAddress: shipping,
         billingAddress: billingSame ? null : (billing || null),
         billingSameAsShipping: billingSame,
-        currentStep: nextStep,
+        currentStep: 2, // go to payment
       }));
       return true;
     } catch (err) {
-      console.error('Save address failed:', err);
-      toast.error('Kon adres niet opslaan.');
+      console.error('Save customer & address failed:', err);
+      toast.error('Kon gegevens niet opslaan.');
       return false;
     } finally {
       setLoading(false);
     }
   }, [state.availableShippingMethods]);
-
-  const selectShippingFn = useCallback(async (methodId: string) => {
-    const cartId = getCartId();
-    if (!cartId) return false;
-    setLoading(true);
-    clearErrors();
-    try {
-      const response = await checkoutAPI.selectShipping(cartId, methodId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = response as any;
-      if (r?.success === false) {
-        handleApiError(r);
-        return false;
-      }
-      const data = r?.data || {};
-      setState(s => ({
-        ...s,
-        selectedShippingMethod: methodId,
-        shippingCost: data.shipping_cost ?? 0,
-        total: data.total ?? s.total,
-        currentStep: 4,
-      }));
-      return true;
-    } catch (err) {
-      console.error('Select shipping failed:', err);
-      toast.error('Kon verzendmethode niet selecteren.');
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const completeCheckout = useCallback(async (paymentMethodId: string) => {
     const cartId = getCartId();
@@ -266,7 +232,6 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
 
       switch (data.payment_type) {
         case 'redirect':
-          // Stripe — redirect. Do NOT clear cart yet (thank-you page does it).
           if (data.checkout_url) {
             window.location.href = data.checkout_url;
           } else {
@@ -274,7 +239,6 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           }
           break;
         case 'manual':
-          // Bank transfer — clear cart + show bank details
           clearStoredCartId();
           navigate('/bedankt', {
             state: {
@@ -287,7 +251,6 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           });
           break;
         case 'qr':
-          // QR — clear cart + show QR
           clearStoredCartId();
           navigate('/bedankt', {
             state: {
@@ -299,18 +262,9 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           });
           break;
         default:
-          if (data.checkout_url) {
-            window.location.href = data.checkout_url;
-          } else {
-            clearStoredCartId();
-            navigate('/bedankt', {
-              state: {
-                orderNumber: data.order_number,
-                total: data.total,
-                paymentType: 'unknown',
-              },
-            });
-          }
+          // Unknown payment_type — do NOT navigate, show error
+          toast.error('Onbekende betaalmethode. Neem contact op met onze klantenservice.');
+          break;
       }
     } catch (err) {
       console.error('Complete checkout failed:', err);
@@ -363,30 +317,32 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     setState(s => ({ ...s, currentStep: step }));
   }, []);
 
-  const getSteps = useCallback(() => {
-    const steps = [
-      { id: 1, label: 'checkout.stepCustomer' },
-      { id: 2, label: 'checkout.stepAddress' },
-    ];
-    if (state.availableShippingMethods.length > 1) {
-      steps.push({ id: 3, label: 'checkout.stepShipping' });
-    }
-    steps.push({ id: 4, label: 'checkout.stepPayment' });
-    return steps;
-  }, [state.availableShippingMethods]);
+  // 2-step checkout: Details & Address → Payment
+  const getSteps = useCallback(() => [
+    { id: 1, label: 'checkout.stepDetails' },
+    { id: 2, label: 'checkout.stepPayment' },
+  ], []);
+
+  // Computed total as fallback when API total is 0
+  const computedTotal = useMemo(() => {
+    const sub = Number(state.subtotal) || 0;
+    const ship = Number(state.shippingCost) || 0;
+    const disc = Number(state.discount?.amount) || 0;
+    const apiTotal = Number(state.total) || 0;
+    return apiTotal > 0 ? apiTotal : Math.max(0, sub + ship - disc);
+  }, [state.subtotal, state.shippingCost, state.discount, state.total]);
 
   const value = useMemo<CheckoutContextType>(() => ({
     ...state,
     startCheckout,
-    saveCustomer,
-    saveAddress,
-    selectShipping: selectShippingFn,
+    saveCustomerAndAddress,
     completeCheckout,
     applyDiscount: applyDiscountFn,
     removeDiscount: removeDiscountFn,
     goToStep,
     getSteps,
-  }), [state, startCheckout, saveCustomer, saveAddress, selectShippingFn, completeCheckout, applyDiscountFn, removeDiscountFn, goToStep, getSteps]);
+    computedTotal,
+  }), [state, startCheckout, saveCustomerAndAddress, completeCheckout, applyDiscountFn, removeDiscountFn, goToStep, getSteps, computedTotal]);
 
   return <CheckoutContext.Provider value={value}>{children}</CheckoutContext.Provider>;
 }

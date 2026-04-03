@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, ChevronLeft, X, Tag } from "lucide-react";
@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout, CheckoutProvider } from "@/integrations/sellqo/CheckoutContext";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 
-/* ── Step indicator ── */
+/* ── Step indicator (2 steps) ── */
 function StepIndicator() {
   const { currentStep, getSteps } = useCheckout();
   const { t } = useTranslation();
@@ -41,57 +42,17 @@ function StepIndicator() {
   );
 }
 
-/* ── Step 1: Customer ── */
-function StepCustomer() {
+/* ── Step 1: Combined Customer + Address ── */
+function StepDetailsAndAddress() {
   const { t } = useTranslation();
-  const { saveCustomer, isLoading, fieldErrors, customer } = useCheckout();
-  const [form, setForm] = useState({
+  const { saveCustomerAndAddress, isLoading, fieldErrors, customer, shippingAddress, billingSameAsShipping: savedBillingSame } = useCheckout();
+
+  const [customerForm, setCustomerForm] = useState({
     email: customer?.email || "",
     first_name: customer?.first_name || "",
     last_name: customer?.last_name || "",
     phone: customer?.phone || "",
   });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await saveCustomer(form);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-lg font-semibold">{t("checkout.customerTitle")}</h2>
-      <div>
-        <Label htmlFor="email">{t("checkout.email")} *</Label>
-        <Input id="email" type="email" required value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-        {fieldErrors.email && <p className="text-sm text-destructive mt-1">{fieldErrors.email}</p>}
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="first_name">{t("checkout.firstName")} *</Label>
-          <Input id="first_name" required value={form.first_name} onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))} />
-          {fieldErrors.first_name && <p className="text-sm text-destructive mt-1">{fieldErrors.first_name}</p>}
-        </div>
-        <div>
-          <Label htmlFor="last_name">{t("checkout.lastName")} *</Label>
-          <Input id="last_name" required value={form.last_name} onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))} />
-          {fieldErrors.last_name && <p className="text-sm text-destructive mt-1">{fieldErrors.last_name}</p>}
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="phone">{t("checkout.phone")}</Label>
-        <Input id="phone" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
-      </div>
-      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.continue")}
-      </Button>
-    </form>
-  );
-}
-
-/* ── Step 2: Address ── */
-function StepAddress() {
-  const { t } = useTranslation();
-  const { saveAddress, isLoading, fieldErrors, goToStep, shippingAddress, billingSameAsShipping: savedBillingSame } = useCheckout();
   const [billingSame, setBillingSame] = useState(savedBillingSame);
   const [shipping, setShipping] = useState({
     street: shippingAddress?.street || "",
@@ -106,22 +67,42 @@ function StepAddress() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await saveAddress(shipping, billingSame, billingSame ? undefined : billing);
+    await saveCustomerAndAddress(
+      customerForm,
+      shipping,
+      billingSame,
+      billingSame ? undefined : billing,
+    );
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex items-center gap-2">
-        <button type="button" onClick={() => goToStep(1)} className="text-muted-foreground hover:text-foreground">
-          <ChevronLeft size={20} />
-        </button>
-        <h2 className="text-lg font-semibold">{t("checkout.addressTitle")}</h2>
+      {/* Customer details */}
+      <h2 className="text-lg font-semibold">{t("checkout.customerTitle")}</h2>
+      <div>
+        <Label htmlFor="email">{t("checkout.email")} *</Label>
+        <Input id="email" type="email" required value={customerForm.email} onChange={e => setCustomerForm(f => ({ ...f, email: e.target.value }))} />
+        {fieldErrors.email && <p className="text-sm text-destructive mt-1">{fieldErrors.email}</p>}
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="first_name">{t("checkout.firstName")} *</Label>
+          <Input id="first_name" required value={customerForm.first_name} onChange={e => setCustomerForm(f => ({ ...f, first_name: e.target.value }))} />
+          {fieldErrors.first_name && <p className="text-sm text-destructive mt-1">{fieldErrors.first_name}</p>}
+        </div>
+        <div>
+          <Label htmlFor="last_name">{t("checkout.lastName")} *</Label>
+          <Input id="last_name" required value={customerForm.last_name} onChange={e => setCustomerForm(f => ({ ...f, last_name: e.target.value }))} />
+          {fieldErrors.last_name && <p className="text-sm text-destructive mt-1">{fieldErrors.last_name}</p>}
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="phone">{t("checkout.phone")}</Label>
+        <Input id="phone" type="tel" value={customerForm.phone} onChange={e => setCustomerForm(f => ({ ...f, phone: e.target.value }))} />
       </div>
 
-      <div>
-        <Label>{t("checkout.company")}</Label>
-        <Input value={shipping.company} onChange={e => setShipping(s => ({ ...s, company: e.target.value }))} />
-      </div>
+      {/* Shipping address */}
+      <h2 className="text-lg font-semibold mt-8">{t("checkout.addressTitle")}</h2>
       <div>
         <Label>{t("checkout.street")} *</Label>
         <Input required value={shipping.street} onChange={e => setShipping(s => ({ ...s, street: e.target.value }))} />
@@ -140,6 +121,10 @@ function StepAddress() {
       <div>
         <Label>{t("checkout.country")} *</Label>
         <CountrySelect value={shipping.country} onChange={(val) => setShipping(s => ({ ...s, country: val }))} />
+      </div>
+      <div>
+        <Label>{t("checkout.company")}</Label>
+        <Input value={shipping.company} onChange={e => setShipping(s => ({ ...s, company: e.target.value }))} />
       </div>
 
       <div className="flex items-center gap-2 pt-2">
@@ -186,62 +171,32 @@ function StepAddress() {
   );
 }
 
-/* ── Step 3: Shipping ── */
-function StepShipping() {
-  const { t } = useTranslation();
-  const { availableShippingMethods, selectShipping, isLoading, goToStep, selectedShippingMethod } = useCheckout();
-  const [selected, setSelected] = useState(selectedShippingMethod || "");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selected) return;
-    await selectShipping(selected);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex items-center gap-2">
-        <button type="button" onClick={() => goToStep(2)} className="text-muted-foreground hover:text-foreground">
-          <ChevronLeft size={20} />
-        </button>
-        <h2 className="text-lg font-semibold">{t("checkout.shippingTitle")}</h2>
-      </div>
-
-      <RadioGroup value={selected} onValueChange={setSelected}>
-        {availableShippingMethods.map((method) => (
-          <label
-            key={method.id}
-            className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
-              selected === method.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-            }`}
-          >
-            <RadioGroupItem value={method.id} />
-            <div className="flex-1">
-              <p className="font-medium text-sm">{method.name}</p>
-              {method.description && <p className="text-xs text-muted-foreground">{method.description}</p>}
-            </div>
-            <span className="font-semibold text-sm">
-              {method.price === 0 ? t("checkout.free") : `€${method.price.toFixed(2)}`}
-            </span>
-          </label>
-        ))}
-      </RadioGroup>
-
-      <Button type="submit" className="w-full" size="lg" disabled={isLoading || !selected}>
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.continue")}
-      </Button>
-    </form>
-  );
-}
-
-/* ── Step 4: Payment ── */
+/* ── Step 2: Payment ── */
 function StepPayment() {
   const { t } = useTranslation();
-  const { availablePaymentMethods, completeCheckout, isLoading, goToStep, availableShippingMethods } = useCheckout();
+  const { availablePaymentMethods, completeCheckout, isLoading, goToStep } = useCheckout();
   const [selected, setSelected] = useState("");
 
-  // Determine previous step based on whether multiple shipping methods exist
-  const prevStep = availableShippingMethods.length > 1 ? 3 : 2;
+  // Detect mobile/tablet for QR filtering
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth < 1024;
+      setIsMobile(isTouchDevice || isSmallScreen);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // Filter & sort: QR first (desktop only), then bank, then stripe
+  const visibleMethods = useMemo(() => {
+    const ORDER: Record<string, number> = { qr_transfer: 0, bank_transfer: 1, stripe: 2 };
+    return availablePaymentMethods
+      .filter(m => !(m.id === 'qr_transfer' && isMobile))
+      .sort((a, b) => (ORDER[a.id] ?? 99) - (ORDER[b.id] ?? 99));
+  }, [availablePaymentMethods, isMobile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,27 +207,45 @@ function StepPayment() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex items-center gap-2">
-        <button type="button" onClick={() => goToStep(prevStep)} className="text-muted-foreground hover:text-foreground">
+        <button type="button" onClick={() => goToStep(1)} className="text-muted-foreground hover:text-foreground">
           <ChevronLeft size={20} />
         </button>
         <h2 className="text-lg font-semibold">{t("checkout.paymentTitle")}</h2>
       </div>
 
-      {availablePaymentMethods.length === 0 ? (
+      {visibleMethods.length === 0 ? (
         <p className="text-muted-foreground text-sm">{t("checkout.noPaymentMethods")}</p>
       ) : (
         <RadioGroup value={selected} onValueChange={setSelected}>
-          {availablePaymentMethods.map((method) => (
+          {visibleMethods.map((method) => (
             <label
               key={method.id}
-              className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+              className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
                 selected === method.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
               }`}
             >
-              <RadioGroupItem value={method.id} />
-              <div>
-                <p className="font-medium text-sm">{method.name}</p>
-                {method.description && <p className="text-xs text-muted-foreground">{method.description}</p>}
+              <RadioGroupItem value={method.id} className="mt-0.5" />
+              <div className="flex-1">
+                <p className="font-medium text-sm">
+                  {method.id === 'qr_transfer' ? t("checkout.qrName") : method.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {method.id === 'qr_transfer'
+                    ? t("checkout.qrDescription")
+                    : method.description}
+                </p>
+                {method.id === 'qr_transfer' && (
+                  <Badge variant="secondary" className="mt-1 bg-green-100 text-green-800 border-green-200 text-xs">
+                    {t("checkout.noTransactionFees")}
+                  </Badge>
+                )}
+                {method.id === 'stripe' && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {['iDEAL', 'Bancontact', 'Creditcard', 'Apple Pay'].map(pm => (
+                      <span key={pm} className="text-xs bg-muted px-2 py-0.5 rounded">{pm}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             </label>
           ))}
@@ -296,7 +269,7 @@ function StepPayment() {
 /* ── Order summary sidebar ── */
 function OrderSummary() {
   const { t } = useTranslation();
-  const { items, subtotal, shippingCost, discount, total, currency, applyDiscount, removeDiscount, isLoading } = useCheckout();
+  const { items, subtotal, shippingCost, discount, computedTotal, currency, applyDiscount, removeDiscount, isLoading } = useCheckout();
   const [discountCode, setDiscountCode] = useState("");
   const [applyingDiscount, setApplyingDiscount] = useState(false);
 
@@ -314,32 +287,35 @@ function OrderSummary() {
       <h3 className="font-semibold text-sm">{t("checkout.orderSummary")}</h3>
 
       <div className="space-y-3 max-h-60 overflow-y-auto">
-        {items.map((item) => (
-          <div key={item.id} className="flex gap-3">
-            {item.image && (
-              <img src={item.image} alt={item.title} className="w-12 h-12 object-cover rounded bg-muted" />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{item.title}</p>
-              {item.variant_title && <p className="text-xs text-muted-foreground">{item.variant_title}</p>}
+        {items.map((item) => {
+          const price = Number(item.price) || 0;
+          return (
+            <div key={item.id} className="flex gap-3">
+              {item.image && (
+                <img src={item.image} alt={item.title} className="w-12 h-12 object-cover rounded bg-muted" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{item.title || 'Product'}</p>
+                {item.variant_title && <p className="text-xs text-muted-foreground">{item.variant_title}</p>}
+              </div>
+              <div className="text-right text-sm">
+                <p>{item.quantity}×</p>
+                <p className="font-semibold">{symbol}{(price * item.quantity).toFixed(2)}</p>
+              </div>
             </div>
-            <div className="text-right text-sm">
-              <p>{item.quantity}×</p>
-              <p className="font-semibold">{symbol}{(item.price * item.quantity).toFixed(2)}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="border-t border-border pt-3 space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-          <span>{symbol}{subtotal.toFixed(2)}</span>
+          <span>{symbol}{(Number(subtotal) || 0).toFixed(2)}</span>
         </div>
         {shippingCost > 0 && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("checkout.shipping")}</span>
-            <span>{symbol}{shippingCost.toFixed(2)}</span>
+            <span>{symbol}{(Number(shippingCost) || 0).toFixed(2)}</span>
           </div>
         )}
         {discount && (
@@ -351,12 +327,12 @@ function OrderSummary() {
                 <X size={12} />
               </button>
             </span>
-            <span>-{symbol}{discount.amount.toFixed(2)}</span>
+            <span>-{symbol}{(Number(discount.amount) || 0).toFixed(2)}</span>
           </div>
         )}
         <div className="flex justify-between font-semibold text-base pt-1 border-t border-border">
           <span>{t("checkout.total")}</span>
-          <span>{symbol}{total.toFixed(2)}</span>
+          <span>{symbol}{computedTotal.toFixed(2)}</span>
         </div>
       </div>
 
@@ -386,7 +362,7 @@ function OrderSummary() {
 function CheckoutContent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { checkoutReady, currentStep, isLoading, startCheckout, generalError } = useCheckout();
+  const { checkoutReady, currentStep, startCheckout, generalError } = useCheckout();
 
   useEffect(() => {
     if (!checkoutReady) {
@@ -420,10 +396,8 @@ function CheckoutContent() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             <div className="lg:col-span-3">
               <StepIndicator />
-              {currentStep === 1 && <StepCustomer />}
-              {currentStep === 2 && <StepAddress />}
-              {currentStep === 3 && <StepShipping />}
-              {currentStep === 4 && <StepPayment />}
+              {currentStep === 1 && <StepDetailsAndAddress />}
+              {currentStep === 2 && <StepPayment />}
             </div>
             <div className="lg:col-span-2">
               <OrderSummary />
