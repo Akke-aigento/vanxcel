@@ -18,12 +18,21 @@ const CartDrawer = () => {
 
   const itemCount = cart?.item_count ?? 0;
 
+  const getCheckoutBaseUrl = () => {
+    const hostname = window.location.hostname;
+    if (hostname.endsWith('.be')) return 'https://vanxcel.be';
+    if (hostname.endsWith('.nl')) return 'https://vanxcel.nl';
+    if (hostname.endsWith('.com')) return 'https://vanxcel.com';
+    return 'https://vanxcel.be'; // fallback for preview domains
+  };
+
   const handleCheckout = async () => {
     setCheckingOut(true);
     try {
+      const baseUrl = getCheckoutBaseUrl();
       await checkout({
-        success_url: `${window.location.origin}/bedankt`,
-        cancel_url: `${window.location.origin}/shop`,
+        success_url: `${baseUrl}/bedankt`,
+        cancel_url: `${baseUrl}/shop`,
       });
     } catch (err) {
       console.error("Checkout failed:", err);

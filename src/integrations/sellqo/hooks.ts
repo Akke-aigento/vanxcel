@@ -242,8 +242,15 @@ export function useCreateCheckout() {
       if (!cartId) throw new Error('No cart found');
       const response = await checkoutAPI.create(cartId, options);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const url = (response as any)?.data?.checkout_url || (response as any)?.checkout_url;
+      const r = response as any;
+      // Check for explicit API failure
+      if (r?.success === false) {
+        const errMsg = typeof r.error === 'string' ? r.error : JSON.stringify(r.error);
+        throw new Error(`Checkout failed: ${errMsg}`);
+      }
+      const url = r?.data?.checkout_url || r?.checkout_url;
       if (!url) {
+        console.error('[checkout] No checkout_url in response:', JSON.stringify(r));
         throw new Error('No checkout URL returned');
       }
       return url as string;
