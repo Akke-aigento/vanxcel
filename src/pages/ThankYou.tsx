@@ -1,23 +1,30 @@
-import { useEffect, useState, useRef } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useSearchParams, useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { sellqoFetch, extractSingle } from "@/integrations/sellqo/client";
-import { normalizeCart } from "@/integrations/sellqo/normalizer";
 import { useCartContext } from "@/integrations/sellqo/CartContext";
-import type { Cart } from "@/integrations/sellqo/types";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const ThankYou = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const cartId = searchParams.get("cart_id");
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [loading, setLoading] = useState(!!cartId);
+  const location = useLocation();
   const { clearCart } = useCartContext();
   const cleared = useRef(false);
+
+  // State passed from checkout complete (manual / qr)
+  const routeState = location.state as {
+    orderNumber?: string;
+    total?: number;
+    currency?: string;
+    bankDetails?: { iban: string; account_holder: string; reference: string };
+    qrData?: { image_url?: string; payload?: string };
+    paymentType?: string;
+  } | null;
+
+  const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
     if (!cleared.current) {
@@ -26,16 +33,7 @@ const ThankYou = () => {
     }
   }, [clearCart]);
 
-  useEffect(() => {
-    if (!cartId) return;
-    sellqoFetch(`/cart/${cartId}`)
-      .then((data) => {
-        const raw = extractSingle<Cart>(data) || data;
-        setCart(normalizeCart(raw));
-      })
-      .catch((err) => console.error("Failed to load order:", err))
-      .finally(() => setLoading(false));
-  }, [cartId]);
+  const paymentType = routeState?.paymentType || (sessionId ? 'redirect' : 'unknown');
 
   return (
     <>
@@ -44,41 +42,64 @@ const ThankYou = () => {
         <div className="max-w-lg mx-auto text-center space-y-6">
           <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
           <h1 className="font-display text-3xl font-bold">{t("thankYou.title")}</h1>
-          <p className="text-muted-foreground">{t("thankYou.subtitle")}</p>
 
-          {loading && (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          {routeState?.orderNumber && (
+            <p className="text-muted-foreground">
+              {t("thankYou.orderNumber")}: <span className="font-mono font-semibold text-foreground">{routeState.orderNumber}</span>
+            </p>
+          )}
+
+          {/* Stripe redirect */}
+          {paymentType === 'redirect' && (
+            <p className="text-muted-foreground">{t("thankYou.stripePaid")}</p>
+          )}
+
+          {/* Bank transfer */}
+          {paymentType === 'manual' && routeState?.bankDetails && (
+            <div className="border border-border rounded-lg text-left p-5 space-y-3">
+              <h2 className="font-semibold text-sm">{t("thankYou.bankTitle")}</h2>
+              <p className="text-sm text-muted-foreground">{t("thankYou.bankInstructions")}</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">IBAN</span>
+                  <span className="font-mono font-semibold">{routeState.bankDetails.iban}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("thankYou.accountHolder")}</span>
+                  <span className="font-semibold">{routeState.bankDetails.account_holder}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("thankYou.reference")}</span>
+                  <span className="font-mono font-semibold">{routeState.bankDetails.reference}</span>
+                </div>
+                {routeState.total != null && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("thankYou.amount")}</span>
+                    <span className="font-semibold">€{routeState.total.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground pt-2">{t("thankYou.bankNote")}</p>
             </div>
           )}
 
-          {cart && cart.items.length > 0 && (
-            <div className="border border-border rounded-lg overflow-hidden text-left">
-              <div className="bg-muted/50 px-4 py-3">
-                <h2 className="font-semibold text-sm">{t("thankYou.orderSummary")}</h2>
-              </div>
-              <div className="divide-y divide-border">
-                {cart.items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 px-4 py-3">
-                    {item.image && (
-                      <img src={item.image} alt={item.title} className="w-12 h-12 object-cover rounded bg-muted" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{item.title}</p>
-                      {item.variant_title && <p className="text-xs text-muted-foreground">{item.variant_title}</p>}
-                    </div>
-                    <div className="text-right text-sm">
-                      <p>{item.quantity}×</p>
-                      <p className="font-semibold">€{(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-border px-4 py-3 flex justify-between font-semibold">
-                <span>{t("thankYou.total")}</span>
-                <span>€{cart.total.toFixed(2)}</span>
-              </div>
+          {/* QR payment */}
+          {paymentType === 'qr' && routeState?.qrData && (
+            <div className="border border-border rounded-lg p-5 space-y-3">
+              <h2 className="font-semibold text-sm">{t("thankYou.qrTitle")}</h2>
+              <p className="text-sm text-muted-foreground">{t("thankYou.qrInstructions")}</p>
+              {routeState.qrData.image_url && (
+                <img src={routeState.qrData.image_url} alt="QR Code" className="mx-auto w-48 h-48" />
+              )}
+              {routeState.total != null && (
+                <p className="font-semibold">€{routeState.total.toFixed(2)}</p>
+              )}
             </div>
+          )}
+
+          {/* Default */}
+          {paymentType === 'unknown' && (
+            <p className="text-muted-foreground">{t("thankYou.subtitle")}</p>
           )}
 
           <Button asChild>
