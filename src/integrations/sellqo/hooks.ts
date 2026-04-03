@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { productsAPI, collectionsAPI, cartAPI, checkoutAPI, settingsAPI, legalAPI } from './api';
 import { extractArray, extractSingle } from './client';
 import { normalizeCart } from './normalizer';
