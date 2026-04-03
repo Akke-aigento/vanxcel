@@ -78,8 +78,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [createCheckout]);
 
   const clearCart = useCallback(() => {
+    const oldCartId = getStoredCartId();
     clearStoredCartId();
-  }, []);
+    if (oldCartId) {
+      queryClient.setQueryData(sellqoKeys.cart(oldCartId), undefined);
+      queryClient.removeQueries({ queryKey: sellqoKeys.cart(oldCartId) });
+    }
+  }, [queryClient]);
 
   const items = cart?.items || [];
   const itemCount = cart?.item_count || items.reduce((sum, i) => sum + i.quantity, 0);

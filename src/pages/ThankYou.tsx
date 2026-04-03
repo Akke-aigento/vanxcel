@@ -21,7 +21,8 @@ const ThankYou = () => {
   const [pollFailed, setPollFailed] = useState(false);
 
   // State passed from checkout complete (manual / qr)
-  const routeState = location.state as {
+  // Store in ref so re-renders from clearCart don't lose it
+  const rawState = location.state as {
     orderNumber?: string;
     total?: number;
     currency?: string;
@@ -29,6 +30,9 @@ const ThankYou = () => {
     qrData?: { image_url?: string; payload?: string };
     paymentType?: string;
   } | null;
+  const stateRef = useRef(rawState);
+  if (rawState && !stateRef.current) stateRef.current = rawState;
+  const routeState = stateRef.current;
 
   const sessionId = searchParams.get("session_id");
 
