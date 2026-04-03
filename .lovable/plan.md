@@ -1,69 +1,46 @@
 
+## Fix: Checkout order_id → cart_id + Stripe polling + discount UI
 
-## Volledige Multi-Step Checkout Flow Bouwen
+### Overzicht
+De SellQo API is gewijzigd: alle checkout-stappen werken nu op `cart_id` i.p.v. `order_id`. Daarnaast moet de success URL een `{CHECKOUT_SESSION_ID}` placeholder bevatten en moet de bedankt-pagina pollen voor de order na Stripe redirect.
 
-### Probleem
-De huidige code roept `/checkout` (= `checkout_start`) aan en verwacht direct een `checkout_url` terug. Maar volgens de SellQo documentatie is checkout een **multi-step flow**:
+### Wijzigingen
 
-1. `checkout_start` → retourneert `order_id` + beschikbare betaal/verzendmethodes
-2. `checkout/customer` → klantgegevens opslaan
-3. `checkout/address` → adres opslaan
-4. `checkout/shipping` → verzendmethode kiezen (optioneel)
-5. `checkout/complete` → betaling starten → **hier** komt pas de `checkout_url` (bij Stripe)
+**1. `src/integrations/sellqo/api.ts`** — Vervang `order_id` door `cart_id` in alle checkout methods:
+- `saveCustomer(cartId, customer)` → body: `{ cart_id, customer }`
+- `saveAddress(cartId, ...)` → body: `{ cart_id, shipping_address, ... }`
+- `selectShipping(cartId, methodId)` → body: `{ cart_id, shipping_method_id }`
+- `complete(cartId, paymentMethodId, successUrl, cancelUrl)` → body: `{ cart_id, ... }`
+- `applyDiscount(cartId, code)` → body: `{ cart_id, discount_code }`
+- `removeDiscount(cartId)` → body: `{ cart_id }`
+- Nieuw: `getOrderBySession(stripeSessionId)` → GET `/checkout/order?stripe_session_id=...`
 
-### Wat er gebouwd moet worden
+**2. `src/integrations/sellqo/CheckoutContext.tsx`** — Grote refactor:
+- Verwijder `orderId` uit state, gebruik `getStoredCartId()` direct
+- Alle methods gebruiken `cartId` i.p.v. `state.orderId`
+- `completeCheckout`: success_url met `{CHECKOUT_SESSION_ID}` placeholder
+- Cart NIET legen bij Stripe redirect (dat doet de bedankt-pagina)
+- Cart WEL legen bij manual/qr
 
-**1. Proxy uitbreiden** (`supabase/functions/sellqo-proxy/index.ts`)
-- Nieuwe routes toevoegen: `checkout/customer`, `checkout/address`, `checkout/shipping`, `checkout/complete`, `checkout/discount`
-- Mappen naar SellQo actions
+**3. `src/pages/Checkout.tsx`** — Check op `cartId` i.p.v. `orderId` voor loading state
 
-**2. API laag uitbreiden** (`src/integrations/sellqo/api.ts`)
-- `checkoutAPI` uitbreiden met: `start`, `saveCustomer`, `saveAddress`, `selectShipping`, `complete`, `applyDiscount`, `removeDiscount`
+**4. `src/pages/ThankYou.tsx`** — Stripe polling toevoegen:
+- Bij `session_id` in URL: poll `/checkout/order?stripe_session_id=...` (max 5 pogingen, 2s interval)
+- Na succesvolle poll: toon ordernummer + maak cart leeg
+- Bij timeout: toon generiek bedankbericht + maak cart leeg
 
-**3. Types uitbreiden** (`src/integrations/sellqo/types.ts`)
-- `CheckoutData` interface (order_id, items, payment_methods, shipping_methods, totalen)
-- `PaymentMethod`, `ShippingMethod` interfaces
+**5. `supabase/functions/sellqo-proxy/index.ts`** — Nieuwe route:
+- GET `/checkout/order?stripe_session_id=...` → action `checkout_get_order`
 
-**4. Checkout Context** (`src/integrations/sellqo/CheckoutContext.tsx`)
-- State management voor de hele checkout flow
-- Huidige stap, order data, errors, loading states
+### Bestanden (6)
+- `src/integrations/sellqo/api.ts`
+- `src/integrations/sellqo/CheckoutContext.tsx`
+- `src/pages/Checkout.tsx`
+- `src/pages/ThankYou.tsx`
+- `supabase/functions/sellqo-proxy/index.ts`
 
-**5. Checkout pagina** (`src/pages/Checkout.tsx`)
-- Multi-step formulier met 4 stappen:
-  - **Stap 1**: Email, voornaam, achternaam, telefoon
-  - **Stap 2**: Adres + "factuuradres zelfde" checkbox
-  - **Stap 3**: Verzendmethode (skip als leeg, auto-select als 1)
-  - **Stap 4**: Betaalmethode kiezen + "Bestelling plaatsen" knop
-- Zijbalk met order samenvatting + kortingscode invoer
-- Responsive: sidebar boven op mobile, naast op desktop
-
-**6. CartDrawer aanpassen** (`src/components/CartDrawer.tsx`)
-- "Afrekenen" knop navigeert naar `/checkout` i.p.v. direct API aan te roepen
-
-**7. Bedankt pagina uitbreiden** (`src/pages/ThankYou.tsx`)
-- 3 varianten: Stripe (redirect terug), bankoverschrijving (bankgegevens tonen), QR
-- Cart legen na succes
-
-**8. Route toevoegen** (`src/App.tsx`)
-- `/checkout` route
-
-**9. i18n** — checkout labels toevoegen aan nl/en/de/fr JSON bestanden
-
-### Bestanden
-- `supabase/functions/sellqo-proxy/index.ts` — proxy routes uitbreiden
-- `src/integrations/sellqo/api.ts` — checkout API methods
-- `src/integrations/sellqo/types.ts` — nieuwe interfaces
-- `src/integrations/sellqo/CheckoutContext.tsx` — nieuw
-- `src/pages/Checkout.tsx` — nieuw (multi-step checkout pagina)
-- `src/components/CartDrawer.tsx` — navigeer naar /checkout
-- `src/pages/ThankYou.tsx` — 3 betaalvarianten
-- `src/App.tsx` — route toevoegen
-- `src/i18n/locales/nl.json`, `en.json`, `de.json`, `fr.json` — checkout labels
-
-### Verwacht resultaat
-- Klant klikt "Afrekenen" → gaat naar `/checkout`
-- Vult gegevens in stap voor stap
-- Bij Stripe: redirect naar Stripe, dan terug naar `/bedankt`
-- Bij bankoverschrijving: direct naar `/bedankt` met bankgegevens
-- Bij QR: direct naar `/bedankt` met QR code
-
+### Resultaat
+- Checkout werkt met cart_id door de hele flow
+- Stripe redirect bevat session ID placeholder
+- Bedankt-pagina pollt voor ordergegevens na Stripe betaling
+- Kortingscode UI is al aanwezig in OrderSummary (geen wijziging nodig)
