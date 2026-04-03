@@ -168,6 +168,11 @@ serve(async (req: Request) => {
 
     console.log(`[sellqo-proxy] ${req.method} ${path} → action: ${storefrontBody.action}`);
 
+    // Log checkout requests for debugging
+    if (storefrontBody.action === 'checkout_start') {
+      console.log(`[sellqo-proxy] checkout_start params: ${JSON.stringify(storefrontBody.params)}`);
+    }
+
     const response = await fetch(SELLQO_API_URL, {
       method: 'POST',
       headers: {
