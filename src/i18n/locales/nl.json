@@ -269,7 +269,8 @@
     "amount": "Bedrag",
     "bankNote": "Je bestelling wordt verwerkt zodra we de betaling ontvangen hebben.",
     "qrTitle": "Betaal via QR-code",
-    "qrInstructions": "Scan de QR-code met je bank-app om te betalen."
+    "qrInstructions": "Scan de QR-code met je bank-app om te betalen.",
+    "verifyingPayment": "Betaling verifiëren..."
   },
   "checkout": {
     "title": "Afrekenen",

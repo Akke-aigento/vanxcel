@@ -269,7 +269,8 @@
     "amount": "Betrag",
     "bankNote": "Deine Bestellung wird bearbeitet, sobald wir die Zahlung erhalten haben.",
     "qrTitle": "Per QR-Code bezahlen",
-    "qrInstructions": "Scanne den QR-Code mit deiner Banking-App, um zu bezahlen."
+    "qrInstructions": "Scanne den QR-Code mit deiner Banking-App, um zu bezahlen.",
+    "verifyingPayment": "Zahlung wird überprüft..."
   },
   "checkout": {
     "title": "Kasse",
