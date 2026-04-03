@@ -184,6 +184,11 @@ serve(async (req: Request) => {
 
     const responseBody = await response.text();
 
+    // Log checkout responses for debugging
+    if (storefrontBody.action === 'checkout_start') {
+      console.log(`[sellqo-proxy] checkout_start response status: ${response.status}, body: ${responseBody.substring(0, 500)}`);
+    }
+
     // If upstream returned an error for non-critical endpoints, return empty data
     if (!response.ok) {
       const nonCriticalActions = ['get_pages'];
