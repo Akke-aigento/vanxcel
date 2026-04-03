@@ -278,6 +278,7 @@
     "stepAddress": "Adres",
     "stepShipping": "Verzending",
     "stepPayment": "Betaling",
+    "stepDetails": "Gegevens & Adres",
     "customerTitle": "Jouw gegevens",
     "email": "E-mailadres",
     "firstName": "Voornaam",
@@ -303,7 +304,10 @@
     "shipping": "Verzendkosten",
     "total": "Totaal",
     "discountPlaceholder": "Kortingscode",
-    "apply": "Toepassen"
+    "apply": "Toepassen",
+    "qrName": "Scan QR code met je bankapp",
+    "qrDescription": "Gratis — direct betalen via je bankapp",
+    "noTransactionFees": "Geen transactiekosten"
   },
   "notFound": {
     "title": "404",
