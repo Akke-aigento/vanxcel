@@ -1,46 +1,35 @@
 
 
-## Fix: Productkaarten reageren slecht op klikken/tikken
+## Fix: Checkout knop blijft hangen op "Even geduld..."
 
 ### Root cause
 
-Twee problemen werken samen:
+Er zijn twee problemen:
 
-1. **3D tilt-effect op de `<Link>`**: De `onMouseMove` handler past continu CSS custom properties (`--rx`, `--ry`) aan op het `<Link>` element zelf. Dit triggert `transform`-transities (0.15s) die op touchscreens interfereren met tap-events — de browser interpreteert de beweging als een drag i.p.v. een klik.
+1. **Upstream API fout**: De SellQo `checkout_start` action retourneert een error (`{"success":false,"error":"[object Object]"}`). Dit is een upstream API-probleem.
 
-2. **Geneste `onMouseMove` op de image-wrapper**: Een tweede `onMouseMove` handler op de binnenste `<div>` verandert `transformOrigin` op de afbeelding. Dit extra event-handling op een child van de `<Link>` maakt het klikgedrag nog onbetrouwbaarder.
-
-3. **CSS `transition: transform 0.15s`** op `.card-3d-tilt-inner`: elke transform-wijziging genereert transitionEnd events die bubbelen en potentieel de AnimatedOutlet verwarren.
+2. **Frontend hangt**: Zelfs als de checkout faalt, blijft de knop op "Even geduld..." hangen. De `handleCheckout` functie in `CartDrawer.tsx` heeft alleen een `catch` — geen `finally`. Als de API een 200 retourneert met `{"success":false}` (zonder checkout_url), dan:
+   - `sellqoFetch` gooit geen error (status is 200)
+   - `onSuccess` in `useCreateCheckout` zoekt naar `checkout_url`, vindt die niet, doet niets
+   - `handleCheckout` await resolved zonder error, maar `setCheckingOut(false)` zit alleen in de `catch` → knop blijft voor eeuwig laden
 
 ### Oplossing
 
-**Bestand: `src/components/ProductCard.tsx`**
+**Bestand 1: `src/components/CartDrawer.tsx`** (regel 21-31)
 
-- Verwijder de `onMouseMove` en `onMouseLeave` handlers van de `<Link>` (de tilt-berekening)
-- Verwijder de `onMouseMove` en `onMouseLeave` handlers van de image-wrapper div (de zoom-origin berekening)
-- Verwijder de `ref={cardRef}` en de `cardRef` variabele
-- Verwijder de `handleMouseMove` en `handleMouseLeave` functies
-- Houd `handleMouseEnter` (prefetch) — die is nuttig en onschadelijk
-- Voeg `pointer-events-none` toe aan alle absolute-positioned badge/overlay divs zodat ze nooit klikken opvangen
+- Voeg `finally { setCheckingOut(false); }` toe zodat de knop altijd reset
+- Dit vangt alle scenario's: netwerk-error, upstream-error, of success-zonder-redirect
 
-**Bestand: `src/index.css`**
+**Bestand 2: `src/integrations/sellqo/hooks.ts`** (regel 237-251)
 
-- Verwijder of vereenvoudig de `.card-3d-tilt` en `.card-3d-tilt-inner` CSS — geen transforms meer nodig, alleen de hover box-shadow kan blijven
-
-### Wat blijft werken
-- Prefetch bij hover (handleMouseEnter)
-- Hover border-kleur verandering (CSS `hover:border-primary/30`)
-- Hover box-shadow (CSS)
-- Image scale op hover (CSS `group-hover:scale-[1.15]`)
-
-### Wat verdwijnt
-- Het 3D kantelen van de kaart bij muisbeweging
-- Het verplaatsen van de transform-origin van de afbeelding bij muisbeweging
-
-Dit zijn puur decoratieve effecten die de UX actief beschadigen.
+- In `useCreateCheckout` → `onSuccess`: als er geen `checkout_url` in de response zit, gooi een error met een duidelijke melding zodat de gebruiker feedback krijgt
+- Voeg `onError` toe die een toast toont: "Afrekenen is momenteel niet beschikbaar"
 
 ### Resultaat
-- Eén tik = navigatie, altijd
-- Geen transform-transities die klikken blokkeren
-- Badges/overlays vangen geen pointer events meer op
+- Knop reset altijd na een checkout-poging
+- Gebruiker krijgt een foutmelding als checkout faalt, i.p.v. eindeloos laden
+- Zodra de upstream API correct werkt, werkt de redirect automatisch mee
+
+### Technisch
+- 2 bestanden: `CartDrawer.tsx`, `hooks.ts`
 
