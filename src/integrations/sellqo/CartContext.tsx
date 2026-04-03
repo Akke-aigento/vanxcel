@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useCallback, useMemo, useState } from 'react';
-import { useCartQuery, useAddToCart, useUpdateCartItem, useRemoveCartItem, useCreateCheckout, clearStoredCartId } from './hooks';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCartQuery, useAddToCart, useUpdateCartItem, useRemoveCartItem, useCreateCheckout, clearStoredCartId, getStoredCartId, sellqoKeys } from './hooks';
 import type { Cart, CartItem } from './types';
 
 interface CartContextType {
