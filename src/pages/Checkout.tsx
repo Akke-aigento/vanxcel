@@ -227,14 +227,14 @@ function StepPayment() {
               <RadioGroupItem value={method.id} className="mt-0.5" />
               <div className="flex-1">
                 <p className="font-medium text-sm">
-                  {method.id === 'qr_transfer' ? t("checkout.qrName") : method.name}
+                  {(method.id === 'qr_transfer' || method.id === 'bank_transfer') ? t("checkout.qrName") : method.name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {method.id === 'qr_transfer'
+                  {(method.id === 'qr_transfer' || method.id === 'bank_transfer')
                     ? t("checkout.qrDescription")
                     : method.description}
                 </p>
-                {method.id === 'qr_transfer' && (
+                {(method.id === 'qr_transfer' || method.id === 'bank_transfer') && (
                   <Badge variant="secondary" className="mt-1 bg-green-100 text-green-800 border-green-200 text-xs">
                     {t("checkout.noTransactionFees")}
                   </Badge>

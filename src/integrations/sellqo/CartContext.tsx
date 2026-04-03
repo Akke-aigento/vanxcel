@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useCallback, useMemo, useState } from 'react';
-import { useCartQuery, useAddToCart, useUpdateCartItem, useRemoveCartItem, useCreateCheckout, clearStoredCartId } from './hooks';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCartQuery, useAddToCart, useUpdateCartItem, useRemoveCartItem, useCreateCheckout, clearStoredCartId, getStoredCartId, sellqoKeys } from './hooks';
 import type { Cart, CartItem } from './types';
 
 interface CartContextType {
@@ -29,6 +30,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeCartItem = useRemoveCartItem();
   const createCheckout = useCreateCheckout();
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
@@ -77,8 +79,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [createCheckout]);
 
   const clearCart = useCallback(() => {
+    const oldCartId = getStoredCartId();
     clearStoredCartId();
-  }, []);
+    if (oldCartId) {
+      queryClient.setQueryData(sellqoKeys.cart(oldCartId), undefined);
+      queryClient.removeQueries({ queryKey: sellqoKeys.cart(oldCartId) });
+    }
+  }, [queryClient]);
 
   const items = cart?.items || [];
   const itemCount = cart?.item_count || items.reduce((sum, i) => sum + i.quantity, 0);
