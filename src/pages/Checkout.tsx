@@ -240,6 +240,7 @@ function StepPayment() {
   const { availablePaymentMethods, completeCheckout, isLoading, goToStep, availableShippingMethods } = useCheckout();
   const [selected, setSelected] = useState("");
 
+  // Determine previous step based on whether multiple shipping methods exist
   const prevStep = availableShippingMethods.length > 1 ? 3 : 2;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -385,17 +386,17 @@ function OrderSummary() {
 function CheckoutContent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { orderId, currentStep, isLoading, startCheckout, generalError } = useCheckout();
+  const { checkoutReady, currentStep, isLoading, startCheckout, generalError } = useCheckout();
 
   useEffect(() => {
-    if (!orderId) {
+    if (!checkoutReady) {
       startCheckout().then(success => {
         if (!success) navigate('/shop');
       });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!orderId) {
+  if (!checkoutReady) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />

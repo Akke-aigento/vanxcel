@@ -15,7 +15,7 @@ import type {
 } from './types';
 
 interface CheckoutState {
-  orderId: string | null;
+  checkoutReady: boolean; // true after successful start
   items: CheckoutOrderItem[];
   availablePaymentMethods: PaymentMethod[];
   availableShippingMethods: ShippingMethod[];
@@ -49,7 +49,7 @@ interface CheckoutContextType extends CheckoutState {
 }
 
 const initialState: CheckoutState = {
-  orderId: null,
+  checkoutReady: false,
   items: [],
   availablePaymentMethods: [],
   availableShippingMethods: [],
@@ -80,6 +80,10 @@ function getCheckoutBaseUrl() {
   return window.location.origin;
 }
 
+function getCartId(): string | null {
+  return getStoredCartId();
+}
+
 export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [state, setState] = useState<CheckoutState>(initialState);
@@ -101,7 +105,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   };
 
   const startCheckout = useCallback(async () => {
-    const cartId = getStoredCartId();
+    const cartId = getCartId();
     if (!cartId) {
       toast.error('Je winkelwagen is leeg.');
       return false;
@@ -119,7 +123,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       const data: CheckoutStartData = r?.data || extractSingle<CheckoutStartData>(response) || r;
       setState(s => ({
         ...s,
-        orderId: data.order_id,
+        checkoutReady: true,
         items: data.items || [],
         availablePaymentMethods: data.available_payment_methods || [],
         availableShippingMethods: data.available_shipping_methods || [],
@@ -139,11 +143,12 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const saveCustomer = useCallback(async (customer: CustomerData) => {
-    if (!state.orderId) return false;
+    const cartId = getCartId();
+    if (!cartId) return false;
     setLoading(true);
     clearErrors();
     try {
-      const response = await checkoutAPI.saveCustomer(state.orderId, customer);
+      const response = await checkoutAPI.saveCustomer(cartId, customer);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = response as any;
       if (r?.success === false) {
@@ -159,14 +164,15 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [state.orderId]);
+  }, []);
 
   const saveAddress = useCallback(async (shipping: AddressData, billingSame: boolean, billing?: AddressData) => {
-    if (!state.orderId) return false;
+    const cartId = getCartId();
+    if (!cartId) return false;
     setLoading(true);
     clearErrors();
     try {
-      const response = await checkoutAPI.saveAddress(state.orderId, shipping, billingSame, billing);
+      const response = await checkoutAPI.saveAddress(cartId, shipping, billingSame, billing);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = response as any;
       if (r?.success === false) {
@@ -180,7 +186,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       if (hasShipping && state.availableShippingMethods.length === 1) {
         const autoMethod = state.availableShippingMethods[0];
         try {
-          await checkoutAPI.selectShipping(state.orderId, autoMethod.id);
+          await checkoutAPI.selectShipping(cartId, autoMethod.id);
           setState(s => ({
             ...s,
             selectedShippingMethod: autoMethod.id,
@@ -204,14 +210,15 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [state.orderId, state.availableShippingMethods]);
+  }, [state.availableShippingMethods]);
 
   const selectShippingFn = useCallback(async (methodId: string) => {
-    if (!state.orderId) return false;
+    const cartId = getCartId();
+    if (!cartId) return false;
     setLoading(true);
     clearErrors();
     try {
-      const response = await checkoutAPI.selectShipping(state.orderId, methodId);
+      const response = await checkoutAPI.selectShipping(cartId, methodId);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = response as any;
       if (r?.success === false) {
@@ -234,18 +241,19 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [state.orderId]);
+  }, []);
 
   const completeCheckout = useCallback(async (paymentMethodId: string) => {
-    if (!state.orderId) return;
+    const cartId = getCartId();
+    if (!cartId) return;
     setLoading(true);
     clearErrors();
     try {
       const baseUrl = getCheckoutBaseUrl();
       const response = await checkoutAPI.complete(
-        state.orderId,
+        cartId,
         paymentMethodId,
-        `${baseUrl}/bedankt`,
+        `${baseUrl}/bedankt?session_id={CHECKOUT_SESSION_ID}`,
         `${baseUrl}/shop`,
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -255,12 +263,10 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       const data: CheckoutCompleteData = r?.data || {};
-      
-      // Clear cart after successful checkout
-      clearStoredCartId();
 
       switch (data.payment_type) {
         case 'redirect':
+          // Stripe — redirect. Do NOT clear cart yet (thank-you page does it).
           if (data.checkout_url) {
             window.location.href = data.checkout_url;
           } else {
@@ -268,6 +274,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           }
           break;
         case 'manual':
+          // Bank transfer — clear cart + show bank details
+          clearStoredCartId();
           navigate('/bedankt', {
             state: {
               orderNumber: data.order_number,
@@ -279,6 +287,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           });
           break;
         case 'qr':
+          // QR — clear cart + show QR
+          clearStoredCartId();
           navigate('/bedankt', {
             state: {
               orderNumber: data.order_number,
@@ -289,10 +299,10 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           });
           break;
         default:
-          // If payment_type is missing but checkout_url exists, redirect
           if (data.checkout_url) {
             window.location.href = data.checkout_url;
           } else {
+            clearStoredCartId();
             navigate('/bedankt', {
               state: {
                 orderNumber: data.order_number,
@@ -308,13 +318,14 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [state.orderId, navigate]);
+  }, [navigate]);
 
   const applyDiscountFn = useCallback(async (code: string) => {
-    if (!state.orderId) return false;
+    const cartId = getCartId();
+    if (!cartId) return false;
     setLoading(true);
     try {
-      const response = await checkoutAPI.applyDiscount(state.orderId, code);
+      const response = await checkoutAPI.applyDiscount(cartId, code);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = response as any;
       if (r?.success === false) {
@@ -335,17 +346,18 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [state.orderId]);
+  }, []);
 
   const removeDiscountFn = useCallback(async () => {
-    if (!state.orderId) return;
+    const cartId = getCartId();
+    if (!cartId) return;
     setLoading(true);
     try {
-      await checkoutAPI.removeDiscount(state.orderId);
+      await checkoutAPI.removeDiscount(cartId);
       setState(s => ({ ...s, discount: null }));
     } catch { /* noop */ }
     finally { setLoading(false); }
-  }, [state.orderId]);
+  }, []);
 
   const goToStep = useCallback((step: number) => {
     setState(s => ({ ...s, currentStep: step }));
