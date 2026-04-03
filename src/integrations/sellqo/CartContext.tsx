@@ -30,6 +30,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeCartItem = useRemoveCartItem();
   const createCheckout = useCreateCheckout();
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
