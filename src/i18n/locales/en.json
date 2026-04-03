@@ -278,6 +278,7 @@
     "stepAddress": "Address",
     "stepShipping": "Shipping",
     "stepPayment": "Payment",
+    "stepDetails": "Details & Address",
     "customerTitle": "Your details",
     "email": "Email address",
     "firstName": "First name",
@@ -303,7 +304,10 @@
     "shipping": "Shipping",
     "total": "Total",
     "discountPlaceholder": "Discount code",
-    "apply": "Apply"
+    "apply": "Apply",
+    "qrName": "Scan QR code with your bank app",
+    "qrDescription": "Free — pay directly via your bank app",
+    "noTransactionFees": "No transaction fees"
   },
   "notFound": {
     "title": "404",
