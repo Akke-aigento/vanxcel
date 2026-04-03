@@ -81,9 +81,9 @@ export const cartAPI = {
     sellqoFetch<Cart>(`/cart/${cartId}/discount`, { method: 'DELETE' }),
 };
 
-// === CHECKOUT (multi-step) ===
+// === CHECKOUT (multi-step, cart_id based) ===
 export const checkoutAPI = {
-  /** Start checkout — returns order_id + available methods */
+  /** Start checkout — returns available methods + items */
   start: (cartId: string) =>
     sellqoFetch<{ success: boolean; data: CheckoutStartData }>('/checkout/start', {
       method: 'POST',
@@ -91,18 +91,18 @@ export const checkoutAPI = {
     }),
 
   /** Save customer details */
-  saveCustomer: (orderId: string, customer: CustomerData) =>
+  saveCustomer: (cartId: string, customer: CustomerData) =>
     sellqoFetch<{ success: boolean; data: unknown }>('/checkout/customer', {
       method: 'POST',
-      body: JSON.stringify({ order_id: orderId, customer }),
+      body: JSON.stringify({ cart_id: cartId, customer }),
     }),
 
   /** Save shipping + billing address */
-  saveAddress: (orderId: string, shippingAddress: AddressData, billingSameAsShipping: boolean, billingAddress?: AddressData) =>
+  saveAddress: (cartId: string, shippingAddress: AddressData, billingSameAsShipping: boolean, billingAddress?: AddressData) =>
     sellqoFetch<{ success: boolean; data: unknown }>('/checkout/address', {
       method: 'POST',
       body: JSON.stringify({
-        order_id: orderId,
+        cart_id: cartId,
         shipping_address: shippingAddress,
         billing_same_as_shipping: billingSameAsShipping,
         billing_address: billingSameAsShipping ? null : billingAddress,
@@ -110,18 +110,18 @@ export const checkoutAPI = {
     }),
 
   /** Select shipping method */
-  selectShipping: (orderId: string, shippingMethodId: string) =>
+  selectShipping: (cartId: string, shippingMethodId: string) =>
     sellqoFetch<{ success: boolean; data: { shipping_cost: number; total: number } }>('/checkout/shipping', {
       method: 'POST',
-      body: JSON.stringify({ order_id: orderId, shipping_method_id: shippingMethodId }),
+      body: JSON.stringify({ cart_id: cartId, shipping_method_id: shippingMethodId }),
     }),
 
   /** Complete checkout — returns payment redirect or confirmation */
-  complete: (orderId: string, paymentMethodId: string, successUrl: string, cancelUrl: string) =>
+  complete: (cartId: string, paymentMethodId: string, successUrl: string, cancelUrl: string) =>
     sellqoFetch<{ success: boolean; data: CheckoutCompleteData }>('/checkout/complete', {
       method: 'POST',
       body: JSON.stringify({
-        order_id: orderId,
+        cart_id: cartId,
         payment_method_id: paymentMethodId,
         success_url: successUrl,
         cancel_url: cancelUrl,
@@ -129,18 +129,24 @@ export const checkoutAPI = {
     }),
 
   /** Apply discount code */
-  applyDiscount: (orderId: string, discountCode: string) =>
+  applyDiscount: (cartId: string, discountCode: string) =>
     sellqoFetch<{ success: boolean; data: { discount_code: string; discount_amount: number; total: number } }>('/checkout/discount', {
       method: 'POST',
-      body: JSON.stringify({ order_id: orderId, discount_code: discountCode }),
+      body: JSON.stringify({ cart_id: cartId, discount_code: discountCode }),
     }),
 
   /** Remove discount code */
-  removeDiscount: (orderId: string) =>
+  removeDiscount: (cartId: string) =>
     sellqoFetch<{ success: boolean; data: unknown }>('/checkout/discount', {
       method: 'DELETE',
-      body: JSON.stringify({ order_id: orderId }),
+      body: JSON.stringify({ cart_id: cartId }),
     }),
+
+  /** Get order by Stripe session ID (for thank-you page polling) */
+  getOrderBySession: (stripeSessionId: string) =>
+    sellqoFetch<{ success: boolean; data: { order_number: string; total: number; currency: string; status: string } }>(
+      `/checkout/order?stripe_session_id=${encodeURIComponent(stripeSessionId)}`
+    ),
 
   /** Legacy: create checkout (for backward compat) */
   create: (cartId: string, options?: { success_url?: string; cancel_url?: string }) =>

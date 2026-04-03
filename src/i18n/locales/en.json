@@ -269,7 +269,8 @@
     "amount": "Amount",
     "bankNote": "Your order will be processed once we receive your payment.",
     "qrTitle": "Pay via QR code",
-    "qrInstructions": "Scan the QR code with your banking app to pay."
+    "qrInstructions": "Scan the QR code with your banking app to pay.",
+    "verifyingPayment": "Verifying payment..."
   },
   "checkout": {
     "title": "Checkout",

@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/integrations/sellqo/CartContext";
+import { checkoutAPI } from "@/integrations/sellqo/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -13,6 +14,11 @@ const ThankYou = () => {
   const location = useLocation();
   const { clearCart } = useCartContext();
   const cleared = useRef(false);
+
+  // Stripe polling state
+  const [pollingOrder, setPollingOrder] = useState(false);
+  const [polledOrder, setPolledOrder] = useState<{ order_number: string; total: number; currency: string } | null>(null);
+  const [pollFailed, setPollFailed] = useState(false);
 
   // State passed from checkout complete (manual / qr)
   const routeState = location.state as {
@@ -26,12 +32,58 @@ const ThankYou = () => {
 
   const sessionId = searchParams.get("session_id");
 
+  // For manual/qr/unknown: clear cart immediately
   useEffect(() => {
-    if (!cleared.current) {
+    if (routeState?.paymentType && !cleared.current) {
       clearCart();
       cleared.current = true;
     }
-  }, [clearCart]);
+  }, [routeState, clearCart]);
+
+  // For Stripe: poll for order then clear cart
+  useEffect(() => {
+    if (!sessionId || cleared.current) return;
+
+    let cancelled = false;
+    setPollingOrder(true);
+
+    async function pollForOrder(attempts = 0) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response = await checkoutAPI.getOrderBySession(sessionId!) as any;
+        if (!cancelled && response?.success && response?.data?.order_number) {
+          setPolledOrder({
+            order_number: response.data.order_number,
+            total: response.data.total,
+            currency: response.data.currency,
+          });
+          setPollingOrder(false);
+          if (!cleared.current) {
+            clearCart();
+            cleared.current = true;
+          }
+          return;
+        }
+      } catch {
+        // webhook might not have processed yet
+      }
+
+      if (!cancelled && attempts < 5) {
+        setTimeout(() => pollForOrder(attempts + 1), 2000);
+      } else if (!cancelled) {
+        // Give up polling — show generic thank you
+        setPollFailed(true);
+        setPollingOrder(false);
+        if (!cleared.current) {
+          clearCart();
+          cleared.current = true;
+        }
+      }
+    }
+
+    pollForOrder();
+    return () => { cancelled = true; };
+  }, [sessionId, clearCart]);
 
   const paymentType = routeState?.paymentType || (sessionId ? 'redirect' : 'unknown');
 
@@ -43,14 +95,31 @@ const ThankYou = () => {
           <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
           <h1 className="font-display text-3xl font-bold">{t("thankYou.title")}</h1>
 
+          {/* Order number from route state */}
           {routeState?.orderNumber && (
             <p className="text-muted-foreground">
               {t("thankYou.orderNumber")}: <span className="font-mono font-semibold text-foreground">{routeState.orderNumber}</span>
             </p>
           )}
 
-          {/* Stripe redirect */}
-          {paymentType === 'redirect' && (
+          {/* Stripe redirect — polling */}
+          {paymentType === 'redirect' && pollingOrder && (
+            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <p>{t("thankYou.verifyingPayment")}</p>
+            </div>
+          )}
+
+          {paymentType === 'redirect' && polledOrder && (
+            <>
+              <p className="text-muted-foreground">
+                {t("thankYou.orderNumber")}: <span className="font-mono font-semibold text-foreground">{polledOrder.order_number}</span>
+              </p>
+              <p className="text-muted-foreground">{t("thankYou.stripePaid")}</p>
+            </>
+          )}
+
+          {paymentType === 'redirect' && pollFailed && (
             <p className="text-muted-foreground">{t("thankYou.stripePaid")}</p>
           )}
 

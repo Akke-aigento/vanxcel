@@ -93,6 +93,11 @@ function resolveAction(
 
   // --- CHECKOUT (multi-step) ---
   if (segments[0] === 'checkout') {
+    // GET /checkout/order?stripe_session_id=... — get order by Stripe session
+    if (segments[1] === 'order' && method === 'GET') {
+      for (const [k, v] of query.entries()) params[k] = v;
+      return { action: 'checkout_get_order', tenant_id: tenantId, params };
+    }
     // POST /checkout/start — start checkout from cart
     if (segments[1] === 'start' && method === 'POST') {
       return { action: 'checkout_start', tenant_id: tenantId, params: { ...params, ...body } };
