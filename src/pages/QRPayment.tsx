@@ -6,7 +6,7 @@ import { Smartphone, ScanLine, CheckCircle2, CreditCard } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/integrations/sellqo/CartContext';
+import { useCartContext } from '@/integrations/sellqo/CartContext';
 
 export default function QRPayment() {
   const location = useLocation();
