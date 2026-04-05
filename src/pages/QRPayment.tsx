@@ -12,7 +12,7 @@ export default function QRPayment() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { clearCart } = useCart();
+  const { clearCart } = useCartContext();
 
   // Persist state in ref so clearCart re-renders don't lose it
   const stateRef = useRef(location.state as {
