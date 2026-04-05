@@ -251,13 +251,13 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           });
           break;
         case 'qr':
-          clearStoredCartId();
-          navigate('/bedankt', {
+          navigate('/checkout/qr-betaling', {
             state: {
               orderNumber: data.order_number,
               total: data.total,
+              currency: data.currency,
               qrData: data.qr_data,
-              paymentType: 'qr',
+              bankDetails: data.bank_details,
             },
           });
           break;
