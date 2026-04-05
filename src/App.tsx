@@ -23,6 +23,7 @@ import Manuals from "./pages/Manuals.tsx";
 import Login from "./pages/Login.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import Account from "./pages/Account.tsx";
+import QRPayment from "./pages/QRPayment.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/checkout/qr-betaling" element={<QRPayment />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
