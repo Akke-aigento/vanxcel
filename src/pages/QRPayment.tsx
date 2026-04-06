@@ -78,11 +78,6 @@ export default function QRPayment() {
       <Navbar />
       <main className="min-h-screen bg-background py-12 px-4">
         <div className="max-w-lg mx-auto space-y-8">
-          {/* TIJDELIJK — verwijder na test */}
-          <p style={{ color: 'red', fontSize: '24px', textAlign: 'center', border: '3px solid red', padding: '8px' }}>
-            === QR COMPONENT V2 ACTIEF ===
-          </p>
-
           {/* Header */}
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-foreground">Scan & betaal</h1>
