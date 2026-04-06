@@ -29,6 +29,16 @@ export default function QRPayment() {
 
   const s = stateRef.current;
 
+  useEffect(() => {
+    console.log('[QRPayment] page state:', {
+      orderNumber: s?.orderNumber,
+      total: s?.total,
+      currency: s?.currency,
+      qrData: s?.qrData,
+      bankDetails: s?.bankDetails,
+    });
+  }, []);
+
   // No state → redirect to shop
   if (!s?.orderNumber) {
     return (
