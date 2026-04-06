@@ -1,33 +1,35 @@
 
 
-## QR Betaling tusschenpagina
+## Fix: Console log toevoegen voor QR data debugging
 
-### Wat
-Een nieuwe pagina `/checkout/qr-betaling` die na QR-betaalkeuze een groot QR-scherm toont met instructies, bankgegevens als fallback, en een "Ik heb betaald" knop die naar `/bedankt` navigeert.
+### Analyse
 
-### Wijzigingen
+De volledige keten is al correct geimplementeerd:
+- `CheckoutContext.tsx`: geeft `qr_data` en `bank_details` door via navigate state
+- `QRPayment.tsx`: leest beide correct uit met `useRef` voor persistentie
+- QR rendering: `QRCodeSVG` met payload, fallback naar image_url
+- Bankgegevens: getoond als fallback sectie
+- Types: correct gedefinieerd
+- Proxy: stuurt volledige response door
 
-**1. `src/pages/QRPayment.tsx`** — Nieuwe pagina
-- Leest `location.state` (orderNumber, total, currency, qrData, bankDetails) via `useRef` (zelfde patroon als ThankYou)
-- Genereert EPC QR-code uit `qrData.payload` met de `qrcode` npm package (of toont `qrData.image_url` als fallback)
-- Layout: grote QR-code gecentreerd, bedrag + bestelnummer, stap-voor-stap instructies (1. Open bankapp, 2. Scan QR, 3. Bevestig betaling), bankgegevens als fallback sectie, "Ik heb betaald" knop → `navigate('/bedankt', { state: { paymentType: 'qr', orderNumber, total, currency } })`
-- Navbar + Footer omvatten de pagina
-- Geen cart clear hier — dat gebeurt op /bedankt
+### Enige wijziging
 
-**2. `src/integrations/sellqo/CheckoutContext.tsx`** — Regel 253-262
-- `case 'qr'`: navigeer naar `/checkout/qr-betaling` i.p.v. `/bedankt`
-- Verwijder `clearStoredCartId()` uit deze case (cart clear verplaatst naar ThankYou na "Ik heb betaald")
-- Voeg `currency` en `bankDetails` toe aan de state
+**`src/pages/QRPayment.tsx`** — Voeg een debug `console.log` toe in een `useEffect` zodat je in de browser console kunt zien wat er binnenkomt:
 
-**3. `src/App.tsx`** — Route toevoegen
-- `<Route path="/checkout/qr-betaling" element={<QRPayment />} />`
-- Import QRPayment
+```typescript
+useEffect(() => {
+  console.log('[QRPayment] page state:', {
+    orderNumber: s?.orderNumber,
+    total: s?.total,
+    currency: s?.currency,
+    qrData: s?.qrData,
+    bankDetails: s?.bankDetails,
+  });
+}, []);
+```
 
-**4. Package** — `qrcode.react` installeren voor client-side QR rendering uit EPC payload
+Dit is de enige manier om te bevestigen of het probleem aan de frontend-kant zit (data komt niet binnen) of aan de API-kant (data wordt niet gestuurd). Als de log `qrData: undefined` toont, dan stuurt de SellQo API het niet mee. Als het gevuld is, dan werkt alles.
 
-### Bestanden (3 + 1 dependency)
-- `src/pages/QRPayment.tsx` (nieuw)
-- `src/integrations/sellqo/CheckoutContext.tsx` (edit)
-- `src/App.tsx` (edit)
-- `npm install qrcode.react`
+### Bestanden (1)
+- `src/pages/QRPayment.tsx`
 
