@@ -12,3 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /account
+Disallow: /checkout
+Disallow: /checkout/qr-betaling
+Disallow: /bedankt
+Disallow: /reset-password
+
+Sitemap: https://vanxcel.be/sitemap.xml

@@ -13,7 +13,11 @@ import {
 
 const FAQ = () => {
   const { t } = useTranslation();
-  useDocumentTitle(t("faq.title"));
+  useDocumentTitle(t("faq.title"), {
+    description:
+      "Antwoorden op veelgestelde vragen over VanXcel campervan-systemen: producten, batterijen, verzending, garantie en support.",
+    path: "/faq",
+  });
 
   const categories = [
     {

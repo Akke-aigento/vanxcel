@@ -7,7 +7,11 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 
 const Delivery = () => {
   const { t } = useTranslation();
-  useDocumentTitle(t("delivery.title"));
+  useDocumentTitle(t("delivery.title"), {
+    description:
+      "Verzendinformatie, levertijden en bezorgvoorwaarden voor VanXcel-bestellingen in België, Nederland, Frankrijk, Duitsland en Luxemburg.",
+    path: "/delivery",
+  });
 
   const steps = [
     { icon: Package, title: t("delivery.step1Title"), desc: t("delivery.step1Desc") },

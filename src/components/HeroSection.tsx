@@ -30,6 +30,10 @@ const HeroSection = () => {
         <img
           src={heroBg}
           alt="VW T3 campervan silhouette against mountain sunset"
+          width={1920}
+          height={1080}
+          fetchPriority="high"
+          decoding="async"
           className="w-full h-full object-cover object-[center_20%] scale-100"
         />
       </div>

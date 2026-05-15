@@ -10,7 +10,11 @@ import { Button } from "@/components/ui/button";
 
 const About = () => {
   const { t } = useTranslation();
-  useDocumentTitle(t("about.heroTitle"));
+  useDocumentTitle(t("about.heroTitle"), {
+    description:
+      "Het verhaal achter VanXcel: een Belgisch merk dat campervan-bouwers helpt met betrouwbare off-grid energiesystemen, complete pakketten en eigen support.",
+    path: "/about",
+  });
 
   const visionCards = [
     { icon: Package, titleKey: "about.visionComplete", descKey: "about.visionCompleteDesc" },
