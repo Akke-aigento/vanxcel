@@ -31,7 +31,7 @@ export default function ProductDetail() {
   const rawRelated = extractArray(apiRelatedData);
   const relatedProducts = rawRelated.length > 0 ? normalizeProducts(rawRelated) : [];
 
-  const productImage = product?.images?.[0] || product?.image || undefined;
+  const productImage = (product?.images?.[0] as any)?.url || undefined;
   const productDesc = (() => {
     if (!product) return undefined;
     const raw = (product as any).short_description || (product as any).description || '';
