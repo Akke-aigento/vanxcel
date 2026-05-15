@@ -12,7 +12,11 @@ const tabMap: Record<string, string> = { power: "power", cable: "cable", build: 
 
 const Calculator = () => {
   const { t } = useTranslation();
-  useDocumentTitle(t("toolsHub.title"));
+  useDocumentTitle(t("toolsHub.title"), {
+    description:
+      "Bereken het benodigde vermogen, batterijcapaciteit en kabel-dimensionering voor je campervan met de gratis VanXcel power calculator.",
+    path: "/calculator",
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab") || "power";
   const activeTab = tabMap[tabParam] || "power";
