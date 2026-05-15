@@ -1,0 +1,23 @@
+# VanXcel
+
+> VanXcel is een Belgisch merk voor LiFePO4 batterijen, converters en complete off-grid energiesystemen voor campervans, met 2 jaar garantie en eigen support.
+
+VanXcel ontwerpt, levert en ondersteunt complete elektrische systemen voor campervan-bouwers. Het assortiment dekt batterijen, omvormers, laders, zonnepanelen en bekabeling. De site bevat ook online tools om benodigd vermogen te berekenen en een complete bouw te configureren.
+
+## Pages
+
+- [Home](/): Overzicht van het VanXcel-merk en producten.
+- [Shop](/shop): Volledige catalogus van campervan energie-producten.
+- [Categorieën](/categories): Producten per categorie (batterijen, converters, panelen, accessoires).
+- [Build je systeem](/build): Stap-voor-stap een passend energiesysteem samenstellen.
+- [Configurator](/configurator): Geavanceerde configurator voor merk, model en motorisatie.
+- [Power Calculator](/calculator): Bereken benodigd vermogen en kabel-dimensionering.
+- [Over ons](/about): Verhaal, visie en USPs van VanXcel.
+- [Contact](/contact): Contactformulier en WhatsApp-support.
+- [FAQ](/faq): Veelgestelde vragen over producten, batterijen en verzending.
+- [Levering](/delivery): Leveringsvoorwaarden en verzendinformatie.
+- [Handleidingen](/manuals): Productdocumentatie en installatiehandleidingen.
+
+## Optional
+
+- [Login](/login): Klantaccount inloggen.
