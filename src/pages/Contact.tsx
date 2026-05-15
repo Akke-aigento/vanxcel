@@ -13,7 +13,11 @@ import { Mail, Send, MessageCircle, Clock, ChevronRight, Package } from "lucide-
 
 const Contact = () => {
   const { t } = useTranslation();
-  useDocumentTitle(t("contact.title"));
+  useDocumentTitle(t("contact.title"), {
+    description:
+      "Vragen over je VanXcel-bestelling of installatie? Stuur ons een bericht via WhatsApp of het contactformulier — we antwoorden meestal binnen één werkdag.",
+    path: "/contact",
+  });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
