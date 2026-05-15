@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 
 const Manuals = () => {
   const { t } = useTranslation();
-  useDocumentTitle(t("manuals.title"));
+  useDocumentTitle(t("manuals.title"), {
+    description:
+      "Download productdocumentatie en installatiehandleidingen voor VanXcel batterijen, omvormers, laders en meer.",
+    path: "/manuals",
+  });
 
   return (
     <>
