@@ -1,7 +1,28 @@
 import { useEffect } from "react";
 
 const BASE = "VanXcel";
-const SITE_URL = "https://vanxcel.be";
+
+// Canonical regional sites — used for hreflang alternates and as
+// the canonical host fallback. Order matters for x-default (last wins not — see below).
+const REGION_SITES: { hreflang: string; url: string }[] = [
+  { hreflang: "nl-BE", url: "https://vanxcel.be" },
+  { hreflang: "nl-NL", url: "https://vanxcel.nl" },
+  { hreflang: "en", url: "https://vanxcel.com" },
+];
+const X_DEFAULT_URL = "https://vanxcel.com";
+
+// Per-hostname canonical: each domain canonicalizes to itself so Google
+// keeps regional versions as separate, indexable URLs (joined via hreflang).
+function getCanonicalSiteUrl(): string {
+  if (typeof window === "undefined") return "https://vanxcel.be";
+  const host = window.location.hostname;
+  if (host.endsWith("vanxcel.nl")) return "https://vanxcel.nl";
+  if (host.endsWith("vanxcel.com")) return "https://vanxcel.com";
+  if (host.endsWith("vanxcel.be")) return "https://vanxcel.be";
+  // Preview / lovable.app etc → fall back to .be canonical to avoid duplicates
+  return "https://vanxcel.be";
+}
+
 const DEFAULT_TITLE = `${BASE} — Power Your Journey | Off-Grid Campervan Systemen`;
 const DEFAULT_DESC =
   "VanXcel — LiFePO4 batterijen, converters & off-grid systemen voor campervans. Belgisch merk met 2 jaar garantie.";
@@ -31,8 +52,9 @@ function upsert<T extends HTMLElement>(
 }
 
 /**
- * Sets <title>, meta description, canonical, og:title/description/url/image/type
- * for the current route. Pass description+path for proper per-route SEO.
+ * Sets <title>, meta description, canonical, og:title/description/url/image/type,
+ * and hreflang alternates for the current route. Pass description+path for
+ * proper per-route SEO.
  *
  * Backwards-compatible: existing callers that pass only `title` still work.
  */
@@ -43,9 +65,10 @@ export function useDocumentTitle(title?: string, options: SEOOptions = {}) {
     const fullTitle = title ? `${title} — ${BASE}` : DEFAULT_TITLE;
     const desc = description || DEFAULT_DESC;
     const img = image || DEFAULT_IMAGE;
-    const url = `${SITE_URL}${
-      path ?? (typeof window !== "undefined" ? window.location.pathname : "/")
-    }`;
+    const routePath =
+      path ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+    const siteUrl = getCanonicalSiteUrl();
+    const url = `${siteUrl}${routePath}`;
 
     document.title = fullTitle;
 
@@ -100,6 +123,27 @@ export function useDocumentTitle(title?: string, options: SEOOptions = {}) {
       return m;
     });
 
+    // Hreflang alternates: tell Google these regional URLs are variants
+    // of the same page so they don't compete as duplicate content.
+    // Strategy: remove any existing hreflang links we own, then re-add
+    // a fresh set for this route.
+    const existingAlternates = document.head.querySelectorAll(
+      'link[rel="alternate"][data-hreflang="true"]',
+    );
+    existingAlternates.forEach((el) => el.parentNode?.removeChild(el));
+
+    const addAlternate = (hreflang: string, href: string) => {
+      const l = document.createElement("link");
+      l.setAttribute("rel", "alternate");
+      l.setAttribute("hreflang", hreflang);
+      l.setAttribute("href", href);
+      l.setAttribute("data-hreflang", "true");
+      document.head.appendChild(l);
+    };
+
+    REGION_SITES.forEach((s) => addAlternate(s.hreflang, `${s.url}${routePath}`));
+    addAlternate("x-default", `${X_DEFAULT_URL}${routePath}`);
+
     // JSON-LD: managed via a dedicated tag we own, removed on unmount.
     let scriptEl: HTMLScriptElement | null = null;
     if (jsonLd) {
@@ -116,6 +160,7 @@ export function useDocumentTitle(title?: string, options: SEOOptions = {}) {
       if (scriptEl && scriptEl.parentNode) {
         scriptEl.parentNode.removeChild(scriptEl);
       }
+      // hreflang alternates are replaced on next mount; safe to leave in place
     };
   }, [title, description, image, type, path, JSON.stringify(jsonLd ?? null)]);
 }

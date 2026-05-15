@@ -1,8 +1,10 @@
-// Runs before `vite dev` and `vite build` (predev/prebuild hooks); writes public/sitemap.xml.
+// Runs before `vite dev` and `vite build` (predev/prebuild hooks).
+// Writes one sitemap per region:
+//   public/sitemap.xml      → vanxcel.be (BE / nl)
+//   public/sitemap-nl.xml   → vanxcel.nl (NL / nl)
+//   public/sitemap-com.xml  → vanxcel.com (EN)
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-
-const BASE_URL = "https://vanxcel.be";
 
 interface SitemapEntry {
   path: string;
@@ -25,11 +27,17 @@ const entries: SitemapEntry[] = [
   { path: "/login", changefreq: "yearly", priority: "0.3" },
 ];
 
-function generateSitemap(items: SitemapEntry[]) {
+const SITES = [
+  { baseUrl: "https://vanxcel.be", file: "public/sitemap.xml" },
+  { baseUrl: "https://vanxcel.nl", file: "public/sitemap-nl.xml" },
+  { baseUrl: "https://vanxcel.com", file: "public/sitemap-com.xml" },
+];
+
+function generateSitemap(baseUrl: string, items: SitemapEntry[]) {
   const urls = items.map((e) =>
     [
       `  <url>`,
-      `    <loc>${BASE_URL}${e.path}</loc>`,
+      `    <loc>${baseUrl}${e.path}</loc>`,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
       `  </url>`,
@@ -45,5 +53,7 @@ function generateSitemap(items: SitemapEntry[]) {
   ].join("\n");
 }
 
-writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));
-console.log(`sitemap.xml written (${entries.length} entries)`);
+for (const site of SITES) {
+  writeFileSync(resolve(site.file), generateSitemap(site.baseUrl, entries));
+  console.log(`${site.file} written (${entries.length} entries) → ${site.baseUrl}`);
+}
