@@ -12,7 +12,11 @@ import Footer from '@/components/Footer';
 
 export default function Shop() {
   const { t } = useTranslation();
-  useDocumentTitle(t("shop.title"));
+  useDocumentTitle(t("shop.title"), {
+    description:
+      "Ontdek alle VanXcel producten: LiFePO4 batterijen, omvormers, laders, zonnepanelen en bekabeling voor je campervan. Snelle levering vanuit België.",
+    path: "/shop",
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get('collection') || 'all';
   const [sort, setSort] = useState('newest');
