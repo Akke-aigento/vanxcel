@@ -52,7 +52,7 @@ export default function ProductDetail() {
       url: `https://vanxcel.be/shop/${product.slug}`,
       priceCurrency: 'EUR',
       price: String(product.price ?? 0),
-      availability: product.in_stock === false
+      availability: (product as any).stock_status === 'out_of_stock'
         ? 'https://schema.org/OutOfStock'
         : 'https://schema.org/InStock',
     },
