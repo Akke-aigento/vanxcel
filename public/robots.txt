@@ -19,3 +19,5 @@ Disallow: /bedankt
 Disallow: /reset-password
 
 Sitemap: https://vanxcel.be/sitemap.xml
+Sitemap: https://vanxcel.nl/sitemap-nl.xml
+Sitemap: https://vanxcel.com/sitemap-com.xml
