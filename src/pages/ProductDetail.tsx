@@ -31,7 +31,40 @@ export default function ProductDetail() {
   const rawRelated = extractArray(apiRelatedData);
   const relatedProducts = rawRelated.length > 0 ? normalizeProducts(rawRelated) : [];
 
-  useDocumentTitle(product?.title);
+  const productImage = product?.images?.[0] || product?.image || undefined;
+  const productDesc = (() => {
+    if (!product) return undefined;
+    const raw = (product as any).short_description || (product as any).description || '';
+    const stripped = String(raw).replace(/<[^>]*>/g, '').trim();
+    if (!stripped) return `${product.title} — bestel bij VanXcel met 2 jaar garantie en snelle levering.`;
+    return stripped.length > 160 ? stripped.slice(0, 157) + '...' : stripped;
+  })();
+  const productJsonLd = product ? {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    image: productImage ? [productImage] : undefined,
+    description: productDesc,
+    sku: (product as any).sku || product.slug,
+    brand: { '@type': 'Brand', name: 'VanXcel' },
+    offers: {
+      '@type': 'Offer',
+      url: `https://vanxcel.be/shop/${product.slug}`,
+      priceCurrency: 'EUR',
+      price: String(product.price ?? 0),
+      availability: product.in_stock === false
+        ? 'https://schema.org/OutOfStock'
+        : 'https://schema.org/InStock',
+    },
+  } : undefined;
+
+  useDocumentTitle(product?.title, {
+    description: productDesc,
+    image: productImage,
+    type: 'product',
+    path: product ? `/shop/${product.slug}` : undefined,
+    jsonLd: productJsonLd,
+  });
 
   if (isLoading) {
     return (
