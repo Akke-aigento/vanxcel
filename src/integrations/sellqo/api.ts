@@ -130,7 +130,15 @@ export const checkoutAPI = {
 
   /** Apply discount code */
   applyDiscount: (cartId: string, discountCode: string) =>
-    sellqoFetch<{ success: boolean; data: { discount_code: string; discount_amount: number; total: number } }>('/checkout/discount', {
+    sellqoFetch<{
+      cart_id?: string;
+      currency?: string;
+      subtotal?: number;
+      shipping_cost?: number;
+      applied_discounts?: Array<{ code: string; description?: string; amount: number }>;
+      discount_total?: number;
+      total?: number;
+    }>('/checkout/discount', {
       method: 'POST',
       body: JSON.stringify({ cart_id: cartId, discount_code: discountCode }),
     }),
