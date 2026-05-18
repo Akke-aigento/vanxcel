@@ -104,11 +104,13 @@ export interface CheckoutSession {
 
 // === CHECKOUT MULTI-STEP ===
 export interface PaymentMethod {
-  id: string;
+  method: string; // 'bancontact' | 'ideal' | 'card' | 'klarna' | 'bank_transfer'
+  group: 'direct' | 'later' | 'transfer';
   name: string;
-  type: string; // 'stripe', 'bank_transfer', 'qr', etc.
   description?: string;
-  icon?: string;
+  fee_cents?: number;
+  available: boolean;
+  reason_unavailable?: string | null;
 }
 
 export interface ShippingMethod {

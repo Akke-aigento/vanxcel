@@ -283,15 +283,23 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = response as any;
       if (r?.success === false) {
-        const msg = r?.error?.message || 'Ongeldige kortingscode.';
-        toast.error(msg);
+        toast.error(r?.error?.message || r?.error || 'Ongeldige kortingscode.');
         return false;
       }
-      const data = r?.data || {};
+      const data = (r?.data && typeof r.data === 'object') ? r.data : r;
+      const firstDiscount = Array.isArray(data?.applied_discounts) && data.applied_discounts.length > 0
+        ? data.applied_discounts[0]
+        : null;
       setState(s => ({
         ...s,
-        discount: { code: data.discount_code || code, amount: data.discount_amount || 0 },
-        total: data.total ?? s.total,
+        discount: firstDiscount
+          ? { code: firstDiscount.code, amount: Number(firstDiscount.amount) || 0 }
+          : (Number(data?.discount_total) > 0
+              ? { code, amount: Number(data.discount_total) }
+              : null),
+        subtotal: data?.subtotal != null ? Number(data.subtotal) : s.subtotal,
+        shippingCost: data?.shipping_cost != null ? Number(data.shipping_cost) : s.shippingCost,
+        total: data?.total != null ? Number(data.total) : s.total,
       }));
       return true;
     } catch {
@@ -307,8 +315,17 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     if (!cartId) return;
     setLoading(true);
     try {
-      await checkoutAPI.removeDiscount(cartId);
-      setState(s => ({ ...s, discount: null }));
+      const response = await checkoutAPI.removeDiscount(cartId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = response as any;
+      const data = (r?.data && typeof r.data === 'object') ? r.data : r;
+      setState(s => ({
+        ...s,
+        discount: null,
+        subtotal: data?.subtotal != null ? Number(data.subtotal) : s.subtotal,
+        shippingCost: data?.shipping_cost != null ? Number(data.shipping_cost) : s.shippingCost,
+        total: data?.total != null ? Number(data.total) : s.total,
+      }));
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);

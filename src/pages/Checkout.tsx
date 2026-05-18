@@ -190,12 +190,15 @@ function StepPayment() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Filter & sort: QR first (desktop only), then bank, then stripe
+  // Filter & sort: bank_transfer first (no fees, desktop only), then direct methods, then klarna
   const visibleMethods = useMemo(() => {
-    const ORDER: Record<string, number> = { qr_transfer: 0, bank_transfer: 1, stripe: 2 };
+    const ORDER: Record<string, number> = {
+      bank_transfer: 0, bancontact: 1, ideal: 2, card: 3, klarna: 4,
+    };
     return availablePaymentMethods
-      .filter(m => !(m.id === 'qr_transfer' && isMobile))
-      .sort((a, b) => (ORDER[a.id] ?? 99) - (ORDER[b.id] ?? 99));
+      .filter(m => m.available !== false)
+      .filter(m => !(m.method === 'bank_transfer' && isMobile))
+      .sort((a, b) => (ORDER[a.method] ?? 99) - (ORDER[b.method] ?? 99));
   }, [availablePaymentMethods, isMobile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -217,38 +220,32 @@ function StepPayment() {
         <p className="text-muted-foreground text-sm">{t("checkout.noPaymentMethods")}</p>
       ) : (
         <RadioGroup value={selected} onValueChange={setSelected}>
-          {visibleMethods.map((method) => (
-            <label
-              key={method.id}
-              className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
-                selected === method.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-              }`}
-            >
-              <RadioGroupItem value={method.id} className="mt-0.5" />
-              <div className="flex-1">
-                <p className="font-medium text-sm">
-                  {(method.id === 'qr_transfer' || method.id === 'bank_transfer') ? t("checkout.qrName") : method.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {(method.id === 'qr_transfer' || method.id === 'bank_transfer')
-                    ? t("checkout.qrDescription")
-                    : method.description}
-                </p>
-                {(method.id === 'qr_transfer' || method.id === 'bank_transfer') && (
-                  <Badge variant="secondary" className="mt-1 bg-green-100 text-green-800 border-green-200 text-xs">
-                    {t("checkout.noTransactionFees")}
-                  </Badge>
-                )}
-                {method.id === 'stripe' && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {['iDEAL', 'Bancontact', 'Creditcard', 'Apple Pay'].map(pm => (
-                      <span key={pm} className="text-xs bg-muted px-2 py-0.5 rounded">{pm}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </label>
-          ))}
+          {visibleMethods.map((method) => {
+            const isBankTransfer = method.method === 'bank_transfer';
+            return (
+              <label
+                key={method.method}
+                className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                  selected === method.method ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
+                }`}
+              >
+                <RadioGroupItem value={method.method} className="mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium text-sm">
+                    {isBankTransfer ? t("checkout.qrName") : method.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {isBankTransfer ? t("checkout.qrDescription") : method.description}
+                  </p>
+                  {isBankTransfer && (
+                    <Badge variant="secondary" className="mt-1 bg-green-100 text-green-800 border-green-200 text-xs">
+                      {t("checkout.noTransactionFees")}
+                    </Badge>
+                  )}
+                </div>
+              </label>
+            );
+          })}
         </RadioGroup>
       )}
 
