@@ -154,6 +154,11 @@ function resolveAction(
     return { action: 'newsletter_subscribe', tenant_id: tenantId, params: { ...params, ...body } };
   }
 
+  // --- CONTACT FORM ---
+  if (segments[0] === 'contact' && method === 'POST') {
+    return { action: 'submit_contact_form', tenant_id: tenantId, params: { ...params, ...body } };
+  }
+
   // --- SHIPPING ---
   if (segments[0] === 'shipping') {
     return { action: 'get_shipping_methods', tenant_id: tenantId, params };
