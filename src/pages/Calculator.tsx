@@ -47,6 +47,10 @@ const Calculator = () => {
                 <span className="hidden md:inline">🛠️ </span>{t("toolsHub.tabBuild")}
                 <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
               </TabsTrigger>
+              <TabsTrigger value="configurator" disabled className="flex-1 rounded-lg py-2.5 md:py-3 text-xs md:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground opacity-60">
+                <span className="hidden md:inline">🚐 </span>{t("configurator.navLabel")}
+                <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="power">
@@ -59,6 +63,13 @@ const Calculator = () => {
               <div className="text-center py-20">
                 <div className="text-5xl mb-4">🛠️</div>
                 <h2 className="font-display text-2xl md:text-3xl text-foreground mb-3">{t("toolsHub.tabBuild")}</h2>
+                <p className="text-muted-foreground">{t("nav.comingSoon", "Coming soon!")}</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="configurator">
+              <div className="text-center py-20">
+                <div className="text-5xl mb-4">🚐</div>
+                <h2 className="font-display text-2xl md:text-3xl text-foreground mb-3">{t("configurator.navLabel")}</h2>
                 <p className="text-muted-foreground">{t("nav.comingSoon", "Coming soon!")}</p>
               </div>
             </TabsContent>
