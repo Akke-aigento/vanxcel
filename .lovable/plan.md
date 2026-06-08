@@ -1,30 +1,20 @@
-## Favicon-pakket toepassen
+## Doel
+Package Simulator (tab "build" in /calculator) net als de Configurator markeren als "Soon" en niet publiek toegankelijk maken. Mijn vorige wijziging (verwijderen `/build` route) was niet wat je bedoelde — die route was een aparte oude pagina. Ik draai dat terug en pas de juiste plek aan.
 
-### Bestanden kopiëren naar `public/`
-- `favicon.ico` (overschrijft bestaande)
-- `favicon.svg`
-- `favicon-96x96.png`
-- `apple-touch-icon.png`
-- `web-app-manifest-192x192.png`
-- `web-app-manifest-512x512.png`
-- `site.webmanifest`
+## Aanpassingen
 
-De oude `public/favicon.png` wordt verwijderd (vervangen door `favicon.ico` + nieuwe PNG's).
+1. **`src/App.tsx`** — `/build` route + `Build` import herstellen (revert van vorige loop), zodat niets onbedoeld verbroken raakt.
 
-### `index.html` head aanpassen
-Vervang de huidige enkele favicon-link door de standaard RealFaviconGenerator-set:
+2. **`src/components/Navbar.tsx`** — `toolItems` aanpassen:
+   - Item `toolsHub.tabBuild` (Package Simulator) krijgt `comingSoon: true`.
+   - Hierdoor toont menu automatisch de "Soon" badge en een toast i.p.v. navigatie, exact zoals nu bij Configurator.
 
-```html
-<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="VanXcel" />
-<link rel="manifest" href="/site.webmanifest" />
-```
+3. **`src/pages/Calculator.tsx`** — tab "build":
+   - `TabsTrigger value="build"` krijgt een kleine "Soon" badge en `disabled`.
+   - `TabsContent value="build"` vervangen door een eenvoudige "Coming soon" placeholder (kopieert tone van configurator coming-soon), zodat directe URL `/calculator?tab=build` niets functioneels toont.
+   - `tabMap` valt terug naar `power` als param `build` is.
 
-### Opmerking — PWA
-`site.webmanifest` bevat `"display": "standalone"`. Dit maakt de site installeerbaar (Add to Home Screen) op mobiel, maar registreert geen service worker — dus geen risico op cache-problemen in de Lovable preview. Alleen het manifest, zoals jij hebt aangeleverd.
-
-### Geen wijzigingen aan
-- SEO-meta, hreflang, sitemaps, verificatie-tags — blijven onaangeroerd.
+## Wat blijft hetzelfde
+- Power Calculator en Cable Calculator blijven volledig werkend.
+- Configurator gedrag ongewijzigd.
+- Geen wijzigingen aan business logic of backend.
