@@ -67,11 +67,23 @@ function StepDetailsAndAddress() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const shippingPayload = {
+      first_name: customerForm.first_name,
+      last_name: customerForm.last_name,
+      ...shipping,
+    };
+    const billingPayload = billingSame
+      ? shippingPayload
+      : {
+          first_name: customerForm.first_name,
+          last_name: customerForm.last_name,
+          ...billing,
+        };
     await saveCustomerAndAddress(
       customerForm,
-      shipping,
+      shippingPayload,
       billingSame,
-      billingSame ? undefined : billing,
+      billingSame ? undefined : billingPayload,
     );
   };
 
