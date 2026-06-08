@@ -48,15 +48,10 @@ const HeroSection = () => {
       <div className="absolute inset-0 hero-gradient-overlay" />
 
       <div className="relative z-10 flex flex-col items-center justify-end h-full pb-24 px-4 text-center">
-        <img
-          src={logoWhite}
-          alt="VanXcel logo"
-          className="w-[180px] md:w-[240px] mb-6 animate-fade-in-up"
-        />
-        <h1 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[96px] tracking-tight text-foreground animate-fade-in-up leading-none">
+        <h1 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[96px] tracking-tight text-foreground animate-fade-in-up leading-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
           {t("hero.title")}
         </h1>
-        <p className="mt-4 text-lg md:text-xl text-primary font-medium animate-fade-in-up-delay-1">
+        <p className="mt-4 text-lg md:text-xl text-foreground/90 font-medium animate-fade-in-up-delay-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
           {t("hero.subtitle")}
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 animate-fade-in-up-delay-2">
