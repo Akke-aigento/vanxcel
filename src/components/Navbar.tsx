@@ -15,7 +15,7 @@ import { useCustomerAuth } from "@/integrations/sellqo/CustomerAuthContext";
 const toolItems = [
   { labelKey: "toolsHub.tabPower", href: "/calculator", icon: "⚡" },
   { labelKey: "toolsHub.tabCable", href: "/calculator?tab=cable", icon: "🔌" },
-  { labelKey: "toolsHub.tabBuild", href: "/calculator?tab=build", icon: "🛠️" },
+  { labelKey: "toolsHub.tabBuild", href: "/calculator?tab=build", icon: "🛠️", comingSoon: true },
   { labelKey: "configurator.navLabel", href: "/configurator", icon: "🚐", comingSoon: true },
 ];
 
