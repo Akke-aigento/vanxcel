@@ -47,7 +47,7 @@ const HeroSection = () => {
 
       <div className="absolute inset-0 hero-gradient-overlay" />
 
-      <div className="relative z-10 flex flex-col items-center justify-end h-full pb-8 md:pb-24 px-4 text-center">
+      <div className="relative z-10 flex flex-col items-center justify-end h-full pb-20 md:pb-24 px-4 text-center">
         <img
           src={logoWhite}
           alt="VanXcel logo"
