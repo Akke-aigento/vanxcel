@@ -43,8 +43,9 @@ const Calculator = () => {
               <TabsTrigger value="cable" className="flex-1 rounded-lg py-2.5 md:py-3 text-xs md:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <span className="hidden md:inline">🔌 </span>{t("toolsHub.tabCable")}
               </TabsTrigger>
-              <TabsTrigger value="build" className="flex-1 rounded-lg py-2.5 md:py-3 text-xs md:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger value="build" disabled className="flex-1 rounded-lg py-2.5 md:py-3 text-xs md:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground opacity-60">
                 <span className="hidden md:inline">🛠️ </span>{t("toolsHub.tabBuild")}
+                <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
               </TabsTrigger>
             </TabsList>
 
@@ -55,7 +56,11 @@ const Calculator = () => {
               <CableCalculator />
             </TabsContent>
             <TabsContent value="build">
-              <BuildWizard />
+              <div className="text-center py-20">
+                <div className="text-5xl mb-4">🛠️</div>
+                <h2 className="font-display text-2xl md:text-3xl text-foreground mb-3">{t("toolsHub.tabBuild")}</h2>
+                <p className="text-muted-foreground">{t("nav.comingSoon", "Coming soon!")}</p>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
