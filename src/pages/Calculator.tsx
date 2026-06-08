@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PowerCalculator from "@/components/PowerCalculator";
 import CableCalculator from "@/components/CableCalculator";
-import BuildWizard from "@/components/BuildWizard";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const tabMap: Record<string, string> = { power: "power", cable: "cable" };
