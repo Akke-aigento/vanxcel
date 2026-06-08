@@ -1,20 +1,15 @@
-## Doel
-Package Simulator (tab "build" in /calculator) net als de Configurator markeren als "Soon" en niet publiek toegankelijk maken. Mijn vorige wijziging (verwijderen `/build` route) was niet wat je bedoelde — die route was een aparte oude pagina. Ik draai dat terug en pas de juiste plek aan.
-
 ## Aanpassingen
 
-1. **`src/App.tsx`** — `/build` route + `Build` import herstellen (revert van vorige loop), zodat niets onbedoeld verbroken raakt.
+1. **`src/components/Navbar.tsx`** — dropdown uitlijning fixen (desktop + mobile, regels ~182-195 en ~337-350):
+   - `min-w-[220px]` → `min-w-[260px]` op de dropdown container zodat "Package Simulator" niet meer wrapt.
+   - `whitespace-nowrap` toevoegen aan de label-span en `flex-shrink-0` op de Soon-badge, zodat label + badge altijd op één regel staan en netjes uitgelijnd zijn met de andere items.
 
-2. **`src/components/Navbar.tsx`** — `toolItems` aanpassen:
-   - Item `toolsHub.tabBuild` (Package Simulator) krijgt `comingSoon: true`.
-   - Hierdoor toont menu automatisch de "Soon" badge en een toast i.p.v. navigatie, exact zoals nu bij Configurator.
+2. **`src/pages/Calculator.tsx`** — 4e tab toevoegen voor Configurator:
+   - `TabsTrigger value="configurator"` met 🚐 icoon, "Soon" badge, `disabled` (zelfde stijl als build-tab).
+   - `TabsContent value="configurator"` met "Coming soon" placeholder (zelfde tone als de build placeholder), zodat het tab-grid 4 kolommen toont op /calculator (de "All tools" pagina).
+   - Niet linken naar /configurator (blijft eigen pagina die ook coming-soon toont); deze tab is puur visuele consistentie.
 
-3. **`src/pages/Calculator.tsx`** — tab "build":
-   - `TabsTrigger value="build"` krijgt een kleine "Soon" badge en `disabled`.
-   - `TabsContent value="build"` vervangen door een eenvoudige "Coming soon" placeholder (kopieert tone van configurator coming-soon), zodat directe URL `/calculator?tab=build` niets functioneels toont.
-   - `tabMap` valt terug naar `power` als param `build` is.
-
-## Wat blijft hetzelfde
-- Power Calculator en Cable Calculator blijven volledig werkend.
-- Configurator gedrag ongewijzigd.
-- Geen wijzigingen aan business logic of backend.
+## Niet gewijzigd
+- Werkende Power en Cable calculators blijven ongemoeid.
+- Eigen `/configurator` route blijft bestaan zoals hij nu is.
+- Geen tekst/i18n wijzigingen nodig (gebruik bestaande `configurator.navLabel`).
