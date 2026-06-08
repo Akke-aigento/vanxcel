@@ -8,7 +8,7 @@ import CableCalculator from "@/components/CableCalculator";
 import BuildWizard from "@/components/BuildWizard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-const tabMap: Record<string, string> = { power: "power", cable: "cable", build: "build" };
+const tabMap: Record<string, string> = { power: "power", cable: "cable" };
 
 const Calculator = () => {
   const { t } = useTranslation();
