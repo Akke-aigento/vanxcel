@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/integrations/sellqo/CartContext";
 import { CustomerAuthProvider } from "@/integrations/sellqo/CustomerAuthContext";
 import Index from "./pages/Index.tsx";
-import Build from "./pages/Build.tsx";
+
 import Configurator from "./pages/Configurator.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Calculator from "./pages/Calculator.tsx";
@@ -52,7 +52,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/shop/:slug" element={<ProductDetail />} />
-              <Route path="/build" element={<Build />} />
+              
               <Route path="/configurator" element={<Configurator />} />
               <Route path="/calculator" element={<Calculator />} />
               <Route path="/bedankt" element={<ThankYou />} />
