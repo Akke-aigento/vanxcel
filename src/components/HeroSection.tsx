@@ -21,7 +21,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative h-[100vh] md:h-[90vh] w-full overflow-hidden">
+    <section className="relative h-[85vh] md:h-[90vh] w-full overflow-hidden">
       {/* Ken Burns zoom + parallax */}
       <div
         className="absolute inset-0 ken-burns-zoom"
@@ -34,7 +34,7 @@ const HeroSection = () => {
           height={1080}
           fetchPriority="high"
           decoding="async"
-          className="w-full h-full object-cover object-[center_20%] scale-100"
+          className="w-full h-full object-cover object-[center_70%] md:object-[center_20%] scale-100"
         />
       </div>
 

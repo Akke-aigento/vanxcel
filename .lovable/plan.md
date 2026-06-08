@@ -1,15 +1,15 @@
-## Aanpassingen
+## Probleem
+Op mobiel toont de hero-afbeelding voornamelijk de lucht/wolken. De van + bergen (de échte focus van het beeld) zijn afgesneden onderaan, waardoor de layout leeg/onevenwichtig voelt.
 
-1. **`src/components/Navbar.tsx`** — dropdown uitlijning fixen (desktop + mobile, regels ~182-195 en ~337-350):
-   - `min-w-[220px]` → `min-w-[260px]` op de dropdown container zodat "Package Simulator" niet meer wrapt.
-   - `whitespace-nowrap` toevoegen aan de label-span en `flex-shrink-0` op de Soon-badge, zodat label + badge altijd op één regel staan en netjes uitgelijnd zijn met de andere items.
+Oorzaak: `object-[center_20%]` in `src/components/HeroSection.tsx` werkt goed op desktop (breed beeld) maar op smal mobile-viewport zit het focuspunt te hoog.
 
-2. **`src/pages/Calculator.tsx`** — 4e tab toevoegen voor Configurator:
-   - `TabsTrigger value="configurator"` met 🚐 icoon, "Soon" badge, `disabled` (zelfde stijl als build-tab).
-   - `TabsContent value="configurator"` met "Coming soon" placeholder (zelfde tone als de build placeholder), zodat het tab-grid 4 kolommen toont op /calculator (de "All tools" pagina).
-   - Niet linken naar /configurator (blijft eigen pagina die ook coming-soon toont); deze tab is puur visuele consistentie.
+## Aanpassing
+**`src/components/HeroSection.tsx`** (regel 37):
+- Image className wijzigen van `object-[center_20%]` naar `object-[center_70%] md:object-[center_20%]`.
+- Resultaat: op mobiel komt de van + bergen omhoog in beeld; desktop blijft ongewijzigd.
+
+Optioneel binnen dezelfde regel: hero hoogte op mobile iets terugbrengen (`h-[100vh]` → `h-[85vh] md:h-[90vh]`) zodat scroll-indicator en CTA's beter zichtbaar zijn zonder scroll. Doe ik mee als kleine extra finetune.
 
 ## Niet gewijzigd
-- Werkende Power en Cable calculators blijven ongemoeid.
-- Eigen `/configurator` route blijft bestaan zoals hij nu is.
-- Geen tekst/i18n wijzigingen nodig (gebruik bestaande `configurator.navLabel`).
+- Geen wijzigingen aan asset, kopij of CTA-gedrag.
+- Geen wijzigingen aan andere pagina's.
