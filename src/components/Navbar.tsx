@@ -174,7 +174,7 @@ const Navbar = () => {
               <ChevronDown size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
             </button>
             <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-              <div className="bg-popover border border-border rounded-lg shadow-lg py-2 min-w-[220px]">
+              <div className="bg-popover border border-border rounded-lg shadow-lg py-2 min-w-[260px]">
                 <Link to="/calculator" className={dropdownLinkClass}>
                   {t("nav.allTools")}
                 </Link>
@@ -183,14 +183,14 @@ const Navbar = () => {
                   <button
                     key={item.href}
                     onClick={() => toast({ title: t("nav.comingSoon", "Coming soon!") })}
-                    className={`${dropdownLinkClass} flex items-center justify-between opacity-50 cursor-not-allowed`}
+                    className={`${dropdownLinkClass} flex items-center justify-between gap-2 opacity-50 cursor-not-allowed`}
                   >
-                    <span>{item.icon} {t(item.labelKey)}</span>
-                    <span className="ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
+                    <span className="whitespace-nowrap">{item.icon} {t(item.labelKey)}</span>
+                    <span className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent text-accent-foreground">Soon</span>
                   </button>
                 ) : (
-                  <Link key={item.href} to={item.href} className={`${dropdownLinkClass} flex items-center justify-between`}>
-                    <span>{item.icon} {t(item.labelKey)}</span>
+                  <Link key={item.href} to={item.href} className={`${dropdownLinkClass} flex items-center justify-between gap-2`}>
+                    <span className="whitespace-nowrap">{item.icon} {t(item.labelKey)}</span>
                   </Link>
                 ))}
               </div>
