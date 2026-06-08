@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/integrations/sellqo/CartContext";
 import { CustomerAuthProvider } from "@/integrations/sellqo/CustomerAuthContext";
 import Index from "./pages/Index.tsx";
-import Build from "./pages/Build.tsx";
+
 import Configurator from "./pages/Configurator.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Calculator from "./pages/Calculator.tsx";
