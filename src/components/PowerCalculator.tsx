@@ -50,19 +50,20 @@ const PowerCalculator = () => {
         : t("calculator.rec300");
 
   return (
-    <section id="calculator" className="bg-background py-20">
+    <section id="calculator" className="bg-background pb-12 md:py-20">
       <div className="container mx-auto px-4 max-w-4xl">
         <RevealOnScroll direction="up">
-          <h2 className="font-display text-4xl md:text-5xl text-center text-foreground mb-4">
+          <h2 className="hidden md:block font-display text-4xl md:text-5xl text-center text-foreground mb-4">
             {t("calculator.title")}
           </h2>
-          <p className="text-center text-muted-foreground mb-12">
+          <p className="hidden md:block text-center text-muted-foreground mb-12">
             {t("calculator.subtitle")}
           </p>
         </RevealOnScroll>
 
         <RevealOnScroll direction="up" delay={150}>
-          <div className="bg-surface-elevated border border-border rounded-lg p-6 md:p-8">
+          <div className="bg-surface-elevated border border-border rounded-lg p-4 md:p-8">
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {appliances.map((app) => {
                 const isActive = !!selected[app.name];
