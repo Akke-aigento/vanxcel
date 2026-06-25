@@ -92,7 +92,7 @@ const Contact = () => {
             {/* Direct contact cards */}
             <div className="space-y-4">
               <a
-                href="https://wa.me/32471234567"
+                href="https://wa.me/32490397544"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40 group"
