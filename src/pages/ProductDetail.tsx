@@ -143,7 +143,7 @@ export default function ProductDetail() {
             <span className="text-foreground">{product.title}</span>
           </nav>
 
-          <div className="grid md:grid-cols-2 gap-10 md:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
             <div>
               <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
                 {mainImage ? (
