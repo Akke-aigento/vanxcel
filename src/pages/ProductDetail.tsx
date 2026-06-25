@@ -72,7 +72,7 @@ export default function ProductDetail() {
         <Navbar />
         <main className="pt-24 pb-16 px-4">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="aspect-square bg-muted rounded-lg animate-pulse" />
               <div className="space-y-4">
                 <div className="h-8 bg-muted rounded w-3/4 animate-pulse" />
@@ -143,7 +143,7 @@ export default function ProductDetail() {
             <span className="text-foreground">{product.title}</span>
           </nav>
 
-          <div className="grid md:grid-cols-2 gap-10 md:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
             <div>
               <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
                 {mainImage ? (
