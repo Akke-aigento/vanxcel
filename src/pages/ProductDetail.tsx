@@ -133,9 +133,9 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-24 pb-16 px-4">
+      <main className="pt-20 md:pt-24 pb-10 md:pb-16 px-4">
         <div className="container mx-auto max-w-6xl">
-          <nav className="text-sm text-muted-foreground mb-8">
+          <nav className="text-xs md:text-sm text-muted-foreground mb-4 md:mb-8">
             <Link to="/" className="hover:text-primary">Home</Link>
             <span className="mx-2">/</span>
             <Link to="/shop" className="hover:text-primary">{t("nav.shop")}</Link>
@@ -143,11 +143,11 @@ export default function ProductDetail() {
             <span className="text-foreground">{product.title}</span>
           </nav>
 
-          <div className="grid md:grid-cols-2 gap-10 md:gap-16">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-16">
             <div>
               <div className="aspect-square bg-card border border-border rounded-lg flex items-center justify-center overflow-hidden">
                 {mainImage ? (
-                  <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-6" />
+                  <img src={mainImage} alt={product.title} className="w-full h-full object-contain p-3 md:p-6" />
                 ) : (
                   <span className="text-8xl">📦</span>
                 )}
@@ -158,7 +158,7 @@ export default function ProductDetail() {
                     <button
                       key={i}
                       onClick={() => setSelectedImage(i)}
-                      className={`w-16 h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all ${
+                      className={`w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all ${
                         selectedImage === i ? 'border-primary' : 'border-border hover:border-muted-foreground'
                       }`}
                     >
@@ -170,15 +170,15 @@ export default function ProductDetail() {
             </div>
 
              <div className="flex flex-col">
-              <h1 className="font-display text-3xl md:text-4xl text-foreground mb-2">{product.title}</h1>
+              <h1 className="font-display text-2xl md:text-4xl text-foreground mb-2 leading-tight">{product.title}</h1>
 
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3 md:mb-4 flex-wrap">
                 {bundleStartingPrice != null ? (
-                  <span className="text-2xl font-bold text-primary">
+                  <span className="text-xl md:text-2xl font-bold text-primary">
                     {t("product.startingFrom")} €{bundleStartingPrice.toFixed(2)}
                   </span>
                 ) : (
-                  <span className="text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
+                  <span className="text-xl md:text-2xl font-bold text-primary">€{variantPrice.toFixed(2)}</span>
                 )}
                 {!isBundle && (variant?.compare_at_price || product.compare_at_price) && (
                   <span className="text-muted-foreground line-through">
