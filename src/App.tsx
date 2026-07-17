@@ -26,6 +26,7 @@ import Account from "./pages/Account.tsx";
 import QRPayment from "./pages/QRPayment.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
+import VacationBanner from "./components/VacationBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
