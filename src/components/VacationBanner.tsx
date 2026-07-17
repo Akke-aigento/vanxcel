@@ -33,14 +33,14 @@ const VacationBanner = () => {
   };
 
   return (
-    <div className="relative z-[60] bg-accent text-accent-foreground">
-      <div className="container mx-auto px-4 py-2.5 flex items-center justify-center gap-3 text-sm font-medium text-center">
+    <div className="fixed bottom-0 left-0 right-0 z-[70] bg-accent text-accent-foreground border-t border-black/10 shadow-lg animate-fade-in-up">
+      <div className="container mx-auto px-4 py-3 pr-10 flex items-center justify-center gap-3 text-sm font-medium text-center relative">
         <Plane size={16} className="shrink-0 hidden sm:inline-block" />
         <span className="leading-snug">{text}</span>
         <button
           onClick={dismiss}
           aria-label="Sluiten"
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-black/10 transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded hover:bg-black/10 transition-colors"
         >
           <X size={16} />
         </button>
