@@ -48,6 +48,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <VacationBanner />
           <AnimatedOutlet>
             <Routes>
               <Route path="/" element={<Index />} />
