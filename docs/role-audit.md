@@ -94,3 +94,9 @@ Newsletter-signup faalde stil (400) omdat `Newsletter.tsx` via de customer-proxy
 (`storefront-customer-api`) subscribete i.p.v. de storefront-proxy; omgelegd naar
 `sellqoFetch('/newsletter')`. Live geverifieerd dat subscribers nu in SellQo
 `newsletter_subscribers` onder de VanXcel-tenant landen.
+
+## Legal pages als eigen route
+
+Legal pages worden nu gerenderd als eigen VanXcel-route `/legal/:slug` in huisstijl (HTML uit SellQo via
+`/sellqo-proxy/legal/<slug>`, gestylede `.legal-content` in `index.css`). De footer is omgelegd van externe
+`<a target="_blank">` naar interne `<Link to="/legal/:slug">`; socials komen via `/settings` automatisch mee.
