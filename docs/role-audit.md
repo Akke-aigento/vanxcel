@@ -113,3 +113,7 @@ DB-foutstrings gemaskeerd naar generieke UPSTREAM_ERROR, business-fouten blijven
 Ongeldige kortingscode werd als toegepast gemeld doordat `applyDiscountFn` enkel de buitenste `success` checkte;
 geneste `data.success:false`-check toegevoegd zodat de foutmelding nu verschijnt en de functie `false` returnt.
 Geldige codes ongewijzigd (WELCOME10 geverifieerd).
+
+## Cookiebanner-link
+Cookiebanner "meer info"-link wees naar `/cookie` (niet-bestaand) i.p.v. de interne `/legal/:slug`-route;
+omgezet naar interne React Router `Link` naar `/legal/cookie` (met "cookie" als veilige default-slug).
