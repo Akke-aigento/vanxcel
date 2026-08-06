@@ -5,7 +5,7 @@ import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCustomerAuth } from "@/integrations/sellqo/CustomerAuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, User, MapPin, ShoppingBag, Lock, LogOut } from "lucide-react";
+import { Loader2, User, MapPin, ShoppingBag, Lock, LogOut, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileTab from "@/components/account/ProfileTab";
 import AddressesTab from "@/components/account/AddressesTab";
@@ -43,6 +43,7 @@ const Account = () => {
   const handleLogout = () => { logout(); navigate("/"); };
 
   const initials = `${customer?.first_name?.[0] || ""}${customer?.last_name?.[0] || ""}`.toUpperCase();
+  const isOwner = customer?.email?.toLowerCase() === "info@vanxcel.com";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -88,6 +89,15 @@ const Account = () => {
                     </button>
                   );
                 })}
+                {isOwner && (
+                  <button
+                    onClick={() => navigate("/beheer/handleidingen")}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-left text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  >
+                    <FileText size={16} />
+                    {t("account.manageManuals")}
+                  </button>
+                )}
                 <div className="border-t border-border/20 mt-3 pt-3">
                   <button
                     onClick={handleLogout}
@@ -119,6 +129,15 @@ const Account = () => {
                     </button>
                   );
                 })}
+                {isOwner && (
+                  <button
+                    onClick={() => navigate("/beheer/handleidingen")}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 bg-secondary/50 text-muted-foreground"
+                  >
+                    <FileText size={14} />
+                    {t("account.manageManuals")}
+                  </button>
+                )}
               </div>
             </nav>
 
