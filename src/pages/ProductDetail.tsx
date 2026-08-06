@@ -160,7 +160,7 @@ export default function ProductDetail() {
                     <button
                       key={i}
                       onClick={() => setSelectedImage(i)}
-                      className={`w-16 h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all ${
+                      className={`w-16 h-16 flex-shrink-0 snap-start rounded border-2 overflow-hidden transition-all ${
                         selectedImage === i ? 'border-primary' : 'border-border hover:border-muted-foreground'
                       }`}
                     >
