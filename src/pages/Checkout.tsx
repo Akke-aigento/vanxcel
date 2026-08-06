@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Badge } from "@/components/ui/badge";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout, CheckoutProvider } from "@/integrations/sellqo/CheckoutContext";
@@ -249,11 +249,6 @@ function StepPayment() {
                   <p className="text-xs text-muted-foreground">
                     {isBankTransfer ? t("checkout.qrDescription") : method.description}
                   </p>
-                  {isBankTransfer && (
-                    <Badge variant="secondary" className="mt-1 bg-green-100 text-green-800 border-green-200 text-xs">
-                      {t("checkout.noTransactionFees")}
-                    </Badge>
-                  )}
                 </div>
               </label>
             );
