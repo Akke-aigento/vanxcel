@@ -78,6 +78,7 @@ function addItem(
     quantity,
     unitPrice,
     reason: reasonOverride ?? product.configuratorUse,
+    reasonVars,
     icon,
     sku: product.sku,
     inStock: product.inStock,
