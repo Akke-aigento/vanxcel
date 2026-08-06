@@ -110,7 +110,7 @@ export function useCollections() {
 
 // === CART HOOKS ===
 export function useCartQuery() {
-  const cartId = getStoredCartId();
+  const cartId = useStoredCartId();
   return useQuery({
     queryKey: sellqoKeys.cart(cartId || ''),
     queryFn: async () => {
