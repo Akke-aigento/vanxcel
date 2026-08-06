@@ -128,7 +128,7 @@ export function generatePackage(
   addItem(items, batterySel.product, batterySel.quantity, 'battery',
     'configurator.pr_battery',
     false, priceOverrides, {
-      batteryAh: Number(batterySel.product.specs.capacity ?? batteryAh) * batterySel.quantity || batteryAh,
+      batteryAh: Number(batterySel.product.specs.capacityAh ?? batteryAh) * batterySel.quantity,
       dailyWh: state.totalDailyWh,
       days: daysAutark,
     });
