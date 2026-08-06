@@ -122,18 +122,25 @@ export function generatePackage(
   // 1. Converter (always)
   addItem(items, converterSel.product, 1, 'zap',
     'configurator.pr_converter',
-    false, priceOverrides);
+    false, priceOverrides, { converterW });
 
   // 2. Battery
   addItem(items, batterySel.product, batterySel.quantity, 'battery',
     'configurator.pr_battery',
-    false, priceOverrides);
+    false, priceOverrides, {
+      batteryAh: Number(batterySel.product.specs.capacity ?? batteryAh) * batterySel.quantity || batteryAh,
+      dailyWh: state.totalDailyWh,
+      days: daysAutark,
+    });
 
   // 3. Solar panels (if needed)
   if (solarWp > 0) {
+    const panelW = Number(
+      solarSel.product.specs.wattage ?? solarSel.product.specs.watt ?? solarSel.product.specs.wp ?? 0
+    );
     addItem(items, solarSel.product, solarSel.quantity, 'sun',
       'configurator.pr_solar',
-      false, priceOverrides);
+      false, priceOverrides, { qty: solarSel.quantity, panelW, totalWp: solarWp });
 
     // Roof cable gland
     addItem(items, getProduct('VXDAKDV')!, 1, 'cable',
@@ -147,15 +154,18 @@ export function generatePackage(
     const solarRoute = cableRoutes?.find(r => r.route_id === 'roof_to_interior');
     const solarMeters = Math.ceil(Number(solarRoute?.distance_meters ?? 4) + 1);
     addItem(items, getProduct('VXCAB6SR')!, solarMeters, 'cable',
-      'configurator.pr_solarCableRed', true, priceOverrides);
+      'configurator.pr_solarCableRed', true, priceOverrides, { meters: solarMeters });
     addItem(items, getProduct('VXCAB6SZ')!, solarMeters, 'cable',
-      'configurator.pr_solarCableBlk', true, priceOverrides);
+      'configurator.pr_solarCableBlk', true, priceOverrides, { meters: solarMeters });
   }
 
   // 4. ANL Fuse (always)
   addItem(items, anlFuse, 1, 'shield',
     'configurator.pr_anlFuse',
-    false, priceOverrides);
+    false, priceOverrides, {
+      converterW,
+      rating: Number(anlFuse.specs.rating ?? anlFuse.sku.replace(/\D/g, '') ?? 200),
+    });
 
   // 5. Battery disconnect switch (always)
   addItem(items, getProduct('VXSWITCH200')!, 1, 'power',
