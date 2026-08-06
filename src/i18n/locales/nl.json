@@ -1041,5 +1041,11 @@
     "published": "Gepubliceerd",
     "draft": "Concept",
     "deleted": "Verwijderd"
+  },
+  "cookie": {
+    "text": "VanXcel gebruikt cookies om de website goed te laten werken en je ervaring te verbeteren.",
+    "accept": "Accepteren",
+    "reject": "Weigeren",
+    "moreInfo": "Lees ons cookiebeleid"
   }
 }
