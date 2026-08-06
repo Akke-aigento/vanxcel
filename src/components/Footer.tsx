@@ -92,16 +92,15 @@ const Footer = () => {
               </li>
               {legalPages.map((page) => (
                 <li key={page.slug}>
-                  <a
-                    href={`${page.url}?from=https%3A%2F%2Fwww.vanxcel.be%2F`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    to={`/legal/${page.slug}`}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {page.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
+
             </ul>
           </div>
 
