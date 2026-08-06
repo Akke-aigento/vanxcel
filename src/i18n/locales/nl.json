@@ -1047,5 +1047,10 @@
     "accept": "Accepteren",
     "reject": "Weigeren",
     "moreInfo": "Lees ons cookiebeleid"
+  },
+  "legal": {
+    "fallbackTitle": "Pagina niet beschikbaar",
+    "fallbackText": "Deze pagina is momenteel niet beschikbaar.",
+    "backHome": "Terug naar de homepagina"
   }
 }

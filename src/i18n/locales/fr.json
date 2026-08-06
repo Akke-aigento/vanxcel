@@ -1047,5 +1047,10 @@
     "accept": "Accepter",
     "reject": "Refuser",
     "moreInfo": "Lire notre politique en matière de cookies"
+  },
+  "legal": {
+    "fallbackTitle": "Page indisponible",
+    "fallbackText": "Cette page n'est pas disponible pour le moment.",
+    "backHome": "Retour à l'accueil"
   }
 }
