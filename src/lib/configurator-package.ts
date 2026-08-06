@@ -20,6 +20,7 @@ export interface PackageItem {
   quantity: number;
   unitPrice: number;
   reason: string;
+  reasonVars?: Record<string, string | number>;
   icon: string;
   sku: string;
   inStock: boolean;
@@ -54,7 +55,8 @@ function addItem(
   icon: string,
   reasonOverride?: string,
   isPerMeter?: boolean,
-  priceOverrides?: Map<string, number>
+  priceOverrides?: Map<string, number>,
+  reasonVars?: Record<string, string | number>
 ) {
   // Coming-soon products get price 0 (hidden in UI)
   // Otherwise use live price from SellQo, or fallback to hardcoded
@@ -76,6 +78,7 @@ function addItem(
     quantity,
     unitPrice,
     reason: reasonOverride ?? product.configuratorUse,
+    reasonVars,
     icon,
     sku: product.sku,
     inStock: product.inStock,
@@ -119,18 +122,25 @@ export function generatePackage(
   // 1. Converter (always)
   addItem(items, converterSel.product, 1, 'zap',
     'configurator.pr_converter',
-    false, priceOverrides);
+    false, priceOverrides, { converterW });
 
   // 2. Battery
   addItem(items, batterySel.product, batterySel.quantity, 'battery',
     'configurator.pr_battery',
-    false, priceOverrides);
+    false, priceOverrides, {
+      batteryAh: Number(batterySel.product.specs.capacityAh ?? batteryAh) * batterySel.quantity,
+      dailyWh: state.totalDailyWh,
+      days: daysAutark,
+    });
 
   // 3. Solar panels (if needed)
   if (solarWp > 0) {
+    const panelW = Number(
+      solarSel.product.specs.wattage ?? solarSel.product.specs.watt ?? solarSel.product.specs.wp ?? 0
+    );
     addItem(items, solarSel.product, solarSel.quantity, 'sun',
       'configurator.pr_solar',
-      false, priceOverrides);
+      false, priceOverrides, { qty: solarSel.quantity, panelW, totalWp: solarWp });
 
     // Roof cable gland
     addItem(items, getProduct('VXDAKDV')!, 1, 'cable',
@@ -144,15 +154,18 @@ export function generatePackage(
     const solarRoute = cableRoutes?.find(r => r.route_id === 'roof_to_interior');
     const solarMeters = Math.ceil(Number(solarRoute?.distance_meters ?? 4) + 1);
     addItem(items, getProduct('VXCAB6SR')!, solarMeters, 'cable',
-      'configurator.pr_solarCableRed', true, priceOverrides);
+      'configurator.pr_solarCableRed', true, priceOverrides, { meters: solarMeters });
     addItem(items, getProduct('VXCAB6SZ')!, solarMeters, 'cable',
-      'configurator.pr_solarCableBlk', true, priceOverrides);
+      'configurator.pr_solarCableBlk', true, priceOverrides, { meters: solarMeters });
   }
 
   // 4. ANL Fuse (always)
   addItem(items, anlFuse, 1, 'shield',
     'configurator.pr_anlFuse',
-    false, priceOverrides);
+    false, priceOverrides, {
+      converterW,
+      rating: Number(anlFuse.specs.rating ?? anlFuse.sku.replace(/\D/g, '') ?? 200),
+    });
 
   // 5. Battery disconnect switch (always)
   addItem(items, getProduct('VXSWITCH200')!, 1, 'power',
@@ -181,9 +194,9 @@ export function generatePackage(
   const altCableBlk = getProduct('VXCAB16Z');
   if (altCableRed && altCableBlk) {
     addItem(items, altCableRed, altMeters, 'cable',
-      'configurator.pr_altCableRed', true, priceOverrides);
+      'configurator.pr_altCableRed', true, priceOverrides, { meters: altMeters });
     addItem(items, altCableBlk, altMeters, 'cable',
-      'configurator.pr_altCableBlk', true, priceOverrides);
+      'configurator.pr_altCableBlk', true, priceOverrides, { meters: altMeters });
   }
 
   // 10. Heatshrink (always)
