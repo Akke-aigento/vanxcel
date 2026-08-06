@@ -5,7 +5,7 @@ import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCustomerAuth } from "@/integrations/sellqo/CustomerAuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, User, MapPin, ShoppingBag, Lock, LogOut } from "lucide-react";
+import { Loader2, User, MapPin, ShoppingBag, Lock, LogOut, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileTab from "@/components/account/ProfileTab";
 import AddressesTab from "@/components/account/AddressesTab";
