@@ -155,7 +155,7 @@ export default function ProductDetail() {
                 )}
               </div>
               {images.length > 1 && (
-                <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1 snap-x scroll-smooth">
                   {images.map((img, i) => (
                     <button
                       key={i}
