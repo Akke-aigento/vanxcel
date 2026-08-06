@@ -43,6 +43,7 @@ const Account = () => {
   const handleLogout = () => { logout(); navigate("/"); };
 
   const initials = `${customer?.first_name?.[0] || ""}${customer?.last_name?.[0] || ""}`.toUpperCase();
+  const isOwner = customer?.email?.toLowerCase() === "info@vanxcel.com";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
