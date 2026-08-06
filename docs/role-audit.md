@@ -1,5 +1,25 @@
 # Role audit / architecture log
 
+## Autoscroll-race bij navigatie
+
+`ScrollToTop` scrollde bij pathname-wissel terwijl `AnimatedOutlet` de oude pagina nog 250ms in de DOM hield,
+dus de reset vuurde op de oude content. Opgelost door `window.scrollTo({top:0,behavior:"auto"})` direct na
+`setDisplayChildren(children)` in de exit-timeout van `AnimatedOutlet`. `ScrollToTop` blijft als vangnet.
+
+## Productbeschrijving werd afgekapt
+
+`ProductDetail` toonde `plainDescription.slice(0,300)` met `line-clamp-4` en negeerde `short_description`.
+Nu: short_description als intro-paragraaf plus de volledige lange beschrijving, HTML gestript (block-tags naar
+newlines) en gerenderd met `whitespace-pre-line` — geen `dangerouslySetInnerHTML`.
+
+## Cookie-consent banner toegevoegd
+
+Nieuw `src/components/CookieConsent.tsx`, gemount in `App.tsx`. Keuze (accepted/rejected + timestamp) in
+localStorage onder `vanxcel_cookie_consent`, in try/catch. Link naar het cookiebeleid komt uit de bestaande
+`/legal`-lijst via `sellqoFetch`; ontbreekt die page, dan tekst zonder dode link. Geen externe cookie-library.
+
+
+
 ## 2026-08-06 — Handleidingen-sectie met beheer (self-contained in VanXcel)
 
 **Root cause / aanleiding.** `/manuals` was een statische placeholder ("mail ons").
