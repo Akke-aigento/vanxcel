@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { productsAPI, collectionsAPI, cartAPI, checkoutAPI, settingsAPI, legalAPI } from './api';
@@ -43,14 +44,37 @@ export function getStoredCartId(): string | null {
   }
 }
 
+const CART_ID_EVENT = 'vanxcel-cart-id-changed';
+
 function storeCartId(cartId: string) {
   if (!isValidCartId(cartId)) return;
-  try { localStorage.setItem(CART_STORAGE_KEY, cartId); } catch { /* noop */ }
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, cartId);
+    window.dispatchEvent(new Event(CART_ID_EVENT));
+  } catch { /* noop */ }
 }
 
 export function clearStoredCartId() {
-  try { localStorage.removeItem(CART_STORAGE_KEY); } catch { /* noop */ }
+  try {
+    localStorage.removeItem(CART_STORAGE_KEY);
+    window.dispatchEvent(new Event(CART_ID_EVENT));
+  } catch { /* noop */ }
 }
+
+export function useStoredCartId(): string | null {
+  const [cartId, setCartId] = useState<string | null>(() => getStoredCartId());
+  useEffect(() => {
+    const sync = () => setCartId(getStoredCartId());
+    window.addEventListener(CART_ID_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(CART_ID_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
+  return cartId;
+}
+
 
 // === PRODUCT HOOKS ===
 export function useProducts(params?: ProductsParams) {
@@ -86,7 +110,7 @@ export function useCollections() {
 
 // === CART HOOKS ===
 export function useCartQuery() {
-  const cartId = getStoredCartId();
+  const cartId = useStoredCartId();
   return useQuery({
     queryKey: sellqoKeys.cart(cartId || ''),
     queryFn: async () => {
