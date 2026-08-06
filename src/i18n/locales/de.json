@@ -458,7 +458,16 @@
     "step3": "Folge den Schritten für eine sichere Installation",
     "needHelp": "Hilfe nötig?",
     "needHelpDesc": "Kommst du nicht weiter? Kein Problem! Kontaktiere uns per WhatsApp oder über das Kontaktformular.",
-    "contactUs": "Kontakt aufnehmen"
+    "contactUs": "Kontakt aufnehmen",
+    "download": "Herunterladen",
+    "downloadFailed": "Download fehlgeschlagen",
+    "filterProduct": "Produkt",
+    "filterLanguage": "Sprache",
+    "allProducts": "Alle Produkte",
+    "allLanguages": "Alle Sprachen",
+    "reset": "Filter zurücksetzen",
+    "empty": "Noch keine Anleitungen verfügbar.",
+    "noResults": "Keine Anleitungen für diese Filter."
   },
   "configurator": {
     "navLabel": "Konfigurator",
@@ -1011,5 +1020,24 @@
     "preferences": "Einstellungen",
     "searchAddress": "Adresse suchen",
     "searchAddressPlaceholder": "Adresse eingeben..."
+  },
+  "manualsAdmin": {
+    "title": "Anleitungen verwalten",
+    "noAccess": "Du hast keinen Zugriff auf diese Seite.",
+    "newManual": "Neue Anleitung",
+    "product": "Produkt",
+    "selectProduct": "Produkt auswählen",
+    "language": "Sprache",
+    "manualTitle": "Titel",
+    "pdfFile": "PDF-Datei",
+    "upload": "Hochladen",
+    "uploaded": "Anleitung hochgeladen",
+    "missingFields": "Bitte alle Felder ausfüllen",
+    "allManuals": "Alle Anleitungen",
+    "empty": "Noch keine Anleitungen.",
+    "order": "Reihenfolge",
+    "published": "Veröffentlicht",
+    "draft": "Entwurf",
+    "deleted": "Gelöscht"
   }
 }

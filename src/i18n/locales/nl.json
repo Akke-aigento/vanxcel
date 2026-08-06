@@ -458,7 +458,16 @@
     "step3": "Volg de stappen voor een veilige installatie",
     "needHelp": "Hulp nodig?",
     "needHelpDesc": "Kom je er niet uit? Geen probleem! Neem contact met ons op via WhatsApp of het contactformulier. We helpen je graag gratis verder.",
-    "contactUs": "Neem contact op"
+    "contactUs": "Neem contact op",
+    "download": "Download",
+    "downloadFailed": "Downloaden mislukt",
+    "filterProduct": "Product",
+    "filterLanguage": "Taal",
+    "allProducts": "Alle producten",
+    "allLanguages": "Alle talen",
+    "reset": "Filters wissen",
+    "empty": "Er zijn nog geen handleidingen beschikbaar.",
+    "noResults": "Geen handleidingen gevonden voor deze filters."
   },
   "configurator": {
     "navLabel": "Configurator",
@@ -1011,5 +1020,24 @@
     "preferences": "Voorkeuren",
     "searchAddress": "Zoek adres",
     "searchAddressPlaceholder": "Typ je adres..."
+  },
+  "manualsAdmin": {
+    "title": "Handleidingen beheren",
+    "noAccess": "Je hebt geen toegang tot deze pagina.",
+    "newManual": "Nieuwe handleiding",
+    "product": "Product",
+    "selectProduct": "Kies een product",
+    "language": "Taal",
+    "manualTitle": "Titel",
+    "pdfFile": "PDF-bestand",
+    "upload": "Uploaden",
+    "uploaded": "Handleiding geüpload",
+    "missingFields": "Vul alle velden in",
+    "allManuals": "Alle handleidingen",
+    "empty": "Nog geen handleidingen.",
+    "order": "Volgorde",
+    "published": "Gepubliceerd",
+    "draft": "Concept",
+    "deleted": "Verwijderd"
   }
 }

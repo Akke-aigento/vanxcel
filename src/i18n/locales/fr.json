@@ -458,7 +458,16 @@
     "step3": "Suivez les étapes pour une installation sûre",
     "needHelp": "Besoin d'aide ?",
     "needHelpDesc": "Vous n'y arrivez pas ? Pas de problème ! Contactez-nous via WhatsApp ou le formulaire de contact.",
-    "contactUs": "Nous contacter"
+    "contactUs": "Nous contacter",
+    "download": "Télécharger",
+    "downloadFailed": "Échec du téléchargement",
+    "filterProduct": "Produit",
+    "filterLanguage": "Langue",
+    "allProducts": "Tous les produits",
+    "allLanguages": "Toutes les langues",
+    "reset": "Réinitialiser",
+    "empty": "Aucun manuel disponible pour le moment.",
+    "noResults": "Aucun manuel ne correspond à ces filtres."
   },
   "configurator": {
     "navLabel": "Configurateur",
@@ -1011,5 +1020,24 @@
     "preferences": "Préférences",
     "searchAddress": "Rechercher une adresse",
     "searchAddressPlaceholder": "Tapez votre adresse..."
+  },
+  "manualsAdmin": {
+    "title": "Gérer les manuels",
+    "noAccess": "Vous n'avez pas accès à cette page.",
+    "newManual": "Nouveau manuel",
+    "product": "Produit",
+    "selectProduct": "Choisir un produit",
+    "language": "Langue",
+    "manualTitle": "Titre",
+    "pdfFile": "Fichier PDF",
+    "upload": "Téléverser",
+    "uploaded": "Manuel téléversé",
+    "missingFields": "Veuillez remplir tous les champs",
+    "allManuals": "Tous les manuels",
+    "empty": "Aucun manuel pour le moment.",
+    "order": "Ordre",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "deleted": "Supprimé"
   }
 }

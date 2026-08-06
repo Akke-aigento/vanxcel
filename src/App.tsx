@@ -20,6 +20,7 @@ import About from "./pages/About.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import Delivery from "./pages/Delivery.tsx";
 import Manuals from "./pages/Manuals.tsx";
+import ManualsAdmin from "./pages/ManualsAdmin.tsx";
 import Login from "./pages/Login.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import Account from "./pages/Account.tsx";
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/faq" element={<FAQ />} />
               <Route path="/delivery" element={<Delivery />} />
               <Route path="/manuals" element={<Manuals />} />
+              <Route path="/beheer/handleidingen" element={<ManualsAdmin />} />
               <Route path="/login" element={<Login />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/account" element={<Account />} />

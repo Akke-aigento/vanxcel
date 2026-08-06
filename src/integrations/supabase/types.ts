@@ -171,6 +171,48 @@ export type Database = {
           },
         ]
       }
+      product_manuals: {
+        Row: {
+          created_at: string
+          file_size: number | null
+          id: string
+          is_published: boolean
+          language: string
+          product_name: string
+          product_sku: string
+          sort_order: number
+          storage_path: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_published?: boolean
+          language: string
+          product_name: string
+          product_sku: string
+          sort_order?: number
+          storage_path: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_published?: boolean
+          language?: string
+          product_name?: string
+          product_sku?: string
+          sort_order?: number
+          storage_path?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_notifications: {
         Row: {
           created_at: string | null
