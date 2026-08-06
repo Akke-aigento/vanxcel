@@ -287,6 +287,12 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
       const data = (r?.data && typeof r.data === 'object') ? r.data : r;
+      // Genest foutcontract: checkout/discount geeft HTTP 200 met data.success:false bij een ongeldige code.
+      if (data?.success === false) {
+        const err = data.error;
+        toast.error((typeof err === 'object' ? err?.message : err) || 'Ongeldige kortingscode.');
+        return false;
+      }
       const firstDiscount = Array.isArray(data?.applied_discounts) && data.applied_discounts.length > 0
         ? data.applied_discounts[0]
         : null;
