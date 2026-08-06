@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import RevealOnScroll from "./RevealOnScroll";
 import MagneticButton from "./MagneticButton";
-import { customerApiFetch } from "@/integrations/sellqo/customerClient";
+import { sellqoFetch } from "@/integrations/sellqo/client";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +16,10 @@ const Newsletter = () => {
     if (!email) return;
     setLoading(true);
     try {
-      await customerApiFetch("newsletter_subscribe", { email, source: "website" });
+      await sellqoFetch("/newsletter", {
+        method: "POST",
+        body: JSON.stringify({ email, source: "website" }),
+      });
       toast.success(t("newsletter.success"));
       setEmail("");
     } catch {

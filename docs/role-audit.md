@@ -67,3 +67,10 @@ De cart-id werd bij de eerste add-to-cart niet betrouwbaar opgeslagen door een r
 een refresh geen id in localStorage stond en het mandje leeg leek. Opgelost door `storeCartId()` expliciet
 en synchroon in de `useAddToCart` mutationFn aan te roepen direct na cart-aanmaak, plus een herbevestiging
 in `onSuccess` met de cart-id uit de respons.
+
+## Newsletter-signup via verkeerde proxy
+
+Newsletter-signup faalde stil (400) omdat `Newsletter.tsx` via de customer-proxy
+(`storefront-customer-api`) subscribete i.p.v. de storefront-proxy; omgelegd naar
+`sellqoFetch('/newsletter')`. Live geverifieerd dat subscribers nu in SellQo
+`newsletter_subscribers` onder de VanXcel-tenant landen.
