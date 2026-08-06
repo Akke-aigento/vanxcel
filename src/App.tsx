@@ -28,6 +28,7 @@ import QRPayment from "./pages/QRPayment.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
 import VacationBanner from "./components/VacationBanner";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <VacationBanner />
+          <CookieConsent />
           <AnimatedOutlet>
             <Routes>
               <Route path="/" element={<Index />} />

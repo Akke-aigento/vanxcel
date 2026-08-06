@@ -1041,5 +1041,11 @@
     "published": "Published",
     "draft": "Draft",
     "deleted": "Deleted"
+  },
+  "cookie": {
+    "text": "VanXcel uses cookies to keep the website working properly and to improve your experience.",
+    "accept": "Accept",
+    "reject": "Decline",
+    "moreInfo": "Read our cookie policy"
   }
 }
