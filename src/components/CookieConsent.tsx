@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { Cookie } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sellqoFetch } from "@/integrations/sellqo/client";
@@ -19,7 +20,7 @@ const readConsent = (): string | null => {
 const CookieConsent = () => {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
-  const [cookieUrl, setCookieUrl] = useState<string | null>(null);
+  const [cookieSlug, setCookieSlug] = useState<string>("cookie");
 
   useEffect(() => {
     if (readConsent()) return;
@@ -31,7 +32,7 @@ const CookieConsent = () => {
         const match = pages.find((p) =>
           `${p.slug || ""} ${p.title || ""}`.toLowerCase().includes("cookie")
         );
-        if (match?.url) setCookieUrl(match.url);
+        if (match?.slug) setCookieSlug(match.slug);
       })
       .catch(() => {});
   }, []);
@@ -56,15 +57,13 @@ const CookieConsent = () => {
         <Cookie size={20} className="shrink-0 text-primary hidden sm:block" />
         <p className="text-sm text-muted-foreground leading-snug flex-1">
           {t("cookie.text")}{" "}
-          {cookieUrl && (
-            <a
-              href={cookieUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+          {cookieSlug && (
+            <Link
+              to={`/legal/${cookieSlug}`}
               className="text-primary underline underline-offset-2 hover:text-primary/80"
             >
               {t("cookie.moreInfo")}
-            </a>
+            </Link>
           )}
         </p>
         <div className="flex gap-2 shrink-0">
