@@ -206,10 +206,19 @@ export default function ProductDetail() {
                 <p className="text-sm text-green-500 mb-4">{t("product.inStock")}</p>
               )}
 
-              {plainDescription && (
-                <p className="text-muted-foreground mb-6 leading-relaxed line-clamp-4">
-                  {plainDescription.slice(0, 300)}{plainDescription.length > 300 ? '...' : ''}
-                </p>
+              {(shortDescription || plainDescription) && (
+                <div className="mb-6 space-y-3">
+                  {shortDescription && (
+                    <p className="text-foreground/80 leading-relaxed whitespace-pre-line">
+                      {shortDescription}
+                    </p>
+                  )}
+                  {plainDescription && plainDescription !== shortDescription && (
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {plainDescription}
+                    </p>
+                  )}
+                </div>
               )}
 
               {product.variants.length > 1 && (
