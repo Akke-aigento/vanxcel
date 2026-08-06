@@ -147,12 +147,17 @@ export function useAddToCart() {
       if (!activeCartId) {
         const newCart = await createCart.mutateAsync();
         activeCartId = newCart.id;
+        if (activeCartId) {
+          storeCartId(activeCartId);
+        }
       }
+      if (!activeCartId) throw new Error('Kon geen winkelmand aanmaken');
       const result = await cartAPI.addItem(activeCartId, item);
       const raw = extractSingle<Cart>(result) || result;
       return normalizeCart(raw);
     },
     onSuccess: (cart) => {
+      if (cart.id) storeCartId(cart.id);
       queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
     },
   });
