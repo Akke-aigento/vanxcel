@@ -184,8 +184,10 @@ serve(async (req: Request) => {
   try {
     const url = new URL(req.url);
     const path = url.pathname.replace(/^\/sellqo-proxy/, '') || '/';
-    const tenantSlug = req.headers.get('X-Tenant-ID') || 'vanxcel';
-    const tenantId = tenantSlug === 'vanxcel' ? '54f6b480-280b-42e1-b843-d5beb2831acd' : tenantSlug;
+    // Deze proxy bedient uitsluitend de VanXcel-storefront. Tenant is hard gepind
+    // zodat de X-Tenant-ID header nooit cross-tenant toegang kan geven.
+    const VANXCEL_TENANT_ID = '54f6b480-280b-42e1-b843-d5beb2831acd';
+    const tenantId = VANXCEL_TENANT_ID;
     const locale = req.headers.get('Accept-Language') || null;
 
     let body: Record<string, unknown> | null = null;
@@ -224,6 +226,16 @@ serve(async (req: Request) => {
         return new Response(
           JSON.stringify({ data: [] }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Masker rauwe DB-/serverlekken; laat nette business-fouten (JSON met code/message) intact.
+      const looksLikeDbLeak = /invalid input syntax|syntax error|relation ".*" does not exist|column .* does not exist|pg_|PostgREST|stack|at Object\.<anonymous>/i.test(responseBody);
+      if (looksLikeDbLeak) {
+        console.warn(`[sellqo-proxy] masked leaky upstream error for ${storefrontBody.action}: ${responseBody.substring(0, 200)}`);
+        return new Response(
+          JSON.stringify({ success: false, error: { code: 'UPSTREAM_ERROR', message: 'Er ging iets mis. Probeer het later opnieuw.' } }),
+          { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
     }

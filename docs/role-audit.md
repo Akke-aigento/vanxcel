@@ -104,3 +104,7 @@ Legal pages worden nu gerenderd als eigen VanXcel-route `/legal/:slug` in huisst
 ## Sprint 1 audit-fixes
 - CableCalculator kreeg rauwe i.p.v. genormaliseerde producten (`title` vs `name`) → crash bij Berekenen, opgelost via `normalizeProducts` + guards.
 - Configurator-pakketstap toonde letterlijke `{{placeholders}}`, opgelost door `reasonVars` per item mee te geven aan `t()`.
+
+## Sprint 2 security
+sellqo-proxy tenant hard gepind op VanXcel (X-Tenant-ID header genegeerd → cross-tenant read dicht); rauwe
+DB-foutstrings gemaskeerd naar generieke UPSTREAM_ERROR, business-fouten blijven intact.
