@@ -120,6 +120,15 @@ const Account = () => {
                     </button>
                   );
                 })}
+                {isOwner && (
+                  <button
+                    onClick={() => navigate("/beheer/handleidingen")}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 bg-secondary/50 text-muted-foreground"
+                  >
+                    <FileText size={14} />
+                    {t("account.manageManuals")}
+                  </button>
+                )}
               </div>
             </nav>
 
