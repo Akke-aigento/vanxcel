@@ -100,3 +100,7 @@ Newsletter-signup faalde stil (400) omdat `Newsletter.tsx` via de customer-proxy
 Legal pages worden nu gerenderd als eigen VanXcel-route `/legal/:slug` in huisstijl (HTML uit SellQo via
 `/sellqo-proxy/legal/<slug>`, gestylede `.legal-content` in `index.css`). De footer is omgelegd van externe
 `<a target="_blank">` naar interne `<Link to="/legal/:slug">`; socials komen via `/settings` automatisch mee.
+
+## Sprint 1 audit-fixes
+- CableCalculator kreeg rauwe i.p.v. genormaliseerde producten (`title` vs `name`) → crash bij Berekenen, opgelost via `normalizeProducts` + guards.
+- Configurator-pakketstap toonde letterlijke `{{placeholders}}`, opgelost door `reasonVars` per item mee te geven aan `t()`.
