@@ -58,9 +58,6 @@ const LegalPage = () => {
             </div>
           ) : doc ? (
             <article>
-              <h1 className="font-display text-4xl md:text-5xl text-foreground mb-10">
-                {doc.title}
-              </h1>
               <div
                 className="legal-content"
                 dangerouslySetInnerHTML={{ __html: doc.content }}
