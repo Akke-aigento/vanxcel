@@ -89,6 +89,15 @@ const Account = () => {
                     </button>
                   );
                 })}
+                {isOwner && (
+                  <button
+                    onClick={() => navigate("/beheer/handleidingen")}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-left text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  >
+                    <FileText size={16} />
+                    {t("account.manageManuals")}
+                  </button>
+                )}
                 <div className="border-t border-border/20 mt-3 pt-3">
                   <button
                     onClick={handleLogout}
