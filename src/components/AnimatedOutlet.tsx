@@ -22,6 +22,7 @@ const AnimatedOutlet = ({ children }: AnimatedOutletProps) => {
       const timer = setTimeout(() => {
         prevKey.current = location.key;
         setDisplayChildren(children);
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
         setTransitionStage("enter");
       }, 250);
       return () => clearTimeout(timer);
