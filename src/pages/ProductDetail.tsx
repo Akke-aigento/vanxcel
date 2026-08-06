@@ -36,7 +36,7 @@ export default function ProductDetail() {
   const productDesc = (() => {
     if (!product) return undefined;
     const raw = (product as any).short_description || (product as any).description || '';
-    const stripped = String(raw).replace(/<[^>]*>/g, '').trim();
+    const stripped = stripHtml(String(raw));
     if (!stripped) return `${product.title} — bestel bij VanXcel met 2 jaar garantie en snelle levering.`;
     return stripped.length > 160 ? stripped.slice(0, 157) + '...' : stripped;
   })();
