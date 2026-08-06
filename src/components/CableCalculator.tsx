@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Check, Zap, ShoppingBag, ArrowRight } from "lucide-react";
 import { useProducts } from "@/integrations/sellqo/hooks";
+import { normalizeProducts } from "@/integrations/sellqo/normalizer";
 import type { Product } from "@/integrations/sellqo/types";
 
 const cableSizes = [2.5, 4, 6, 10, 16, 25, 35, 50];
@@ -11,8 +12,8 @@ function matchCableProduct(products: Product[] | undefined, cableMm: number): Pr
   if (!products?.length) return null;
   const searchTerms = [`${cableMm}mm`, `${cableMm} mm`, `${cableMm}mm²`, `${cableMm} mm²`];
   return products.find(p => {
-    const title = p.title.toLowerCase();
-    const variantMatch = p.variants?.some(v => searchTerms.some(t => v.title.toLowerCase().includes(t)));
+    const title = (p.title || "").toLowerCase();
+    const variantMatch = p.variants?.some(v => searchTerms.some(t => (v.title || "").toLowerCase().includes(t)));
     return searchTerms.some(t => title.includes(t)) || variantMatch;
   }) ?? null;
 }
@@ -21,13 +22,13 @@ function matchFuseProduct(products: Product[] | undefined, fuseKey: string): Pro
   if (!products?.length) return null;
   if (fuseKey === 'mini') {
     return products.find(p => {
-      const title = p.title.toLowerCase();
+      const title = (p.title || "").toLowerCase();
       return title.includes('mini') && (title.includes('zekering') || title.includes('fuse'));
     }) ?? null;
   }
   const ampMatch = fuseKey.replace('A', '');
   return products.find(p => {
-    const title = p.title.toLowerCase();
+    const title = (p.title || "").toLowerCase();
     return title.includes(ampMatch) && (title.includes('zekering') || title.includes('fuse'));
   }) ?? null;
 }
@@ -81,13 +82,15 @@ const CableCalculator = () => {
   const cableProducts = useMemo(() => {
     if (!cablesData) return undefined;
     const raw = cablesData as any;
-    return raw?.data?.products || raw?.products || (Array.isArray(raw) ? raw : undefined);
+    const arr = raw?.data?.products || raw?.products || (Array.isArray(raw) ? raw : undefined);
+    return Array.isArray(arr) ? normalizeProducts(arr) : undefined;
   }, [cablesData]);
 
   const accessoireProducts = useMemo(() => {
     if (!accessoiresData) return undefined;
     const raw = accessoiresData as any;
-    return raw?.data?.products || raw?.products || (Array.isArray(raw) ? raw : undefined);
+    const arr = raw?.data?.products || raw?.products || (Array.isArray(raw) ? raw : undefined);
+    return Array.isArray(arr) ? normalizeProducts(arr) : undefined;
   }, [accessoiresData]);
 
   const matchedCable = useMemo(() => {
