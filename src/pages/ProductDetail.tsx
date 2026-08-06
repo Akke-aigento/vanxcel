@@ -117,14 +117,6 @@ export default function ProductDetail() {
     : null;
   const images = product.images || [];
   const mainImage = images[selectedImage]?.url || images[0]?.url;
-  const stripHtml = (raw?: string) =>
-    (raw || '')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n\n')
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
   const shortDescription = stripHtml((product as any).short_description);
   const plainDescription = stripHtml(product.description);
 
