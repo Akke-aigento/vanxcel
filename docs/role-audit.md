@@ -108,3 +108,8 @@ Legal pages worden nu gerenderd als eigen VanXcel-route `/legal/:slug` in huisst
 ## Sprint 2 security
 sellqo-proxy tenant hard gepind op VanXcel (X-Tenant-ID header genegeerd → cross-tenant read dicht); rauwe
 DB-foutstrings gemaskeerd naar generieke UPSTREAM_ERROR, business-fouten blijven intact.
+
+## Sprint 3 kortingscodes
+Ongeldige kortingscode werd als toegepast gemeld doordat `applyDiscountFn` enkel de buitenste `success` checkte;
+geneste `data.success:false`-check toegevoegd zodat de foutmelding nu verschijnt en de functie `false` returnt.
+Geldige codes ongewijzigd (WELCOME10 geverifieerd).
