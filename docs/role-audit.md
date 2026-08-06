@@ -59,3 +59,11 @@ Add-to-cart vulde het mandje niet bij een verse sessie omdat `useCartQuery()` de
 (`getStoredCartId()` direct uit localStorage → `enabled: false`, geen re-render na `storeCartId()`).
 Opgelost met een event-gedreven `useStoredCartId()` (custom `vanxcel-cart-id-changed` event + `storage` event),
 zodat de query automatisch herstart zodra de cart-id in localStorage verschijnt. API-laag en `normalizeCart` bleven ongewijzigd.
+
+## Cart-id persistentie (race bij eerste add-to-cart)
+
+De cart-id werd bij de eerste add-to-cart niet betrouwbaar opgeslagen door een race op de geneste
+`useCreateCart.onSuccess`: de add-item-call en query-reads liepen vóór/naast `storeCartId()`, waardoor na
+een refresh geen id in localStorage stond en het mandje leeg leek. Opgelost door `storeCartId()` expliciet
+en synchroon in de `useAddToCart` mutationFn aan te roepen direct na cart-aanmaak, plus een herbevestiging
+in `onSuccess` met de cart-id uit de respons.
