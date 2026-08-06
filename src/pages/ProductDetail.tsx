@@ -13,6 +13,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Loader2 } from 'lucide-react';
+import { stripHtml } from '@/lib/utils';
 
 export default function ProductDetail() {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ export default function ProductDetail() {
   const productDesc = (() => {
     if (!product) return undefined;
     const raw = (product as any).short_description || (product as any).description || '';
-    const stripped = String(raw).replace(/<[^>]*>/g, '').trim();
+    const stripped = stripHtml(String(raw));
     if (!stripped) return `${product.title} — bestel bij VanXcel met 2 jaar garantie en snelle levering.`;
     return stripped.length > 160 ? stripped.slice(0, 157) + '...' : stripped;
   })();
@@ -116,14 +117,6 @@ export default function ProductDetail() {
     : null;
   const images = product.images || [];
   const mainImage = images[selectedImage]?.url || images[0]?.url;
-  const stripHtml = (raw?: string) =>
-    (raw || '')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n\n')
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
   const shortDescription = stripHtml((product as any).short_description);
   const plainDescription = stripHtml(product.description);
 
@@ -162,12 +155,12 @@ export default function ProductDetail() {
                 )}
               </div>
               {images.length > 1 && (
-                <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1 snap-x scroll-smooth">
                   {images.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setSelectedImage(i)}
-                      className={`w-16 h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all ${
+                      className={`w-16 h-16 flex-shrink-0 snap-start rounded border-2 overflow-hidden transition-all ${
                         selectedImage === i ? 'border-primary' : 'border-border hover:border-muted-foreground'
                       }`}
                     >

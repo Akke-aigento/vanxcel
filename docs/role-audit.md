@@ -117,3 +117,8 @@ Geldige codes ongewijzigd (WELCOME10 geverifieerd).
 ## Cookiebanner-link
 Cookiebanner "meer info"-link wees naar `/cookie` (niet-bestaand) i.p.v. de interne `/legal/:slug`-route;
 omgezet naar interne React Router `Link` naar `/legal/cookie` (met "cookie" als veilige default-slug).
+
+## PDP: HTML-entities & thumbnail-scroll
+PDP toonde letterlijke HTML-entities (`&amp;`) en tofu door ontbrekende entity-decoding in `stripHtml`;
+gedeelde `stripHtml` + `decodeEntities` in `lib/utils` toegevoegd en ProductDetail (2 call-sites + SEO-desc)
+daarop aangesloten. Thumbnail-rij mobiel: snap-scroll toegevoegd.
