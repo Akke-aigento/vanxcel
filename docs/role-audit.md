@@ -52,3 +52,10 @@ het popup-safe patroon (window synchroon openen binnen de click, vóór de await
 
 **Nog te doen door de eigenaar.** Secret `ADMIN_EMAIL` zetten in Project Settings →
 Secrets; zonder dat secret geeft elke admin-actie `403` (fail-closed, bewust).
+
+## Cart-id reactiviteit (add-to-cart bug)
+
+Add-to-cart vulde het mandje niet bij een verse sessie omdat `useCartQuery()` de cart-id niet-reactief las
+(`getStoredCartId()` direct uit localStorage → `enabled: false`, geen re-render na `storeCartId()`).
+Opgelost met een event-gedreven `useStoredCartId()` (custom `vanxcel-cart-id-changed` event + `storage` event),
+zodat de query automatisch herstart zodra de cart-id in localStorage verschijnt. API-laag en `normalizeCart` bleven ongewijzigd.
