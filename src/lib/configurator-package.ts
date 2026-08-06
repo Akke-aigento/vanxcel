@@ -20,6 +20,7 @@ export interface PackageItem {
   quantity: number;
   unitPrice: number;
   reason: string;
+  reasonVars?: Record<string, string | number>;
   icon: string;
   sku: string;
   inStock: boolean;
@@ -54,7 +55,8 @@ function addItem(
   icon: string,
   reasonOverride?: string,
   isPerMeter?: boolean,
-  priceOverrides?: Map<string, number>
+  priceOverrides?: Map<string, number>,
+  reasonVars?: Record<string, string | number>
 ) {
   // Coming-soon products get price 0 (hidden in UI)
   // Otherwise use live price from SellQo, or fallback to hardcoded
