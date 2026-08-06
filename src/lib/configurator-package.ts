@@ -194,9 +194,9 @@ export function generatePackage(
   const altCableBlk = getProduct('VXCAB16Z');
   if (altCableRed && altCableBlk) {
     addItem(items, altCableRed, altMeters, 'cable',
-      'configurator.pr_altCableRed', true, priceOverrides);
+      'configurator.pr_altCableRed', true, priceOverrides, { meters: altMeters });
     addItem(items, altCableBlk, altMeters, 'cable',
-      'configurator.pr_altCableBlk', true, priceOverrides);
+      'configurator.pr_altCableBlk', true, priceOverrides, { meters: altMeters });
   }
 
   // 10. Heatshrink (always)
