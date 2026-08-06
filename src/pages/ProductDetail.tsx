@@ -13,6 +13,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Loader2 } from 'lucide-react';
+import { stripHtml } from '@/lib/utils';
 
 export default function ProductDetail() {
   const { t } = useTranslation();
