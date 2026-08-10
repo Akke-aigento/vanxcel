@@ -164,6 +164,13 @@ export interface CustomerData {
   first_name: string;
   last_name: string;
   phone?: string;
+  // B2B (optional — only sent when the customer orders as a business)
+  is_b2b?: boolean;
+  company_name?: string;
+  vat_number?: string;
+  vat_verified?: boolean;
+  vat_country?: string;
+  vat_company_name?: string;
 }
 
 export interface AddressData {
