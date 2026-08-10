@@ -307,15 +307,18 @@ function StepDetailsAndAddress() {
             </div>
           </div>
           <div>
-            <Label>{t("checkout.country")} *</Label>
-            <CountrySelect value={billing.country} onChange={(val) => setBilling(s => ({ ...s, country: val }))} />
+            <Label>{allowedCodes.length === 1 ? t("checkout.shipsOnlyTo") : `${t("checkout.country")} *`}</Label>
+            <CountrySelect codes={allowedCodes} value={billing.country} onChange={(val) => setBilling(s => ({ ...s, country: val }))} />
           </div>
         </div>
       )}
 
-      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.continue")}
-      </Button>
+      {!blocked && (
+        <Button type="submit" className="w-full" size="lg" disabled={isLoading || countriesLoading}>
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.continue")}
+        </Button>
+      )}
+
     </form>
   );
 }
