@@ -150,6 +150,21 @@ export const checkoutAPI = {
       body: JSON.stringify({ cart_id: cartId }),
     }),
 
+  /** Validate an EU VAT number via VIES (proxy fallback maps this to action checkout_validate_vat) */
+  validateVat: (vatNumber: string) =>
+    sellqoFetch<{
+      valid?: boolean;
+      company_name?: string | null;
+      address?: string | null;
+      country_code?: string;
+      cached?: boolean;
+      success?: boolean;
+      error?: { code: string; message: string };
+    }>('/checkout/validate_vat', {
+      method: 'POST',
+      body: JSON.stringify({ vat_number: vatNumber }),
+    }),
+
   /** Get order by Stripe session ID (for thank-you page polling) */
   getOrderBySession: (stripeSessionId: string) =>
     sellqoFetch<{ success: boolean; data: { order_number: string; total: number; currency: string; status: string } }>(

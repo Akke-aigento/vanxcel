@@ -138,3 +138,18 @@ nu ook de cart-query.
 
 Enkel `src/integrations/sellqo/hooks.ts` aangepast; bestaande `clearStoredCartId` hergebruikt, geen wijziging aan
 `extractSingle`, `normalizeCart`, client of proxy. `useCreateCart`/`update`/`remove`/`discount`/checkout ongewijzigd.
+
+## B2B-CHECKOUT-1 — zakelijk bestellen met BTW-verlegging (VanXcel frontend)
+
+Root cause / status: greenfield. De SellQo-backend ondersteunt B2B al (checkout_customer accepteert is_b2b/company_name/vat_number/vat_verified/vat_country/vat_company_name; checkout_validate_vat doet VIES; cart/checkout-response bevat reverse_charge/vat_regime/vat_text + NETTO totalen), maar de VanXcel-frontend had geen enkel B2B-veld en toonde altijd bruto.
+
+Wijzigingen (frontend-only):
+- `types.ts`: `CustomerData` uitgebreid met optionele B2B-velden.
+- `api.ts`: `checkoutAPI.validateVat(vat_number)` → POST `/checkout/validate_vat` **met underscore**; de proxy heeft geen expliciete VAT-route, de fallback mapt het pad naar action `checkout_validate_vat` (een streepje zou niet mappen).
+- `CheckoutContext.tsx`: state `reverseCharge`/`vatText`/`vatRegime`; helper `readCartTotals`; in `saveCustomerAndAddress` is de **server-response bron van waarheid** voor subtotal/shipping_cost/total/items — shipping-response boven customer-response, nooit stale state — zodat er geen bruto/netto-inconsistentie ontstaat wanneer verlegging aanslaat.
+- `Checkout.tsx`: zakelijk-toggle + bedrijfsnaam (verplicht bij B2B) + BTW-nummer met VIES-validatie **on blur** (niet per toetsaanslag; VIES 10/min) en een "opnieuw controleren"-knop; OrderSummary toont bij verlegging "prijzen excl. btw" + de juridische vat_text, zonder apart btw-bedrag.
+- i18n: nieuwe `checkout.*`-keys in nl/en/fr/de (parity).
+
+Gedragsregels: `block_invalid_vat_orders=false` — een ongeldig/onverifieerbaar BTW-nummer blokkeert de bestelling NIET, de klant betaalt dan gewoon incl. btw. Zonder de toggle is B2C exact ongewijzigd: geen extra verplichte velden, geen extra calls, identieke totalen en flow.
+
+NIET aangeraakt: SellQo-backend, `supabase/` (proxy + edge functions), cart-hooks (CART-HEAL-1), normalizer, client.

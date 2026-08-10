@@ -308,7 +308,16 @@
     "apply": "Apply",
     "qrName": "Scan QR code with your bank app",
     "qrDescription": "Free — pay directly via your bank app",
-    "noTransactionFees": "No transaction fees"
+    "noTransactionFees": "No transaction fees",
+    "b2bToggle": "I'm ordering as a business",
+    "companyName": "Company name",
+    "vatNumber": "VAT number (e.g. BE0123456789)",
+    "vatChecking": "Checking VAT number...",
+    "vatValid": "VAT number valid",
+    "vatInvalid": "VAT number could not be verified. You can still continue, but VAT will be charged.",
+    "vatRecheck": "Check again",
+    "reverseChargeNotice": "VAT reverse charged - intra-Community supply - art. 39bis Belgian VAT Code",
+    "pricesExclVat": "All prices are excluding VAT"
   },
   "notFound": {
     "title": "404",
