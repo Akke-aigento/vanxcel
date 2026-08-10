@@ -192,6 +192,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         handleApiError(custResp);
         return false;
       }
+      // Server response is the source of truth for totals + VAT regime (B2B reverse charge → net amounts)
+      const custTotals = readCartTotals(custResp?.data ?? custResp);
 
       // 2. Save address
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -202,26 +204,45 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       }
 
       // 3. Auto-select shipping if only 1 method
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let shipTotals: any = null;
+      let autoMethod: ShippingMethod | null = null;
       if (state.availableShippingMethods.length === 1) {
-        const autoMethod = state.availableShippingMethods[0];
+        autoMethod = state.availableShippingMethods[0];
         try {
-          await checkoutAPI.selectShipping(cartId, autoMethod.id);
-          setState(s => ({
-            ...s,
-            selectedShippingMethod: autoMethod.id,
-            shippingCost: autoMethod.price || 0,
-          }));
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const shipResp = await checkoutAPI.selectShipping(cartId, autoMethod.id) as any;
+          shipTotals = readCartTotals(shipResp?.data ?? shipResp);
         } catch { /* proceed anyway */ }
       }
 
-      setState(s => ({
-        ...s,
-        customer,
-        shippingAddress: shipping,
-        billingAddress: billingSame ? null : (billing || null),
-        billingSameAsShipping: billingSame,
-        currentStep: 2, // go to payment
-      }));
+      const src = shipTotals || custTotals;
+
+      setState(s => {
+        const nextSubtotal = src?.subtotal != null ? Number(src.subtotal) : s.subtotal;
+        const nextShipping = src?.shipping_cost != null
+          ? Number(src.shipping_cost)
+          : (autoMethod ? (autoMethod.price || 0) : s.shippingCost);
+        const nextTotal = src?.total != null ? Number(src.total) : (nextSubtotal + nextShipping);
+        const nextItems = Array.isArray(src?.items) && src.items.length ? mapItems(src.items) : s.items;
+
+        return {
+          ...s,
+          customer,
+          shippingAddress: shipping,
+          billingAddress: billingSame ? null : (billing || null),
+          billingSameAsShipping: billingSame,
+          selectedShippingMethod: autoMethod ? autoMethod.id : s.selectedShippingMethod,
+          items: nextItems,
+          subtotal: nextSubtotal,
+          shippingCost: nextShipping,
+          total: nextTotal,
+          reverseCharge: src?.reverse_charge != null ? !!src.reverse_charge : s.reverseCharge,
+          vatText: src?.vat_text != null ? String(src.vat_text) : s.vatText,
+          vatRegime: src?.vat_regime != null ? String(src.vat_regime) : s.vatRegime,
+          currentStep: 2, // go to payment
+        };
+      });
       return true;
     } catch (err) {
       console.error('Save customer & address failed:', err);
