@@ -53,6 +53,11 @@ function StepDetailsAndAddress() {
     last_name: customer?.last_name || "",
     phone: customer?.phone || "",
   });
+  const [isB2B, setIsB2B] = useState(!!customer?.is_b2b);
+  const [companyName, setCompanyName] = useState(customer?.company_name || "");
+  const [vatNumber, setVatNumber] = useState(customer?.vat_number || "");
+  const [vatStatus, setVatStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  const [vatInfo, setVatInfo] = useState<{ company_name?: string | null; country_code?: string }>({});
   const [billingSame, setBillingSame] = useState(savedBillingSame);
   const [shipping, setShipping] = useState({
     street: shippingAddress?.street || "",
@@ -65,12 +70,51 @@ function StepDetailsAndAddress() {
     street: "", city: "", postal_code: "", country: "BE", company: "",
   });
 
+  const runVatValidation = async () => {
+    const value = vatNumber.trim();
+    if (!value) {
+      setVatStatus('idle');
+      setVatInfo({});
+      return;
+    }
+    setVatStatus('checking');
+    try {
+      const res = await checkoutAPI.validateVat(value);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = (res as any)?.data && typeof (res as any).data === 'object' ? (res as any).data : res;
+      if (r?.valid === true) {
+        setVatStatus('valid');
+        setVatInfo({ company_name: r.company_name, country_code: r.country_code });
+        if (!companyName.trim() && r.company_name) setCompanyName(String(r.company_name));
+      } else {
+        setVatStatus('invalid');
+        setVatInfo({});
+      }
+    } catch {
+      setVatStatus('invalid');
+      setVatInfo({});
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const customerPayload = isB2B
+      ? {
+          ...customerForm,
+          is_b2b: true,
+          company_name: companyName.trim(),
+          vat_number: vatNumber.trim(),
+          vat_verified: vatStatus === 'valid',
+          vat_country: vatInfo.country_code,
+          vat_company_name: vatInfo.company_name || undefined,
+        }
+      : customerForm;
+    const shippingCompany = shipping.company || (isB2B ? companyName.trim() : "");
     const shippingPayload = {
       first_name: customerForm.first_name,
       last_name: customerForm.last_name,
       ...shipping,
+      company: shippingCompany,
     };
     const billingPayload = billingSame
       ? shippingPayload
@@ -80,7 +124,7 @@ function StepDetailsAndAddress() {
           ...billing,
         };
     await saveCustomerAndAddress(
-      customerForm,
+      customerPayload,
       shippingPayload,
       billingSame,
       billingSame ? undefined : billingPayload,
@@ -112,6 +156,65 @@ function StepDetailsAndAddress() {
         <Label htmlFor="phone">{t("checkout.phone")}</Label>
         <Input id="phone" type="tel" value={customerForm.phone} onChange={e => setCustomerForm(f => ({ ...f, phone: e.target.value }))} />
       </div>
+
+      {/* B2B */}
+      <div className="flex items-center gap-2 pt-2">
+        <Checkbox
+          id="b2b-toggle"
+          checked={isB2B}
+          onCheckedChange={(checked) => setIsB2B(!!checked)}
+        />
+        <Label htmlFor="b2b-toggle" className="cursor-pointer">{t("checkout.b2bToggle")}</Label>
+      </div>
+
+      {isB2B && (
+        <div className="space-y-4 border border-border rounded-lg p-4 bg-muted/20">
+          <div>
+            <Label htmlFor="b2b-company">{t("checkout.companyName")} *</Label>
+            <Input
+              id="b2b-company"
+              required
+              value={companyName}
+              onChange={e => setCompanyName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="b2b-vat">{t("checkout.vatNumber")}</Label>
+            <div className="flex gap-2">
+              <Input
+                id="b2b-vat"
+                value={vatNumber}
+                onChange={e => { setVatNumber(e.target.value); setVatStatus('idle'); }}
+                onBlur={runVatValidation}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={runVatValidation}
+                disabled={vatStatus === 'checking' || !vatNumber.trim()}
+              >
+                {t("checkout.vatRecheck")}
+              </Button>
+            </div>
+            {vatStatus === 'checking' && (
+              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                {t("checkout.vatChecking")}
+              </p>
+            )}
+            {vatStatus === 'valid' && (
+              <p className="text-sm text-green-600 mt-1">
+                ✓ {t("checkout.vatValid")}{vatInfo.company_name ? ` — ${vatInfo.company_name}` : ""}
+              </p>
+            )}
+            {vatStatus === 'invalid' && (
+              <p className="text-sm text-destructive mt-1">✗ {t("checkout.vatInvalid")}</p>
+            )}
+          </div>
+        </div>
+      )}
+
 
       {/* Shipping address */}
       <h2 className="text-lg font-semibold mt-8">{t("checkout.addressTitle")}</h2>
