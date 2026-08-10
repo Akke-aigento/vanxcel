@@ -156,3 +156,5 @@ NIET aangeraakt: SellQo-backend, `supabase/` (proxy + edge functions), cart-hook
 
 ### B2B-CHECKOUT-1c
 Frontend stuurt nu expliciet `is_b2b:false` bij een uitgevinkte zakelijk-toggle (defense-in-depth naast de backend-normalisatie).
+
+- **B2B-CHECKOUT-1d** — rehydratie van B2B-status bij terugkeer in checkout (startCheckout vult customer/reverse_charge/vat_text/vat_regime; StepDetailsAndAddress init vatStatus/vatInfo uit customer.vat_verified).
