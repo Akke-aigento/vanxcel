@@ -30,6 +30,9 @@ interface CheckoutState {
   discount: { code: string; amount: number } | null;
   total: number;
   currency: string;
+  reverseCharge: boolean;
+  vatText: string | null;
+  vatRegime: string | null;
   currentStep: number;
   isLoading: boolean;
   fieldErrors: Record<string, string>;
