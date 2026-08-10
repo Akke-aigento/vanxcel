@@ -122,3 +122,19 @@ omgezet naar interne React Router `Link` naar `/legal/cookie` (met "cookie" als 
 PDP toonde letterlijke HTML-entities (`&amp;`) en tofu door ontbrekende entity-decoding in `stripHtml`;
 gedeelde `stripHtml` + `decodeEntities` in `lib/utils` toegevoegd en ProductDetail (2 call-sites + SEO-desc)
 daarop aangesloten. Thumbnail-rij mobiel: snap-scroll toegevoegd.
+
+## CART-HEAL-1 — self-healing bij verlopen/verwijderde storefront-cart
+**Root cause.** Bij een verlopen/verwijderde cart antwoordt de SellQo storefront-api correct met
+`{success:true, data:null}` (bewezen via curl-test op de storefront-api — backend gezond). De cart-hooks deden
+`extractSingle<Cart>(result) || result`; bij `data:null` viel dat terug op de envelope, `normalizeCart` maakte
+een cart met `id:''` en de dode cart-id in localStorage werd nooit opgeruimd → mand permanent leeg tot handmatig wissen.
+
+**Wijziging 1 — `useCartQuery`.** `|| result` weg; `extractSingle`'s `null` wordt gerespecteerd: dode cart →
+bestaande `clearStoredCartId()` (met event-dispatch) + lege mand tonen.
+
+**Wijziging 2 — `useAddToCart`.** Self-heal: bij `null` uit de add-call de dode id wissen, een verse cart maken
+en de add exact 1× herhalen; blijft het leeg, dan `CART_ADD_FAILED` (geen stille fout). `onSuccess` invalideert
+nu ook de cart-query.
+
+Enkel `src/integrations/sellqo/hooks.ts` aangepast; bestaande `clearStoredCartId` hergebruikt, geen wijziging aan
+`extractSingle`, `normalizeCart`, client of proxy. `useCreateCart`/`update`/`remove`/`discount`/checkout ongewijzigd.
