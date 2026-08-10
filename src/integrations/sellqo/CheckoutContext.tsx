@@ -152,6 +152,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         ...item,
         price: Number(item.price) || Number((item as any).unit_price) || Number((item as any).line_total) || 0,
       }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const d = data as any;
       setState(s => ({
         ...s,
         checkoutReady: true,
@@ -161,6 +163,10 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         subtotal: Number(data.subtotal) || 0,
         total: Number(data.total) || 0,
         currency: data.currency || 'EUR',
+        customer: (d.customer as CustomerData) ?? null,
+        reverseCharge: !!d.reverse_charge,
+        vatText: d.vat_text ?? null,
+        vatRegime: d.vat_regime ?? null,
         currentStep: 1,
       }));
       return true;
