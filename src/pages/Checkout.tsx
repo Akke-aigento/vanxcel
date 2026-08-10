@@ -377,7 +377,7 @@ function StepPayment() {
 /* ── Order summary sidebar ── */
 function OrderSummary() {
   const { t } = useTranslation();
-  const { items, subtotal, shippingCost, discount, computedTotal, currency, applyDiscount, removeDiscount, isLoading } = useCheckout();
+  const { items, subtotal, shippingCost, discount, computedTotal, currency, applyDiscount, removeDiscount, isLoading, reverseCharge, vatText } = useCheckout();
   const [discountCode, setDiscountCode] = useState("");
   const [applyingDiscount, setApplyingDiscount] = useState(false);
 
@@ -442,6 +442,12 @@ function OrderSummary() {
           <span>{t("checkout.total")}</span>
           <span>{symbol}{computedTotal.toFixed(2)}</span>
         </div>
+        {reverseCharge && (
+          <div className="pt-2 border-t border-border text-xs text-muted-foreground space-y-1">
+            <p className="font-medium text-foreground">{t("checkout.pricesExclVat")}</p>
+            <p>{vatText || t("checkout.reverseChargeNotice")}</p>
+          </div>
+        )}
       </div>
 
       {!discount && (
