@@ -57,8 +57,14 @@ function StepDetailsAndAddress() {
   const [isB2B, setIsB2B] = useState(!!customer?.is_b2b);
   const [companyName, setCompanyName] = useState(customer?.company_name || "");
   const [vatNumber, setVatNumber] = useState(customer?.vat_number || "");
-  const [vatStatus, setVatStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
-  const [vatInfo, setVatInfo] = useState<{ company_name?: string | null; country_code?: string }>({});
+  const [vatStatus, setVatStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>(
+    customer?.vat_verified ? 'valid' : 'idle',
+  );
+  const [vatInfo, setVatInfo] = useState<{ company_name?: string | null; country_code?: string }>(
+    customer?.vat_verified
+      ? { company_name: customer?.vat_company_name ?? null, country_code: customer?.vat_country }
+      : {},
+  );
   const [billingSame, setBillingSame] = useState(savedBillingSame);
   const [shipping, setShipping] = useState({
     street: shippingAddress?.street || "",
