@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout, CheckoutProvider } from "@/integrations/sellqo/CheckoutContext";
+import { checkoutAPI } from "@/integrations/sellqo/api";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 
 /* ── Step indicator (2 steps) ── */
