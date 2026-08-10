@@ -317,7 +317,9 @@
     "vatInvalid": "Numéro de TVA non vérifié. Vous pouvez continuer, mais la TVA sera facturée.",
     "vatRecheck": "Vérifier à nouveau",
     "reverseChargeNotice": "TVA autoliquidée - livraison intracommunautaire - art. 39bis CTVA",
-    "pricesExclVat": "Tous les prix sont hors TVA"
+    "pricesExclVat": "Tous les prix sont hors TVA",
+    "shipsOnlyTo": "Livraison vers",
+    "noShippingCountries": "Cette boutique n'expédie actuellement pas."
   },
   "notFound": {
     "title": "404",

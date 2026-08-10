@@ -317,7 +317,9 @@
     "vatInvalid": "VAT number could not be verified. You can still continue, but VAT will be charged.",
     "vatRecheck": "Check again",
     "reverseChargeNotice": "VAT reverse charged - intra-Community supply - art. 39bis Belgian VAT Code",
-    "pricesExclVat": "All prices are excluding VAT"
+    "pricesExclVat": "All prices are excluding VAT",
+    "shipsOnlyTo": "Ships to",
+    "noShippingCountries": "This shop currently does not ship anywhere."
   },
   "notFound": {
     "title": "404",

@@ -158,3 +158,5 @@ NIET aangeraakt: SellQo-backend, `supabase/` (proxy + edge functions), cart-hook
 Frontend stuurt nu expliciet `is_b2b:false` bij een uitgevinkte zakelijk-toggle (defense-in-depth naast de backend-normalisatie).
 
 - **B2B-CHECKOUT-1d** — rehydratie van B2B-status bij terugkeer in checkout (startCheckout vult customer/reverse_charge/vat_text/vat_regime; StepDetailsAndAddress init vatStatus/vatInfo uit customer.vat_verified).
+
+- **SHIP-GEO-FE-1** — verzendlandenlijst in de checkout komt nu uit de storefront-api (`get_shipping_countries`, 5 min cache); geen hardcoded landenlijst meer in `CountrySelect` (namen via `Intl.DisplayNames`, vlaggen uit ISO-code). Auto-correctie naar `default_country`, vast label bij 1 land, blokkering + melding bij 0 landen. Serverzijdige landvalidatie blijft leidend.
