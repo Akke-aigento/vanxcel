@@ -109,7 +109,7 @@ function StepDetailsAndAddress() {
           vat_country: vatInfo.country_code,
           vat_company_name: vatInfo.company_name || undefined,
         }
-      : customerForm;
+      : { ...customerForm, is_b2b: false };
     const shippingCompany = shipping.company || (isB2B ? companyName.trim() : "");
     const shippingPayload = {
       first_name: customerForm.first_name,
