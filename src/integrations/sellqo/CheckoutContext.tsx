@@ -71,6 +71,9 @@ const initialState: CheckoutState = {
   discount: null,
   total: 0,
   currency: 'EUR',
+  reverseCharge: false,
+  vatText: null,
+  vatRegime: null,
   currentStep: 1,
   isLoading: false,
   fieldErrors: {},
@@ -89,6 +92,23 @@ function getCheckoutBaseUrl() {
 
 function getCartId(): string | null {
   return getStoredCartId();
+}
+
+/** Returns the payload if it looks like a cart/checkout totals response, else null. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function readCartTotals(data: any) {
+  if (!data || typeof data !== 'object') return null;
+  const has = ['subtotal', 'total', 'shipping_cost', 'items', 'reverse_charge', 'vat_text', 'vat_regime'].some(k => data[k] != null);
+  return has ? data : null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapItems(rawItems: any[]): CheckoutOrderItem[] {
+  return rawItems.map(item => ({
+    ...item,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    price: Number(item.price) || Number((item as any).unit_price) || Number((item as any).line_total) || 0,
+  }));
 }
 
 export function CheckoutProvider({ children }: { children: React.ReactNode }) {
