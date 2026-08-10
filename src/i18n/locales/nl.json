@@ -317,7 +317,9 @@
     "vatInvalid": "BTW-nummer niet geverifieerd. Je kunt gewoon verder bestellen, maar dan betaal je inclusief btw.",
     "vatRecheck": "Opnieuw controleren",
     "reverseChargeNotice": "Btw verlegd - intracommunautaire levering - art. 39bis WBTW",
-    "pricesExclVat": "Alle prijzen zijn exclusief btw"
+    "pricesExclVat": "Alle prijzen zijn exclusief btw",
+    "shipsOnlyTo": "Verzending naar",
+    "noShippingCountries": "Deze winkel verzendt momenteel niet."
   },
   "notFound": {
     "title": "404",

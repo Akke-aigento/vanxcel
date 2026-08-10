@@ -317,7 +317,9 @@
     "vatInvalid": "USt-IdNr. konnte nicht bestätigt werden. Du kannst weiter bestellen, dann wird jedoch MwSt. berechnet.",
     "vatRecheck": "Erneut prüfen",
     "reverseChargeNotice": "Steuerschuldnerschaft des Leistungsempfängers - innergemeinschaftliche Lieferung - Art. 39bis bel. MwStGB",
-    "pricesExclVat": "Alle Preise verstehen sich zzgl. MwSt."
+    "pricesExclVat": "Alle Preise verstehen sich zzgl. MwSt.",
+    "shipsOnlyTo": "Versand nach",
+    "noShippingCountries": "Dieser Shop versendet derzeit nicht."
   },
   "notFound": {
     "title": "404",

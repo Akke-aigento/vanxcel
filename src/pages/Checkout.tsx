@@ -13,6 +13,9 @@ import Footer from "@/components/Footer";
 import { useCheckout, CheckoutProvider } from "@/integrations/sellqo/CheckoutContext";
 import { checkoutAPI } from "@/integrations/sellqo/api";
 import { CountrySelect } from "@/components/ui/CountrySelect";
+import { useShippingCountries } from "@/hooks/use-shipping-countries";
+import { ALL_COUNTRY_CODES } from "@/lib/countries";
+
 
 /* ── Step indicator (2 steps) ── */
 function StepIndicator() {
@@ -47,6 +50,12 @@ function StepIndicator() {
 function StepDetailsAndAddress() {
   const { t } = useTranslation();
   const { saveCustomerAndAddress, isLoading, fieldErrors, customer, shippingAddress, billingSameAsShipping: savedBillingSame } = useCheckout();
+  const { codes, unrestricted, defaultCountry, isLoading: countriesLoading, blocked } = useShippingCountries();
+
+  const allowedCodes = useMemo(
+    () => (unrestricted ? ALL_COUNTRY_CODES : codes),
+    [unrestricted, codes],
+  );
 
   const [customerForm, setCustomerForm] = useState({
     email: customer?.email || "",
@@ -70,12 +79,23 @@ function StepDetailsAndAddress() {
     street: shippingAddress?.street || "",
     city: shippingAddress?.city || "",
     postal_code: shippingAddress?.postal_code || "",
-    country: shippingAddress?.country || "BE",
+    country: shippingAddress?.country || "",
     company: shippingAddress?.company || "",
   });
   const [billing, setBilling] = useState({
-    street: "", city: "", postal_code: "", country: "BE", company: "",
+    street: "", city: "", postal_code: "", country: "", company: "",
   });
+
+  // Preselect default country / auto-correct a country that is not allowed
+  useEffect(() => {
+    if (countriesLoading || allowedCodes.length === 0) return;
+    const fallback = defaultCountry && allowedCodes.includes(defaultCountry)
+      ? defaultCountry
+      : allowedCodes[0];
+    setShipping(s => (s.country && allowedCodes.includes(s.country) ? s : { ...s, country: fallback }));
+    setBilling(b => (b.country && allowedCodes.includes(b.country) ? b : { ...b, country: fallback }));
+  }, [countriesLoading, allowedCodes, defaultCountry]);
+
 
   const runVatValidation = async () => {
     const value = vatNumber.trim();
@@ -241,9 +261,16 @@ function StepDetailsAndAddress() {
         </div>
       </div>
       <div>
-        <Label>{t("checkout.country")} *</Label>
-        <CountrySelect value={shipping.country} onChange={(val) => setShipping(s => ({ ...s, country: val }))} />
+        <Label>{allowedCodes.length === 1 ? t("checkout.shipsOnlyTo") : `${t("checkout.country")} *`}</Label>
+        {countriesLoading ? (
+          <div className="flex items-center h-10 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /></div>
+        ) : blocked ? (
+          <p className="text-sm text-destructive">{t("checkout.noShippingCountries")}</p>
+        ) : (
+          <CountrySelect codes={allowedCodes} value={shipping.country} onChange={(val) => setShipping(s => ({ ...s, country: val }))} />
+        )}
       </div>
+
       <div>
         <Label>{t("checkout.company")}</Label>
         <Input value={shipping.company} onChange={e => setShipping(s => ({ ...s, company: e.target.value }))} />
@@ -280,15 +307,18 @@ function StepDetailsAndAddress() {
             </div>
           </div>
           <div>
-            <Label>{t("checkout.country")} *</Label>
-            <CountrySelect value={billing.country} onChange={(val) => setBilling(s => ({ ...s, country: val }))} />
+            <Label>{allowedCodes.length === 1 ? t("checkout.shipsOnlyTo") : `${t("checkout.country")} *`}</Label>
+            <CountrySelect codes={allowedCodes} value={billing.country} onChange={(val) => setBilling(s => ({ ...s, country: val }))} />
           </div>
         </div>
       )}
 
-      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.continue")}
-      </Button>
+      {!blocked && (
+        <Button type="submit" className="w-full" size="lg" disabled={isLoading || countriesLoading}>
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.continue")}
+        </Button>
+      )}
+
     </form>
   );
 }
