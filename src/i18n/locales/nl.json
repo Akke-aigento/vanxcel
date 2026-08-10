@@ -308,7 +308,16 @@
     "apply": "Toepassen",
     "qrName": "Scan QR code met je bankapp",
     "qrDescription": "Gratis — direct betalen via je bankapp",
-    "noTransactionFees": "Geen transactiekosten"
+    "noTransactionFees": "Geen transactiekosten",
+    "b2bToggle": "Ik bestel zakelijk",
+    "companyName": "Bedrijfsnaam",
+    "vatNumber": "BTW-nummer (bv. BE0123456789)",
+    "vatChecking": "BTW-nummer controleren...",
+    "vatValid": "BTW-nummer geldig",
+    "vatInvalid": "BTW-nummer niet geverifieerd. Je kunt gewoon verder bestellen, maar dan betaal je inclusief btw.",
+    "vatRecheck": "Opnieuw controleren",
+    "reverseChargeNotice": "Btw verlegd - intracommunautaire levering - art. 39bis WBTW",
+    "pricesExclVat": "Alle prijzen zijn exclusief btw"
   },
   "notFound": {
     "title": "404",

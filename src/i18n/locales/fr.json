@@ -308,7 +308,16 @@
     "apply": "Appliquer",
     "qrName": "Scanner le QR code avec votre app bancaire",
     "qrDescription": "Gratuit — payer directement via votre app bancaire",
-    "noTransactionFees": "Pas de frais de transaction"
+    "noTransactionFees": "Pas de frais de transaction",
+    "b2bToggle": "Je commande en tant que professionnel",
+    "companyName": "Nom de l'entreprise",
+    "vatNumber": "Numéro de TVA (ex. BE0123456789)",
+    "vatChecking": "Vérification du numéro de TVA...",
+    "vatValid": "Numéro de TVA valide",
+    "vatInvalid": "Numéro de TVA non vérifié. Vous pouvez continuer, mais la TVA sera facturée.",
+    "vatRecheck": "Vérifier à nouveau",
+    "reverseChargeNotice": "TVA autoliquidée - livraison intracommunautaire - art. 39bis CTVA",
+    "pricesExclVat": "Tous les prix sont hors TVA"
   },
   "notFound": {
     "title": "404",

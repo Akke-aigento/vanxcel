@@ -308,7 +308,16 @@
     "apply": "Anwenden",
     "qrName": "QR-Code mit deiner Bank-App scannen",
     "qrDescription": "Kostenlos — direkt mit deiner Bank-App bezahlen",
-    "noTransactionFees": "Keine Transaktionsgebühren"
+    "noTransactionFees": "Keine Transaktionsgebühren",
+    "b2bToggle": "Ich bestelle geschäftlich",
+    "companyName": "Firmenname",
+    "vatNumber": "USt-IdNr. (z. B. BE0123456789)",
+    "vatChecking": "USt-IdNr. wird geprüft...",
+    "vatValid": "USt-IdNr. gültig",
+    "vatInvalid": "USt-IdNr. konnte nicht bestätigt werden. Du kannst weiter bestellen, dann wird jedoch MwSt. berechnet.",
+    "vatRecheck": "Erneut prüfen",
+    "reverseChargeNotice": "Steuerschuldnerschaft des Leistungsempfängers - innergemeinschaftliche Lieferung - Art. 39bis bel. MwStGB",
+    "pricesExclVat": "Alle Preise verstehen sich zzgl. MwSt."
   },
   "notFound": {
     "title": "404",
