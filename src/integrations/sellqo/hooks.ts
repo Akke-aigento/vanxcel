@@ -115,7 +115,12 @@ export function useCartQuery() {
     queryKey: sellqoKeys.cart(cartId || ''),
     queryFn: async () => {
       const result = await cartAPI.get(cartId!);
-      const raw = extractSingle<Cart>(result) || result;
+      const raw = extractSingle<Cart>(result);
+      if (!raw) {
+        // Cart bestaat niet meer (verlopen/verwijderd) → opruimen, lege mand tonen.
+        clearStoredCartId();
+        return normalizeCart({ id: '', items: [] });
+      }
       return normalizeCart(raw);
     },
     enabled: !!cartId,
@@ -147,18 +152,33 @@ export function useAddToCart() {
       if (!activeCartId) {
         const newCart = await createCart.mutateAsync();
         activeCartId = newCart.id;
-        if (activeCartId) {
-          storeCartId(activeCartId);
-        }
+        if (activeCartId) storeCartId(activeCartId);
       }
       if (!activeCartId) throw new Error('Kon geen winkelmand aanmaken');
-      const result = await cartAPI.addItem(activeCartId, item);
-      const raw = extractSingle<Cart>(result) || result;
+
+      let result = await cartAPI.addItem(activeCartId, item);
+      let raw = extractSingle<Cart>(result);
+
+      // Self-heal: opgeslagen cart bleek dood (backend gaf data:null) → verse cart + retry (max 1x)
+      if (!raw) {
+        clearStoredCartId();
+        const newCart = await createCart.mutateAsync();
+        activeCartId = newCart.id;
+        if (!activeCartId) throw new Error('Kon geen winkelmand aanmaken');
+        storeCartId(activeCartId);
+        result = await cartAPI.addItem(activeCartId, item);
+        raw = extractSingle<Cart>(result);
+      }
+
+      if (!raw) {
+        throw new Error('CART_ADD_FAILED');
+      }
       return normalizeCart(raw);
     },
     onSuccess: (cart) => {
       if (cart.id) storeCartId(cart.id);
       queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
+      queryClient.invalidateQueries({ queryKey: sellqoKeys.cart(cart.id) });
     },
   });
 }
