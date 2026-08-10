@@ -47,6 +47,12 @@ function StepIndicator() {
 function StepDetailsAndAddress() {
   const { t } = useTranslation();
   const { saveCustomerAndAddress, isLoading, fieldErrors, customer, shippingAddress, billingSameAsShipping: savedBillingSame } = useCheckout();
+  const { codes, unrestricted, defaultCountry, isLoading: countriesLoading, blocked } = useShippingCountries();
+
+  const allowedCodes = useMemo(
+    () => (unrestricted ? ALL_COUNTRY_CODES : codes),
+    [unrestricted, codes],
+  );
 
   const [customerForm, setCustomerForm] = useState({
     email: customer?.email || "",
@@ -70,12 +76,23 @@ function StepDetailsAndAddress() {
     street: shippingAddress?.street || "",
     city: shippingAddress?.city || "",
     postal_code: shippingAddress?.postal_code || "",
-    country: shippingAddress?.country || "BE",
+    country: shippingAddress?.country || "",
     company: shippingAddress?.company || "",
   });
   const [billing, setBilling] = useState({
-    street: "", city: "", postal_code: "", country: "BE", company: "",
+    street: "", city: "", postal_code: "", country: "", company: "",
   });
+
+  // Preselect default country / auto-correct a country that is not allowed
+  useEffect(() => {
+    if (countriesLoading || allowedCodes.length === 0) return;
+    const fallback = defaultCountry && allowedCodes.includes(defaultCountry)
+      ? defaultCountry
+      : allowedCodes[0];
+    setShipping(s => (s.country && allowedCodes.includes(s.country) ? s : { ...s, country: fallback }));
+    setBilling(b => (b.country && allowedCodes.includes(b.country) ? b : { ...b, country: fallback }));
+  }, [countriesLoading, allowedCodes, defaultCountry]);
+
 
   const runVatValidation = async () => {
     const value = vatNumber.trim();
