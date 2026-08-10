@@ -261,9 +261,16 @@ function StepDetailsAndAddress() {
         </div>
       </div>
       <div>
-        <Label>{t("checkout.country")} *</Label>
-        <CountrySelect value={shipping.country} onChange={(val) => setShipping(s => ({ ...s, country: val }))} />
+        <Label>{allowedCodes.length === 1 ? t("checkout.shipsOnlyTo") : `${t("checkout.country")} *`}</Label>
+        {countriesLoading ? (
+          <div className="flex items-center h-10 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /></div>
+        ) : blocked ? (
+          <p className="text-sm text-destructive">{t("checkout.noShippingCountries")}</p>
+        ) : (
+          <CountrySelect codes={allowedCodes} value={shipping.country} onChange={(val) => setShipping(s => ({ ...s, country: val }))} />
+        )}
       </div>
+
       <div>
         <Label>{t("checkout.company")}</Label>
         <Input value={shipping.company} onChange={e => setShipping(s => ({ ...s, company: e.target.value }))} />
