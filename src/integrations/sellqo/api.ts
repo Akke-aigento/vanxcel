@@ -83,7 +83,18 @@ export const cartAPI = {
 
 // === CHECKOUT (multi-step, cart_id based) ===
 export const checkoutAPI = {
+  /** Countries the shop ships to (public, no cart needed; proxy maps to get_shipping_countries) */
+  getShippingCountries: () =>
+    sellqoFetch<{
+      success?: boolean;
+      data?: { countries: string[]; unrestricted: boolean; default_country: string | null };
+      countries?: string[];
+      unrestricted?: boolean;
+      default_country?: string | null;
+    }>('/get_shipping_countries', { method: 'POST', body: JSON.stringify({}) }),
+
   /** Start checkout — returns available methods + items */
+
   start: (cartId: string) =>
     sellqoFetch<{ success: boolean; data: CheckoutStartData }>('/checkout/start', {
       method: 'POST',
