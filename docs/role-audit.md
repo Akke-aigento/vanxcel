@@ -153,3 +153,6 @@ Wijzigingen (frontend-only):
 Gedragsregels: `block_invalid_vat_orders=false` — een ongeldig/onverifieerbaar BTW-nummer blokkeert de bestelling NIET, de klant betaalt dan gewoon incl. btw. Zonder de toggle is B2C exact ongewijzigd: geen extra verplichte velden, geen extra calls, identieke totalen en flow.
 
 NIET aangeraakt: SellQo-backend, `supabase/` (proxy + edge functions), cart-hooks (CART-HEAL-1), normalizer, client.
+
+### B2B-CHECKOUT-1c
+Frontend stuurt nu expliciet `is_b2b:false` bij een uitgevinkte zakelijk-toggle (defense-in-depth naast de backend-normalisatie).
