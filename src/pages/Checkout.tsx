@@ -13,6 +13,9 @@ import Footer from "@/components/Footer";
 import { useCheckout, CheckoutProvider } from "@/integrations/sellqo/CheckoutContext";
 import { checkoutAPI } from "@/integrations/sellqo/api";
 import { CountrySelect } from "@/components/ui/CountrySelect";
+import { useShippingCountries } from "@/hooks/use-shipping-countries";
+import { ALL_COUNTRY_CODES } from "@/lib/countries";
+
 
 /* ── Step indicator (2 steps) ── */
 function StepIndicator() {
