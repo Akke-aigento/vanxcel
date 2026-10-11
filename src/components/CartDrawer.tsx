@@ -19,6 +19,7 @@ const CartDrawer = () => {
   const itemCount = cart?.item_count ?? 0;
 
   const handleCheckout = () => {
+    window.akke?.("Checkout gestart");
     closeCart();
     navigate('/checkout');
   };

@@ -175,10 +175,12 @@ export function useAddToCart() {
       }
       return normalizeCart(raw);
     },
-    onSuccess: (cart) => {
+    onSuccess: (cart, vars) => {
       if (cart.id) storeCartId(cart.id);
       queryClient.setQueryData(sellqoKeys.cart(cart.id), cart);
       queryClient.invalidateQueries({ queryKey: sellqoKeys.cart(cart.id) });
+      const added = cart.items.find((i) => i.product_id === vars.product_id);
+      window.akke?.('In winkelmandje', { product: added?.title ?? vars.product_id });
     },
   });
 }

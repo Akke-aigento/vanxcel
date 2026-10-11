@@ -91,6 +91,18 @@ const ThankYou = () => {
 
   const paymentType = routeState?.paymentType || (sessionId ? 'redirect' : 'unknown');
 
+  // Akke Insights: één "Bestelling"-event per bestelling
+  const tracked = useRef(false);
+  useEffect(() => {
+    if (tracked.current) return;
+    const total = polledOrder?.total ?? routeState?.total;
+    const hasOrder = !!(polledOrder?.order_number || routeState?.orderNumber);
+    if (hasOrder && total != null) {
+      tracked.current = true;
+      window.akke?.("Bestelling", { waarde: total.toFixed(2) });
+    }
+  }, [polledOrder, routeState]);
+
   return (
     <>
       <Navbar />
