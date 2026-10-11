@@ -104,7 +104,12 @@ async function dynamicPages(projectId: string | undefined): Promise<PageMeta[]> 
     out.push({
       path: `/shop/${p.slug}`,
       title: `${p.name} | VanXcel`,
-      description: plainExcerpt(p.description) || `${p.name} — bestel bij VanXcel met 2 jaar garantie en snelle levering.`,
+      // Productnaam vooraan: varianten (zwart/rood, 35/50 mm²) delen in SellQo vaak dezelfde
+      // omschrijving en kregen anders identieke beschrijvingen.
+      description: plainExcerpt(p.description).startsWith(p.name)
+        ? plainExcerpt(p.description)
+        : plainExcerpt(`${p.name}. ${p.description ?? ""}`) ||
+          `${p.name} — bestel bij VanXcel met 2 jaar garantie en snelle levering.`,
       image: p.featured_image ?? p.images?.[0] ?? undefined,
       type: "product",
       changefreq: "weekly",
@@ -116,7 +121,7 @@ async function dynamicPages(projectId: string | undefined): Promise<PageMeta[]> 
     out.push({
       path: `/legal/${l.slug}`,
       title: `${l.title} | VanXcel`,
-      description: `${l.title} van VanXcel.`,
+      description: `${l.title} van VanXcel, het Belgische merk voor off-grid energiesystemen in campervans: alle afspraken helder op één pagina.`,
       changefreq: "yearly",
       priority: 0.2,
     });
