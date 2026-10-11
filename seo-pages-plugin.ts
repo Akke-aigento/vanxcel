@@ -91,6 +91,18 @@ async function getJson<T>(url: string): Promise<T | null> {
   }
 }
 
+// Oude Shopify-URL /products/<handle> → /shop/<slug> (handles = slugs). Een meta-refresh met 0 s
+// behandelt Google als permanente redirect; de JS-regel is voor browsers die meta-refresh negeren.
+// De echte 301 hoort in de Cloudflare Worker; dit is het vangnet dat zonder Worker werkt.
+export function legacyRedirectHtml(target: string): string {
+  const t = esc(target);
+  return `<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>VanXcel</title>
+<meta http-equiv="refresh" content="0; url=${t}">
+<script>location.replace(${JSON.stringify(target)})</script>
+</head><body><a href="${t}">${t}</a></body></html>
+`;
+}
+
 async function dynamicPages(projectId: string | undefined): Promise<PageMeta[]> {
   if (!projectId) return [];
   const api = `https://${projectId}.supabase.co/functions/v1/sellqo-proxy`;
@@ -154,6 +166,12 @@ export function seoPages(): Plugin {
           fs.mkdirSync(path.dirname(file), { recursive: true });
           fs.writeFileSync(file, html);
         }
+      }
+      for (const page of pages) {
+        if (!page.path.startsWith("/shop/")) continue;
+        const legacy = path.join(outDir, "products", page.path.slice("/shop/".length), "index.html");
+        fs.mkdirSync(path.dirname(legacy), { recursive: true });
+        fs.writeFileSync(legacy, legacyRedirectHtml(page.path));
       }
       const lastmod = new Date().toISOString().slice(0, 10);
       for (const site of REGION_SITES) {

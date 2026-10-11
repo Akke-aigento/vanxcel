@@ -78,6 +78,7 @@ export function normalizeProduct(raw: any): Product {
     stock_status: stockStatus as Product['stock_status'],
     stock_quantity: raw.stock ?? undefined,
     sku: raw.sku || undefined,
+    barcode: typeof raw.barcode === 'string' && /^'?\d{8,14}$/.test(raw.barcode) ? raw.barcode.replace(/^'/, '') : undefined,
     product_type: raw.product_type || undefined,
     bundle_savings: bundleSavings,
     bundle_pricing_model: raw.bundle_pricing_model || undefined,

@@ -49,6 +49,7 @@ export interface Product {
   stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
   stock_quantity?: number;
   sku?: string;
+  barcode?: string;
   product_type?: 'physical' | 'digital' | 'service' | 'subscription' | 'bundle' | 'gift_card';
   bundle_savings?: number;
   bundle_pricing_model?: string;

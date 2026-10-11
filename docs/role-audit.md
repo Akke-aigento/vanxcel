@@ -160,3 +160,32 @@ Frontend stuurt nu expliciet `is_b2b:false` bij een uitgevinkte zakelijk-toggle 
 - **B2B-CHECKOUT-1d** — rehydratie van B2B-status bij terugkeer in checkout (startCheckout vult customer/reverse_charge/vat_text/vat_regime; StepDetailsAndAddress init vatStatus/vatInfo uit customer.vat_verified).
 
 - **SHIP-GEO-FE-1** — verzendlandenlijst in de checkout komt nu uit de storefront-api (`get_shipping_countries`, 5 min cache); geen hardcoded landenlijst meer in `CountrySelect` (namen via `Intl.DisplayNames`, vlaggen uit ISO-code). Auto-correctie naar `default_country`, vast label bij 1 land, blokkering + melding bij 0 landen. Serverzijdige landvalidatie blijft leidend.
+
+## VX-1 — audit-quick-wins: oude Shopify-URL's, nep-signalen, gtin, catalogusdata — 2026-10-11
+
+**Root cause / aanleiding.** Audit van 11-10: `/products/vanxcel-300ah-lifepo4-battery` (oude Shopify-URL, nog
+in Google) was de op één na meest bezochte pagina en eindigde op NotFound. De homepage toonde hardcoded reviews
+die naar niet meer bestaande kits verwijzen, zonder vermelding van verificatie (Omnibus). In de catalogus stonden
+permanente doorstreepprijzen, een prijsfout en EAN's met een Excel-apostrof (`'5430…`).
+
+**Frontend (deze repo).**
+- `src/pages/LegacyProductRedirect.tsx` + route `/products/:slug` → `Navigate` naar `/shop/<slug>` (strip `.json`).
+  Shopify-handles = SellQo-slugs, dus geen mapping nodig.
+- `seo-pages-plugin.ts`: per product ook `dist/products/<slug>/index.html` met meta-refresh 0 s + `location.replace`
+  (vangnet zonder JS-rendering; de echte 301 hoort in de Cloudflare Worker).
+- `ReviewsMarquee` niet meer gemount op de homepage (component blijft staan tot de herkomst van de reviews
+  bevestigd is; SellQo's product-API levert al een `reviews`-veld als echte bron).
+- `VacationBanner` verwijderd (verlopen sinds 03-08-2026).
+- `barcode` door de normalizer (apostrof-tolerant) → `gtin13`/`gtin` in het product-JSON-LD.
+
+**Data (SellQo core, via connector, snapshot `ops.vx1_products_snapshot_20261011`, 48 rijen).**
+- `compare_at_price` → NULL voor 300Ah, 200Ah, 1000W, 500W (permanente doorstreepprijs) + alle `0.00`-waarden.
+- 500W Powerstation: `track_inventory` false → true (stock 4, oversell-risico).
+- 6 mm² solar rood: €5,95 → €9,95 (zwart €9,95; bol verkocht rood aan €9,95).
+- Slug `…-1x-usb-a-1x-usb-c-copy` → `vanxcel-powerstrip-2x-eu-plug-2x-usb-c`.
+- 22 EAN's: leidende apostrof gestript in `barcode` en `bol_ean`.
+- Les: twee data-modifying CTE's op dezelfde rij in één statement → enkel de eerste update telt (de
+  `track_inventory`-update werd stil genegeerd en moest apart). Per rij één UPDATE per statement.
+
+**Niet aangeraakt / open.** Retour-orders met `payment_status='paid'`, test-orders (#1111/#1112), `support_email`,
+`is_internal_tenant`, gewichten en `google_product_category` — beslissing Akke.

@@ -5,7 +5,6 @@ import TrustBar from "@/components/TrustBar";
 import CategoryGrid from "@/components/CategoryGrid";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import PowerCalculator from "@/components/PowerCalculator";
-import ReviewsMarquee from "@/components/ReviewsMarquee";
 import ComparisonTable from "@/components/ComparisonTable";
 import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
@@ -24,7 +23,6 @@ const Index = () => {
       <CategoryGrid />
       <FeaturedProducts />
       <PowerCalculator />
-      <ReviewsMarquee />
       <ComparisonTable />
       <Newsletter />
       <Footer />

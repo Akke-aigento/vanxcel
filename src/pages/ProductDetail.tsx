@@ -47,6 +47,8 @@ export default function ProductDetail() {
     image: productImage ? [productImage] : undefined,
     description: productDesc,
     sku: (product as any).sku || product.slug,
+    gtin13: product.barcode && product.barcode.length === 13 ? product.barcode : undefined,
+    gtin: product.barcode && product.barcode.length !== 13 ? product.barcode : undefined,
     brand: { '@type': 'Brand', name: 'VanXcel' },
     offers: {
       '@type': 'Offer',

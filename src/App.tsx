@@ -11,6 +11,7 @@ import Configurator from "./pages/Configurator.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Calculator from "./pages/Calculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import LegacyProductRedirect from "./pages/LegacyProductRedirect.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
@@ -29,7 +30,6 @@ import Account from "./pages/Account.tsx";
 import QRPayment from "./pages/QRPayment.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AnimatedOutlet from "./components/AnimatedOutlet";
-import VacationBanner from "./components/VacationBanner";
 import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient({
@@ -52,13 +52,13 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <VacationBanner />
           <CookieConsent />
           <AnimatedOutlet>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/shop/:slug" element={<ProductDetail />} />
+              <Route path="/products/:slug" element={<LegacyProductRedirect />} />
               
               <Route path="/configurator" element={<Configurator />} />
               <Route path="/calculator" element={<Calculator />} />
