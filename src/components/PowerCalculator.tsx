@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import RevealOnScroll from "./RevealOnScroll";
 
@@ -42,6 +42,15 @@ const PowerCalculator = () => {
   }, 0);
 
   const recommendedAh = Math.ceil(totalWh / 12.8 / 0.8);
+
+  // Akke Insights: één event zodra de calculator een resultaat toont
+  const tracked = useRef(false);
+  useEffect(() => {
+    if (!tracked.current && totalWh > 0) {
+      tracked.current = true;
+      window.akke?.("Calculator gebruikt");
+    }
+  }, [totalWh]);
   const recommendation =
     recommendedAh <= 100
       ? t("calculator.rec100")
