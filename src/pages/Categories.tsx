@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Footer from "@/components/Footer";
 import { useCollections } from "@/integrations/sellqo/hooks";
 import { extractArray } from "@/integrations/sellqo/client";
@@ -18,6 +19,11 @@ const categoryImages: Record<string, string> = {
 
 const Categories = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("categories.pageTitle"), {
+    description:
+      "Ontdek het volledige VanXcel-assortiment per categorie: alles wat je nodig hebt voor een volledig powered campervan.",
+    path: "/categories",
+  });
   const { data: collectionsData, isLoading } = useCollections();
 
   const collections: Collection[] = useMemo(() => {

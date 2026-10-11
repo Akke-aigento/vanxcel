@@ -1,10 +1,16 @@
 import Navbar from "@/components/Navbar";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Footer from "@/components/Footer";
 import ConfiguratorWizard from "@/components/configurator/ConfiguratorWizard";
 import { useTranslation } from "react-i18next";
 
 const Configurator = () => {
   const { t } = useTranslation();
+  useDocumentTitle(t("configurator.title"), {
+    description:
+      "Kies merk, model en bouwjaar van je campervan en vind stap voor stap het energiesysteem dat erbij past.",
+    path: "/configurator",
+  });
 
   return (
     <div className="min-h-screen bg-background">

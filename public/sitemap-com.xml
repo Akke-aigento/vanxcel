@@ -16,11 +16,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vanxcel.com/build</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://vanxcel.com/configurator</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -54,10 +49,5 @@
     <loc>https://vanxcel.com/manuals</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://vanxcel.com/login</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
   </url>
 </urlset>

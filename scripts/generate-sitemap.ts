@@ -1,4 +1,6 @@
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks).
+// Bij `vite build` overschrijft seo-pages-plugin.ts deze sitemaps in dist/ met de
+// productpagina's en hreflang-varianten erbij; deze versie dient voor dev en als terugval.
 // Writes one sitemap per region:
 //   public/sitemap.xml      → vanxcel.be (BE / nl)
 //   public/sitemap-nl.xml   → vanxcel.nl (NL / nl)
@@ -16,7 +18,6 @@ const entries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/shop", changefreq: "daily", priority: "0.9" },
   { path: "/categories", changefreq: "weekly", priority: "0.8" },
-  { path: "/build", changefreq: "monthly", priority: "0.7" },
   { path: "/configurator", changefreq: "monthly", priority: "0.7" },
   { path: "/calculator", changefreq: "monthly", priority: "0.7" },
   { path: "/about", changefreq: "monthly", priority: "0.6" },
@@ -24,7 +25,6 @@ const entries: SitemapEntry[] = [
   { path: "/faq", changefreq: "monthly", priority: "0.6" },
   { path: "/delivery", changefreq: "monthly", priority: "0.5" },
   { path: "/manuals", changefreq: "monthly", priority: "0.5" },
-  { path: "/login", changefreq: "yearly", priority: "0.3" },
 ];
 
 const SITES = [
