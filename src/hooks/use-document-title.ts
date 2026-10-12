@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { overrideFor } from "@/seo/insights";
 
 const BASE = "VanXcel";
 
@@ -62,11 +63,13 @@ export function useDocumentTitle(title?: string, options: SEOOptions = {}) {
   const { description, image, type = "website", path, jsonLd } = options;
 
   useEffect(() => {
-    const fullTitle = title ? `${title} — ${BASE}` : DEFAULT_TITLE;
-    const desc = description || DEFAULT_DESC;
-    const img = image || DEFAULT_IMAGE;
     const routePath =
       path ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+    // Goedgekeurde teksten uit Akke Insights gaan voor (zelfde bron als de statische head).
+    const ov = overrideFor(routePath);
+    const fullTitle = ov?.title ?? (title ? `${title} — ${BASE}` : DEFAULT_TITLE);
+    const desc = ov?.description ?? (description || DEFAULT_DESC);
+    const img = image || DEFAULT_IMAGE;
     const siteUrl = getCanonicalSiteUrl();
     const url = `${siteUrl}${routePath}`;
 
