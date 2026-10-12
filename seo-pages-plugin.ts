@@ -11,7 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
-import { fetchSeoOverrides, withOverride, type SeoOverrides } from "./src/seo/insights";
+import { fetchSeoBundle, guideJsonLd, withOverride, type GuidePage, type SeoOverrides } from "./src/seo/insights";
 import { PAGES, REGION_SITES, X_DEFAULT_URL, plainExcerpt, type PageMeta } from "./src/seo/pages";
 
 const esc = (s: string) =>
@@ -146,15 +146,25 @@ async function dynamicPages(projectId: string | undefined): Promise<PageMeta[]> 
 export function seoPages(): Plugin {
   let outDir = "dist";
   let overrides: SeoOverrides = {};
+  let content: GuidePage[] = [];
   let projectId: string | undefined;
   return {
     name: "vanxcel-seo-pages",
     apply: "build",
     // Goedgekeurde teksten uit Akke Insights ophalen; ook aan de browser meegeven.
     async config() {
-      overrides = await fetchSeoOverrides();
-      console.log(`[seo-pages] ${Object.keys(overrides).length} goedgekeurde teksten uit Insights`);
-      return { define: { __SEO_OVERRIDES__: JSON.stringify(overrides) } };
+      const bundle = await fetchSeoBundle();
+      overrides = bundle.pages;
+      content = bundle.content;
+      console.log(
+        `[seo-pages] ${Object.keys(overrides).length} goedgekeurde teksten en ${content.length} gidspagina's uit Insights`,
+      );
+      return {
+        define: {
+          __SEO_OVERRIDES__: JSON.stringify(overrides),
+          __SEO_CONTENT__: JSON.stringify(content),
+        },
+      };
     },
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir);
@@ -164,9 +174,26 @@ export function seoPages(): Plugin {
       const indexPath = path.join(outDir, "index.html");
       if (!fs.existsSync(indexPath)) return;
       const base = fs.readFileSync(indexPath, "utf8");
-      const pages = [...PAGES, ...(await dynamicPages(projectId))].map((p) => withOverride(p, overrides));
+      // Gidspagina's uit de contentmotor van Insights: eigen head + FAQ-gegevens op /gids/<slug>.
+      const guides = new Map(content.map((g) => [`/gids/${g.slug}`, g]));
+      const pages: PageMeta[] = [
+        ...[...PAGES, ...(await dynamicPages(projectId))].map((p) => withOverride(p, overrides)),
+        ...content.map((g) => ({
+          path: `/gids/${g.slug}`,
+          title: g.title,
+          description: g.description,
+          changefreq: "monthly" as const,
+          priority: 0.6,
+        })),
+      ];
       for (const page of pages) {
-        const html = applyHead(base, page);
+        let html = applyHead(base, page);
+        const guide = guides.get(page.path);
+        if (guide)
+          html = html.replace(
+            "</head>",
+            `    <script type="application/ld+json" data-insights="guide">${JSON.stringify(guideJsonLd(guide, `${X_DEFAULT_URL}${page.path}`)).replace(/</g, "\\u003c")}</script>\n  </head>`,
+          );
         for (const file of [
           path.join(outDir, `${page.path.slice(1)}.html`),
           path.join(outDir, page.path.slice(1), "index.html"),

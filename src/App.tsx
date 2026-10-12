@@ -11,6 +11,7 @@ import Configurator from "./pages/Configurator.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Calculator from "./pages/Calculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Gids from "./pages/Gids";
 import LegacyProductRedirect from "./pages/LegacyProductRedirect.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Contact from "./pages/Contact.tsx";
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/account" element={<Account />} />
               <Route path="/checkout/qr-betaling" element={<QRPayment />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/gids/:slug" element={<Gids />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatedOutlet>
