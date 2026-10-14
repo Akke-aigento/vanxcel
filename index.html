@@ -16,6 +16,18 @@
     <title>VanXcel — Power Your Journey | Off-Grid Campervan Systemen</title>
     <meta name="description" content="VanXcel — LiFePO4 batterijen, converters &amp; off-grid systemen voor campervans. Belgisch merk met 2 jaar garantie.">
     <meta name="author" content="VanXcel" />
+    <!-- Relatieve canonical: valt op het domein waarop de pagina geladen wordt (.be/.nl/.com
+         wijzen elk naar zichzelf, net als de hreflang). De seo-pages-plugin zet per route het pad.
+         Het script maakt hem meteen absoluut; buiten de drie VanXcel-domeinen (preview,
+         lovable.app) wijst hij naar vanxcel.be. useDocumentTitle houdt hem daarna bij. -->
+    <link rel="canonical" href="/" />
+    <script>
+      (function () {
+        var h = location.hostname, l = document.querySelector('link[rel="canonical"]');
+        var site = /(^|\.)vanxcel\.(be|nl|com)$/.test(h) ? "https://" + h.replace(/^www\./, "") : "https://vanxcel.be";
+        if (l) l.href = site + location.pathname;
+      })();
+    </script>
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://vanxcel.be/" />
@@ -56,7 +68,9 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <!-- Statische h1 + intro voor crawlers zonder JavaScript; React vervangt dit bij het laden.
+         Visueel verborgen zodat er geen flits is vóór de app start. De plugin vult dit per route. -->
+    <div id="root"><div data-seo-static style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"><h1>VanXcel — Power Your Journey</h1><p>VanXcel — LiFePO4 batterijen, converters &amp; off-grid systemen voor campervans. Belgisch merk met 2 jaar garantie.</p></div></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

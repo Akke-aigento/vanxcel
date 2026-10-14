@@ -3,8 +3,10 @@
 // crawler of deelplatform zonder JavaScript per pagina een eigen titel, beschrijving en de
 // hreflang-varianten. Na het laden neemt useDocumentTitle het over (taal + canonical per domein).
 //
-// Bewust GEEN canonical in de statische HTML: dezelfde build draait op vanxcel.be, .nl en .com,
-// dus het domein is bij de build niet gekend. De canonical zet useDocumentTitle in de browser.
+// Canonical in de statische HTML is RELATIEF (href="/shop"): dezelfde build draait op vanxcel.be,
+// .nl en .com, dus het domein is bij de build niet gekend. Een relatief adres valt op het domein
+// waarop de pagina geladen wordt. Zet hier NOOIT één vast domein: dan zeg je Google dat de andere
+// twee kopieën zijn en vallen ze uit de index. useDocumentTitle maakt hem in de browser absoluut.
 
 export const REGION_SITES = [
   { hreflang: "nl-BE", url: "https://vanxcel.be", sitemap: "sitemap.xml" },

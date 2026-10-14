@@ -7,7 +7,8 @@
 //
 // Producten en juridische pagina's komen bij de build uit de sellqo-proxy. Lukt dat niet (geen
 // netwerk, time-out), dan bouwt de site gewoon verder met alleen de vaste pagina's.
-// Geen canonical in de statische HTML: één build voor drie domeinen (zie src/seo/pages.ts).
+// Canonical is relatief (één build voor drie domeinen, zie src/seo/pages.ts). Per route komt ook
+// een statische h1 + intro in #root voor crawlers zonder JavaScript; React vervangt die bij laden.
 import fs from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
@@ -37,6 +38,15 @@ export function applyHead(html: string, page: PageMeta): string {
   }
   // og:url in index.html wijst naar de homepage van vanxcel.be; op een subpagina klopt dat niet.
   out = out.replace(/\s*<meta\s+property="og:url"[^>]*>/i, "");
+  // Relatieve canonical per route (zie src/seo/pages.ts): elk domein wijst naar zichzelf.
+  // Functie-replacers: productteksten kunnen een "$" bevatten.
+  out = out.replace(/<link\s+rel="canonical"[^>]*>/i, () => `<link rel="canonical" href="${esc(page.path)}" />`);
+  // Statische h1 + intro in #root (React vervangt dit bij het laden).
+  const h1 = page.title.replace(/\s*[|—–-]\s*VanXcel\s*$/i, "").trim() || page.title;
+  out = out.replace(
+    /(<div data-seo-static[^>]*>)[\s\S]*?(<\/div><\/div>)/,
+    (_m, open: string, close: string) => `${open}<h1>${esc(h1)}</h1><p>${esc(page.description)}</p>${close}`,
+  );
   // data-hreflang="true": useDocumentTitle ruimt deze op en zet ze opnieuw bij navigatie.
   const alts = [
     ...REGION_SITES.map((s) => [s.hreflang, `${s.url}${page.path}`] as const),

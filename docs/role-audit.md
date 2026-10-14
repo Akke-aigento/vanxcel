@@ -189,3 +189,28 @@ permanente doorstreepprijzen, een prijsfout en EAN's met een Excel-apostrof (`'5
 
 **Niet aangeraakt / open.** Retour-orders met `payment_status='paid'`, test-orders (#1111/#1112), `support_email`,
 `is_internal_tenant`, gewichten en `google_product_category` — beslissing Akke.
+
+## SEO-STATIC-1 — canonical + h1 in de statische HTML (2026-10-14)
+
+**Aanleiding.** Akke Insights meldde "geen canonical" en "geen h1" op 12 pagina's. Recon: beide bestonden al, maar
+alleen na JavaScript (`useDocumentTitle` zet de canonical per domein, elke pagina rendert één `<h1>`). Live gemeten
+via `net.http_get` op vanxcel.be/shop en vanxcel.com/shop: ruwe HTML zonder canonical en zonder h1. Google ziet het
+wel (rendert JS); crawlers zonder JS (Insights, AI-crawlers, deelplatformen) niet.
+
+**Advies van Insights NIET gevolgd.** Insights stelde overal `https://vanxcel.com/` als canonical voor. Dat zegt
+Google dat vanxcel.be en .nl kopieën zijn → die vallen uit de index en de hreflang-opzet breekt.
+
+**Wijziging.**
+- `index.html`: relatieve `<link rel="canonical" href="/">` + inline script dat hem meteen absoluut maakt
+  (eigen domein op .be/.nl/.com, `vanxcel.be` op preview/lovable.app). Statische h1 + intro in `#root`, visueel
+  verborgen; `createRoot().render` vervangt het bij het laden.
+- `seo-pages-plugin.ts` (`applyHead`): per route canonical-pad (`/shop`, `/shop/<slug>`, `/legal/…`, `/gids/…`) en
+  h1 = paginatitel zonder "| VanXcel", plus de beschrijving.
+- `src/seo/pages.ts`: commentaar bijgewerkt (relatief, nooit één vast domein).
+
+**Test.** Lokale build: canonical + exact één h1 in `dist/index.html`, `shop/`, `about/`, `manuals/`. Playwright op
+`vite preview`: na het laden één h1 (de echte), één canonical (absoluut), statisch blok weg.
+
+**Bekend restpunt.** Routes zonder eigen HTML (`/login`, `/account`, `/checkout`, `/bedankt`) krijgen via de
+index.html-terugval statisch `canonical="/"`; het script zet hem in de browser goed. Liefst later `noindex` op die
+privéroutes.
