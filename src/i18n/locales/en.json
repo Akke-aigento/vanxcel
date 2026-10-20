@@ -69,7 +69,9 @@
     "subtitle": "Subscribe to our newsletter and get 10% off your first order.",
     "placeholder": "Your email address",
     "success": "Thanks for subscribing!",
-    "error": "Something went wrong. Please try again later."
+    "error": "Something went wrong. Please try again later.",
+    "checkInbox": "Almost there — check your inbox and confirm your subscription via the link in the email.",
+    "alreadySubscribed": "You're already subscribed to our newsletter."
   },
   "cart": {
     "title": "Shopping Cart",

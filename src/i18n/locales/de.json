@@ -69,7 +69,9 @@
     "subtitle": "Melde dich für unseren Newsletter an und erhalte 10% Rabatt auf deine erste Bestellung.",
     "placeholder": "Deine E-Mail-Adresse",
     "success": "Danke für deine Anmeldung!",
-    "error": "Etwas ist schiefgelaufen. Versuche es später erneut."
+    "error": "Etwas ist schiefgelaufen. Versuche es später erneut.",
+    "checkInbox": "Fast geschafft — prüfe dein Postfach und bestätige deine Anmeldung über den Link in der E-Mail.",
+    "alreadySubscribed": "Du bist bereits für unseren Newsletter angemeldet."
   },
   "cart": {
     "title": "Warenkorb",

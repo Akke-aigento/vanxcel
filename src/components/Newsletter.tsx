@@ -9,18 +9,30 @@ import { sellqoFetch } from "@/integrations/sellqo/client";
 const Newsletter = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
     try {
-      await sellqoFetch("/newsletter", {
+      const language = (i18n.language || "nl").slice(0, 2).toLowerCase();
+      const res = await sellqoFetch<{
+        data?: { requires_confirmation?: boolean; message?: string };
+        requires_confirmation?: boolean;
+        message?: string;
+      }>("/newsletter", {
         method: "POST",
-        body: JSON.stringify({ email, source: "website" }),
+        body: JSON.stringify({ email, source: "website", language }),
       });
-      toast.success(t("newsletter.success"));
+      const result = res?.data ?? res;
+      if (result?.requires_confirmation === true) {
+        toast.success(t("newsletter.checkInbox"));
+      } else if (result?.requires_confirmation === false && result?.message === "Already subscribed") {
+        toast.success(t("newsletter.alreadySubscribed"));
+      } else {
+        toast.success(t("newsletter.success"));
+      }
       setEmail("");
     } catch {
       toast.error(t("newsletter.error"));

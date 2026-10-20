@@ -69,7 +69,9 @@
     "subtitle": "Schrijf je in voor onze nieuwsbrief en ontvang 10% korting op je eerste bestelling.",
     "placeholder": "Je e-mailadres",
     "success": "Bedankt voor je aanmelding!",
-    "error": "Er ging iets mis. Probeer het later opnieuw."
+    "error": "Er ging iets mis. Probeer het later opnieuw.",
+    "checkInbox": "Bijna klaar — check je inbox en bevestig je inschrijving via de link in de mail.",
+    "alreadySubscribed": "Je bent al ingeschreven op onze nieuwsbrief."
   },
   "cart": {
     "title": "Winkelwagen",
