@@ -69,7 +69,9 @@
     "subtitle": "Inscrivez-vous à notre newsletter et recevez 10% de réduction sur votre première commande.",
     "placeholder": "Votre adresse e-mail",
     "success": "Merci pour votre inscription !",
-    "error": "Une erreur s'est produite. Réessayez plus tard."
+    "error": "Une erreur s'est produite. Réessayez plus tard.",
+    "checkInbox": "Presque fini — vérifiez votre boîte mail et confirmez votre inscription via le lien dans l'e-mail.",
+    "alreadySubscribed": "Vous êtes déjà inscrit à notre newsletter."
   },
   "cart": {
     "title": "Panier",
